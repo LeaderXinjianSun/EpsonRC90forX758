@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/02 11:38:48:876,DS:0000002009,CS:16242,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2016/12/07 12:27:30:085,DS:0000002019,CS:15141,MA:C4-8E-8F-74-5D-8A,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -9,21 +9,21 @@ ProgramFile1 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=663
+		nHeight=438
 	}
 }
 nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=136
+		nHeight=39
 	}
 }
 nForceFileCount=0
@@ -39,12 +39,12 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=682
+		nHeight=383
 	}
 	nWinState=0
 }
@@ -53,10 +53,10 @@ IOLabelEditor {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=849
+		nHeight=485
 	}
-	nWinState=0
+	nWinState=2
 }
 IOMonitor {
 	bOpened=False
@@ -136,9 +136,9 @@ GUIBuilder {
 ProjectExplorer {
 	bProgramsOpened=True
 	bIncludesOpened=False
-	bLabelsOpened=False
+	bLabelsOpened=True
 	bMacrosOpened=False
-	bFunctionsOpened=False
+	bFunctionsOpened=True
 	bVisionOpened=False
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False
@@ -148,5 +148,5 @@ ProjectExplorer {
 	bCommonPointsOpened=False
 	bForcesOpened=False
 	bCommonForcesOpened=False
-	bRobotsOpened1=False
+	bRobotsOpened1=True
 }

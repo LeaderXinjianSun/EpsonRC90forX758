@@ -155,10 +155,6 @@ Function IsFeedPanelEmpty
 		IsFeedPanelEmpty = False
 	EndIf
 Fend
-'A抓手处理测试机程序
-Function TesterOperate1
-	
-Fend
 Function ScanBarcodeOpetate(num As Integer, picksting$ As String)
 
 	TargetPosition_Num = 1

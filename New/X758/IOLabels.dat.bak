@@ -1,7 +1,7 @@
-ENVT0100,LM:2016/12/07 11:44:47:870,DS:0000003535,CS:17712,MA:C4-8E-8F-74-5D-8A,EI:           
+ENVT0100,LM:2016/12/07 07:56:56:175,DS:0000003397,CS:22844,MA:C4-8E-8F-74-5D-8A,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
-	nNumberOfLabels=29
+	nNumberOfLabels=28
 	Label1 {
 		nBit=0
 		sLabel="VacuumValueA"
@@ -142,11 +142,6 @@ InputBitLabels {
 		sLabel="BRUp"
 		sDescription=""
 	}
-	Label29 {
-		nBit=524
-		sLabel="FeedReady"
-		sDescription=""
-	}
 }
 InputByteLabels {
 	nNumberOfLabels=0
@@ -155,7 +150,7 @@ InputWordLabels {
 	nNumberOfLabels=0
 }
 OutputBitLabels {
-	nNumberOfLabels=17
+	nNumberOfLabels=16
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -234,11 +229,6 @@ OutputBitLabels {
 	Label16 {
 		nBit=15
 		sLabel="ValveD"
-		sDescription=""
-	}
-	Label17 {
-		nBit=514
-		sLabel="FeedEmpty"
 		sDescription=""
 	}
 }
