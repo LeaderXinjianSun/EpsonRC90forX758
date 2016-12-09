@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/07 12:27:30:085,DS:0000002019,CS:15141,MA:C4-8E-8F-74-5D-8A,EI:           
+ENVT0100,LM:2016/12/09 09:26:00:388,DS:0000002022,CS:06508,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -17,7 +17,7 @@ nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -39,7 +39,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -138,7 +138,7 @@ ProjectExplorer {
 	bIncludesOpened=False
 	bLabelsOpened=True
 	bMacrosOpened=False
-	bFunctionsOpened=True
+	bFunctionsOpened=False
 	bVisionOpened=False
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False
