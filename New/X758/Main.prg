@@ -28,17 +28,70 @@ Global Integer ScanResult
 Global Preserve Boolean FeedFill(6)
 
 Global Boolean PickHave(4)
-
-Global Integer FeedReadySigleDown
+Global Preserve Integer PassTrayPalletNum, NgTrayPalletNum
+Global Integer FeedReadySigleDown, PassTraySigleDown, NgTraySigleDown
 
 Global Preserve Boolean ReTest_
 
+Global Integer Discharge
 
 '主函数
 Function main
+	Integer i
+	Integer fillNum
 	Trap Emergency Xqt TrapInterruptAbort
 	Trap Abort Xqt TrapInterruptAbort
 	Trap Error Xqt TrapInterruptAbort
+	Xqt TesterStart1, NoEmgAbort
+	Xqt TesterStart2, NoEmgAbort
+	Xqt TesterStart3, NoEmgAbort
+	Xqt TesterStart4, NoEmgAbort
+	Xqt AllMonitor, NoEmgAbort
+main_label1:
+	
+	Do
+		'判断吸嘴上是否有料
+		For i = 0 To 3
+			If PickHave(i) = True Then
+				Exit For
+			EndIf
+		Next
+		If i > 3 Then
+			'抓手，全无产品
+			If Discharge = 0 Then
+				Call PickFeedOperate1
+				If Sw(FeedReady) = 1 And FeedReadySigleDown = 1 Then
+					Call PickFeedOperate2
+				EndIf
+			Else
+				fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+				'治具里也为空，在排料
+				If fillNum = 0 Then
+					Print "排料完成"
+					MsgSend$ = "排料完成"
+					Wait 1
+					Exit Do
+				EndIf
+			EndIf
+		EndIf
+		'操作A吸嘴
+		Call TesterOperate1
+		'操作B吸嘴
+		Call TesterOperate2
+		'下料
+		For i = 0 To 3
+			Call UnloadOperate(i)
+		Next
+		'操作C吸嘴
+		Call TesterOperate3
+		'操作D吸嘴
+		Call TesterOperate4
+		'下料
+		For i = 0 To 3
+			Call UnloadOperate(i)
+		Next
+	Loop
+	GoTo main_label1
 Fend
 Function AllMonitor
 	Do
@@ -47,117 +100,154 @@ Function AllMonitor
 			FeedReadySigleDown = 1
 			Off FeedEmpty, Forced
 		EndIf
+		
+		If Sw(PassTrayRdy) = 0 Then
+			PassTrayPalletNum = 1
+			PassTraySigleDown = 1
+			Off PassTrayFull, Forced
+		EndIf
+		
+		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
+			NgTrayPalletNum = 1
+			NgTraySigleDown = 1
+		EndIf
 	Loop
 Fend
 Function test1
-	Integer i
-	For i = 0 To 2
-		
-	Next
-	Print i
+	Wait MemSw(0) = 1
+	If MemSw(1) = 1 Then
+		If MemSw(2) = 1 Then
+			GoTo testlabel1
+		EndIf
+		Print "1"
+testlabel2:
+		Print "3"
+	Else
+testlabel1:
+		If MemSw(3) = 1 Then
+			GoTo testlabel2
+		EndIf
+		Print "2"
+	EndIf
+Fend
+Function test2
+testlabel3:
+	Print "4"
 Fend
 '爪手A取操作
 Function PickFeedOperate1
 	Integer i
 	Boolean scanflag, pickfeedflag
 PickFeedOperatelabel1:
-	If Sw(FeedReady) = 0 Or FeedReadySigleDown = 0 Then
+	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		TargetPosition_Num = 1
 		FinalPosition = FeedEmptyYield
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
+			If Discharge <> 0 Then
+                Exit Do
+			EndIf
 		Loop
 	EndIf
-	For i = 0 To 5
-		If FeedFill(i) Then
-			Exit For
-		EndIf
-	Next
-	If i > 5 Then
-		'料盘空了
-		Call IsFeedPanelEmpty
-		GoTo PickFeedOperatelabel1
-	Else
-		scanflag = ScanBarcodeOpetate(i, "A")
-		If scanflag Then
-			TargetPosition_Num = 1
-			FinalPosition = P(11 + i)
-			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			pickfeedflag = PickAction(0)
-			FeedFill(i) = False
-			PickHave(0) = pickfeedflag
-			If pickfeedflag Then
-				Call IsFeedPanelEmpty
+	If Discharge = 0 Then
+		For i = 0 To 5
+			If FeedFill(i) Then
+				Exit For
+			EndIf
+		Next
+		If i > 5 Then
+			'料盘空了
+			Call IsFeedPanelEmpty
+			GoTo PickFeedOperatelabel1
+		Else
+			scanflag = ScanBarcodeOpetate(i, "A")
+			If scanflag Then
+				TargetPosition_Num = 1
+				FinalPosition = P(11 + i)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				pickfeedflag = PickAction(0)
+				FeedFill(i) = False
+				PickHave(0) = pickfeedflag
+				If pickfeedflag Then
+					Call IsFeedPanelEmpty
+				Else
+					BlowSuckFail(0)
+					Call IsFeedPanelEmpty
+				EndIf
+				
 			Else
-				BlowSuckFail(0)
+				FeedFill(i) = False
 				Call IsFeedPanelEmpty
 			EndIf
-			
-		Else
-			FeedFill(i) = False
-			Call IsFeedPanelEmpty
 		EndIf
 	EndIf
+
 Fend
 '爪手B取操作
 Function PickFeedOperate2
 	Integer i
 	Boolean scanflag, pickfeedflag
 PickFeedOperatelabel2:
-	If Sw(FeedReady) = 0 Or FeedReadySigleDown = 0 Then
+	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		TargetPosition_Num = 1
 		FinalPosition = FeedEmptyYield
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
+			If Discharge <> 0 Then
+				Exit Do
+            EndIf
 		Loop
 	EndIf
-	For i = 3 To 5
-		If FeedFill(i) Then
-			Exit For
-		EndIf
-	Next
-	If i > 5 Then
-		For i = 0 To 2
+	If Discharge = 0 Then
+		For i = 3 To 5
 			If FeedFill(i) Then
 				Exit For
 			EndIf
 		Next
-		If i > 2 Then
-			'料盘空了
-			Call IsFeedPanelEmpty
-			GoTo PickFeedOperatelabel2
-		Else
-			GoTo PickFeedOperatelabel2_2
-		EndIf
-	Else
-PickFeedOperatelabel2_2:
-		scanflag = ScanBarcodeOpetate(i, "C")
-		If scanflag Then
-			TargetPosition_Num = 1
-			FinalPosition = P(21 + i)
-			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			pickfeedflag = PickAction(2)
-			FeedFill(i) = False
-			PickHave(2) = pickfeedflag
-			If pickfeedflag Then
-				
+		If i > 5 Then
+			For i = 0 To 2
+				If FeedFill(i) Then
+					Exit For
+				EndIf
+			Next
+			If i > 2 Then
+				'料盘空了
 				Call IsFeedPanelEmpty
+	'			GoTo PickFeedOperatelabel2
 			Else
-				BlowSuckFail(2)
-				Call IsFeedPanelEmpty
+				GoTo PickFeedOperatelabel2_2
+			EndIf
+		Else
+PickFeedOperatelabel2_2:
+			scanflag = ScanBarcodeOpetate(i, "C")
+			If scanflag Then
+				TargetPosition_Num = 1
+				FinalPosition = P(21 + i)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				pickfeedflag = PickAction(2)
+				FeedFill(i) = False
+				PickHave(2) = pickfeedflag
+				If pickfeedflag Then
+					
+					Call IsFeedPanelEmpty
+				Else
+					BlowSuckFail(2)
+					Call IsFeedPanelEmpty
+					GoTo PickFeedOperatelabel2
+				EndIf
+				
+			Else
+				FeedFill(i) = False
 				GoTo PickFeedOperatelabel2
 			EndIf
-			
-		Else
-			FeedFill(i) = False
-			GoTo PickFeedOperatelabel2
 		EndIf
-	EndIf
+    EndIf
+
 Fend
 '判断上料盘是否取空
-Function IsFeedPanelEmpty
+Function IsFeedPanelEmpty As Boolean
 	Integer i
 	For i = 0 To 5
 		If FeedFill(i) Then
@@ -180,7 +270,7 @@ Function TesterOperate1
 	Integer rearnum
 	Integer selectNum, fillNum, testingNum
 	Real realbox
-	If PickHave(0) Then
+	If PickHave(0) = True Then
 		'判断是否全为选测试机
 		Do
 			For i = 0 To 3
@@ -210,7 +300,7 @@ Function TesterOperate1
 			EndIf
 		Next
 		If i > 3 Then
-		'都满穴
+		'都满穴 或 排料
 '			selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
 '			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
 '			testingNum = 8 * Tester_Testing(3) + 4 * Tester_Testing(2) + 2 * Tester_Testing(1) + Tester_Testing(0)
@@ -286,48 +376,135 @@ TesterOperate1_lable1:
 				GoTo TesterOperate1_lable2
 			Else
 TesterOperate1_lable2:
-				'取
-				Select i
-					Case 0
-						TargetPosition_Num = 2
-						'A_1，依据TesterOperate1更改
-						FinalPosition1 = B_1
-						rearnum = 4
-					Case 1
-						TargetPosition_Num = 3
-						FinalPosition1 = B_2
-						rearnum = 5
-					Case 2
-						TargetPosition_Num = 4
-						FinalPosition1 = B_3
-						rearnum = 14
-					Case 3
-						TargetPosition_Num = 5
-						FinalPosition1 = B_4
-						rearnum = 15
-				Send
-				If Sw(rearnum) = 0 Then
-					Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-					MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-					FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+                GoSub TesterOperate1SuckSub
+				
+				'放
+				'若被测试机被选择屏蔽，需要先取走产品。
+				If NeedChancel(i) = False Then
+				'取放
+					GoSub TesterOperate1ReleaseSub
+				Else
+					Tester_Select(i) = False
+					NeedChancel(i) = False
+					Go FinalPosition +X(10)
+				EndIf
+			EndIf
+		Else
+'单放
+			GoSub TesterOperate1ReleaseSub
+		EndIf
+	Else
+		If Discharge <> 0 Then
+			For i = 0 To 3
+				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+					Exit For
+				EndIf
+			Next
+			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+			If fillNum <> 0 Then
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中
+					Print "测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 0
+					For i = 0 To 3
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					Next
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = A_1
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = A_2
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = A_3
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = A_4
+					Send
+					FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
 					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate1_lable4:
+					For i = 0 To 3
+						If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo TesterOperate1_lable4
+					EndIf
+					GoTo TesterOperate1_lable5
+				Else
+TesterOperate1_lable5:
+	                GoSub TesterOperate1SuckSub
+					Go FinalPosition +X(10)
+
+					If NeedChancel(i) = True Then
+						Tester_Select(i) = False
+						NeedChancel(i) = False
+					EndIf
 				EndIf
-				Wait Sw(rearnum) = 1
-				FinalPosition = FinalPosition1
-				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
-				EndIf
-				Do While CmdSend$ <> ""
-					Wait 0.1
-				Loop
-				CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
-				
-				PickHave(1) = PickAction(1)
-				Tester_Fill(i) = False;
-				
-				If PickHave(1) = True Then
-					If Tester_Pass(i) <> 0 Then
+			Else
+			'所有治具都为空
+			EndIf
+
+		EndIf
+	EndIf
+'取产品子函数	
+TesterOperate1SuckSub:
+	'取
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = B_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = B_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = B_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = B_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+	
+	PickHave(1) = PickAction(1)
+	Tester_Fill(i) = False;
+	
+	If PickHave(1) = True Then
+		If Tester_Pass(i) <> 0 Then
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -336,49 +513,213 @@ TesterOperate1_lable2:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4					
-						Pick_P_Msg(1) = 0
-						NgContinue(i) = 0
-					Else
-						
-						If ReTest_ = True Then
-							If Tester_ReTestFalg(i) = True Then
-								Pick_P_Msg(1) = 1
-							Else
-								Pick_P_Msg(1) = 2 + i
-							EndIf
-						Else
-							Pick_P_Msg(1) = 1
-						EndIf
-						'判断超时
-						If Tester_Timeout(i) <> 0 Then
-							Print "测试机" + Str$(i + 1) + "，测试超时"
-							MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
-							Pause
-						EndIf
-						'判断连续NG
-						If Tester_Ng(i) <> 0 Then
-							NgContinue(i) = NgContinue(i) + 1
-						EndIf
+			Pick_P_Msg(1) = 0
+			NgContinue(i) = 0
+		Else
+			
+			If ReTest_ = True Then
+				If Tester_ReTestFalg(i) = True Then
+					Pick_P_Msg(1) = 1
+				Else
+					Pick_P_Msg(1) = 2 + i
+				EndIf
+			Else
+				Pick_P_Msg(1) = 1
+			EndIf
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
 
-						If NgContinue(i) >= NgContinueNum Then
-							Print "测试机" + Str$(i + 1) + "，连续NG"
-							MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
-							Pause
-							NgContinue(i) = 0
-						EndIf
-						
+			If NgContinue(i) >= NgContinueNum Then
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+		EndIf
+	Else
+		Go FinalPosition +X(10)
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+	EndIf
+Return
+
+TesterOperate1ReleaseSub:
+'有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(0, i + 1)
+	Tester_Fill(i) = True;
+	If ReTest_ Then
+		If Pick_P_Msg(0) = -1 Then
+			Tester_ReTestFalg(i) = False
+		Else
+			Tester_ReTestFalg(i) = True
+		EndIf
+	Else
+		Tester_ReTestFalg(i) = False
+	EndIf
+	'退出来，发送启动命令
+	Go FinalPosition +X(20)
+	Tester_Testing(i) = True
+	PickAorC$(i) = "A"
+Return
+
+Fend
+'B抓手处理测试机程序
+Function TesterOperate2
+	Integer i, i_index
+	Integer rearnum
+	Integer selectNum, fillNum, testingNum
+	Real realbox
+	If PickHave(1) = True Then
+		'判断是否全为选测试机
+		Do
+			For i = 0 To 3
+				If Tester_Select(i) = True Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				Wait 1
+				Print "未选择测试机,参与测试！"
+				MsgSend$ = "未选择测试机，参与测试！"
+			Else
+				Exit Do
+			EndIf
+		Loop
+		'判断是否存在空穴
+		For i = 0 To 3
+			If ReTest_ Then
+			'Pick_P_Msg，依据TesterOperate1更改
+				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(0) - 2) <> i Then
+					Exit For
+				EndIf
+			Else
+				If Tester_Select(i) = True And Tester_Fill(i) = False Then
+					Exit For
+				EndIf
+			EndIf
+		Next
+		If i > 3 Then
+		'都满穴 或 排料
+'			selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
+'			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+'			testingNum = 8 * Tester_Testing(3) + 4 * Tester_Testing(2) + 2 * Tester_Testing(1) + Tester_Testing(0)
+			For i = 0 To 3
+				If ReTest_ Then
+					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+						Exit For
 					EndIf
 				Else
-					Go FinalPosition +X(10)
-					Print "测试机" + Str$(i + 1) + "，吸取失败"
-					MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
-					Pause
+					If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
 				EndIf
+			Next
+			If i > 3 Then
+				'所有测试机，都在测试中都在测试中
+				Print "所有选中的测试机，都在测试中。前往预判位置。"
+				MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+				realbox = 0
+				i_index = 0
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+							
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					EndIf
+				Next
+				Select i_index
+					Case 0
+						TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = B_1
+					Case 1
+						TargetPosition_Num = 3
+						FinalPosition1 = B_2
+					Case 2
+						TargetPosition_Num = 4
+						FinalPosition1 = B_3
+					Case 3
+						TargetPosition_Num = 5
+						FinalPosition1 = B_4
+				Send
+				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate2_lable1:
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					EndIf
+				Next
+				If i > 3 Then
+					Wait 0.2
+					'一直判断
+					GoTo TesterOperate2_lable1
+				EndIf
+				GoTo TesterOperate2_lable2
+			Else
+TesterOperate2_lable2:
+                GoSub TesterOperate2SuckSub
 				
 				'放
 				'若被测试机被选择屏蔽，需要先取走产品。
 				If NeedChancel(i) = False Then
-					GoTo TesterOperate1_lable3
+				'取放
+					GoSub TesterOperate2ReleaseSub
 				Else
 					Tester_Select(i) = False
 					NeedChancel(i) = False
@@ -386,57 +727,981 @@ TesterOperate1_lable2:
 				EndIf
 			EndIf
 		Else
-TesterOperate1_lable3:
-		'有空穴
-			Select i
-				Case 0
-					TargetPosition_Num = 2
-					'A_1，依据TesterOperate1更改
-					FinalPosition1 = A_1
-					rearnum = 4
-				Case 1
-					TargetPosition_Num = 3
-					FinalPosition1 = A_2
-					rearnum = 5
-				Case 2
-					TargetPosition_Num = 4
-					FinalPosition1 = A_3
-					rearnum = 14
-				Case 3
-					TargetPosition_Num = 5
-					FinalPosition1 = A_4
-					rearnum = 15
-			Send
-			If Sw(rearnum) = 0 Then
-				Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-				MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
-				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			EndIf
-			Wait Sw(rearnum) = 1
-			FinalPosition = FinalPosition1
-			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			Call ReleaseAction(0, i + 1)
-			Tester_Fill(i) = True;
-			If ReTest_ Then
-				If Pick_P_Msg(0) = -1 Then
-					Tester_ReTestFalg(i) = False
-				Else
-					Tester_ReTestFalg(i) = True
-				EndIf
-			Else
-				Tester_ReTestFalg(i) = False
-			EndIf
-			'退出来，发送启动命令
-			Go FinalPosition +X(20)
-			Tester_Testing(i) = True
-			PickAorC$(i) = "A"
+'单放
+			GoSub TesterOperate2ReleaseSub
 		EndIf
 	Else
-		'排料处理部分
-		
+		If Discharge <> 0 Then
+			For i = 0 To 3
+				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+					Exit For
+				EndIf
+			Next
+			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+			If fillNum <> 0 Then
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中
+					Print "测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 0
+					For i = 0 To 3
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					Next
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = B_1
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = B_2
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = B_3
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = B_4
+					Send
+					FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate2_lable4:
+					For i = 0 To 3
+						If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo TesterOperate2_lable4
+					EndIf
+					GoTo TesterOperate2_lable5
+				Else
+TesterOperate2_lable5:
+	                GoSub TesterOperate2SuckSub
+					Go FinalPosition +X(10)
+
+					If NeedChancel(i) = True Then
+						Tester_Select(i) = False
+						NeedChancel(i) = False
+					EndIf
+				EndIf
+			Else
+			'所有治具都为空
+			EndIf
+
+		EndIf
 	EndIf
+'取产品子函数	
+TesterOperate2SuckSub:
+	'取
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+	
+	PickHave(0) = PickAction(0)
+	Tester_Fill(i) = False;
+	
+	If PickHave(0) = True Then
+		If Tester_Pass(i) <> 0 Then
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4					
+			Pick_P_Msg(0) = 0
+			NgContinue(i) = 0
+		Else
+			
+			If ReTest_ = True Then
+				If Tester_ReTestFalg(i) = True Then
+					Pick_P_Msg(0) = 1
+				Else
+					Pick_P_Msg(0) = 2 + i
+				EndIf
+			Else
+				Pick_P_Msg(0) = 1
+			EndIf
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
+
+			If NgContinue(i) >= NgContinueNum Then
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+		EndIf
+	Else
+		Go FinalPosition +X(10)
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+	EndIf
+Return
+
+TesterOperate2ReleaseSub:
+'有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = B_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = B_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = B_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = B_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(1, i + 1)
+	Tester_Fill(i) = True;
+	If ReTest_ Then
+		If Pick_P_Msg(1) = -1 Then
+			Tester_ReTestFalg(i) = False
+		Else
+			Tester_ReTestFalg(i) = True
+		EndIf
+	Else
+		Tester_ReTestFalg(i) = False
+	EndIf
+	'退出来，发送启动命令
+	Go FinalPosition +X(20)
+	Tester_Testing(i) = True
+	PickAorC$(i) = "B"
+Return
+
 Fend
+'C抓手处理测试机程序
+Function TesterOperate3
+	Integer i, i_index
+	Integer rearnum
+	Integer selectNum, fillNum, testingNum
+	Real realbox
+	If PickHave(2) = True Then
+		'判断是否全为选测试机
+		Do
+			For i = 0 To 3
+				If Tester_Select(i) = True Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				Wait 1
+				Print "未选择测试机,参与测试！"
+				MsgSend$ = "未选择测试机，参与测试！"
+			Else
+				Exit Do
+			EndIf
+		Loop
+		'判断是否存在空穴
+		For i = 0 To 3
+			If ReTest_ Then
+			'Pick_P_Msg，依据TesterOperate1更改
+				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(0) - 2) <> i Then
+					Exit For
+				EndIf
+			Else
+				If Tester_Select(i) = True And Tester_Fill(i) = False Then
+					Exit For
+				EndIf
+			EndIf
+		Next
+		If i > 3 Then
+		'都满穴 或 排料
+'			selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
+'			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+'			testingNum = 8 * Tester_Testing(3) + 4 * Tester_Testing(2) + 2 * Tester_Testing(1) + Tester_Testing(0)
+			For i = 0 To 3
+				If ReTest_ Then
+					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+				Else
+					If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+				EndIf
+			Next
+			If i > 3 Then
+				'所有测试机，都在测试中都在测试中
+				Print "所有选中的测试机，都在测试中。前往预判位置。"
+				MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+				realbox = 0
+				i_index = 0
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+							
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					EndIf
+				Next
+				Select i_index
+					Case 0
+						TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = D_1
+					Case 1
+						TargetPosition_Num = 3
+						FinalPosition1 = D_2
+					Case 2
+						TargetPosition_Num = 4
+						FinalPosition1 = D_3
+					Case 3
+						TargetPosition_Num = 5
+						FinalPosition1 = D_4
+				Send
+				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate3_lable1:
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					EndIf
+				Next
+				If i > 3 Then
+					Wait 0.2
+					'一直判断
+					GoTo TesterOperate3_lable1
+				EndIf
+				GoTo TesterOperate3_lable2
+			Else
+TesterOperate3_lable2:
+                GoSub TesterOperate3SuckSub
+				
+				'放
+				'若被测试机被选择屏蔽，需要先取走产品。
+				If NeedChancel(i) = False Then
+				'取放
+					GoSub TesterOperate3ReleaseSub
+				Else
+					Tester_Select(i) = False
+					NeedChancel(i) = False
+					Go FinalPosition +X(10)
+				EndIf
+			EndIf
+		Else
+'单放
+			GoSub TesterOperate3ReleaseSub
+		EndIf
+	Else
+		If Discharge <> 0 Then
+			For i = 0 To 3
+				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+					Exit For
+				EndIf
+			Next
+			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+			If fillNum <> 0 Then
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中
+					Print "测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 0
+					For i = 0 To 3
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					Next
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = C_1
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = C_2
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = C_3
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = C_4
+					Send
+					FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate3_lable4:
+					For i = 0 To 3
+						If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo TesterOperate3_lable4
+					EndIf
+					GoTo TesterOperate3_lable5
+				Else
+TesterOperate3_lable5:
+	                GoSub TesterOperate3SuckSub
+					Go FinalPosition +X(10)
+
+					If NeedChancel(i) = True Then
+						Tester_Select(i) = False
+						NeedChancel(i) = False
+					EndIf
+				EndIf
+			Else
+			'所有治具都为空
+			EndIf
+
+		EndIf
+	EndIf
+'取产品子函数	
+TesterOperate3SuckSub:
+	'取
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = D_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = D_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = D_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = D_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",D"
+	
+	PickHave(3) = PickAction(3)
+	Tester_Fill(i) = False;
+	
+	If PickHave(3) = True Then
+		If Tester_Pass(i) <> 0 Then
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4					
+			Pick_P_Msg(3) = 0
+			NgContinue(i) = 0
+		Else
+			
+			If ReTest_ = True Then
+				If Tester_ReTestFalg(i) = True Then
+					Pick_P_Msg(3) = 1
+				Else
+					Pick_P_Msg(3) = 2 + i
+				EndIf
+			Else
+				Pick_P_Msg(3) = 1
+			EndIf
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
+
+			If NgContinue(i) >= NgContinueNum Then
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+		EndIf
+	Else
+		Go FinalPosition +X(10)
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+	EndIf
+Return
+
+TesterOperate3ReleaseSub:
+'有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = C_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = C_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = C_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = C_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(2, i + 1)
+	Tester_Fill(i) = True;
+	If ReTest_ Then
+		If Pick_P_Msg(2) = -1 Then
+			Tester_ReTestFalg(i) = False
+		Else
+			Tester_ReTestFalg(i) = True
+		EndIf
+	Else
+		Tester_ReTestFalg(i) = False
+	EndIf
+	'退出来，发送启动命令
+	Go FinalPosition +X(20)
+	Tester_Testing(i) = True
+	PickAorC$(i) = "C"
+Return
+
+Fend
+'D抓手处理测试机程序
+Function TesterOperate4
+	Integer i, i_index
+	Integer rearnum
+	Integer selectNum, fillNum, testingNum
+	Real realbox
+	If PickHave(3) = True Then
+		'判断是否全为选测试机
+		Do
+			For i = 0 To 3
+				If Tester_Select(i) = True Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				Wait 1
+				Print "未选择测试机,参与测试！"
+				MsgSend$ = "未选择测试机，参与测试！"
+			Else
+				Exit Do
+			EndIf
+		Loop
+		'判断是否存在空穴
+		For i = 0 To 3
+			If ReTest_ Then
+			'Pick_P_Msg，依据TesterOperate1更改
+				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(0) - 2) <> i Then
+					Exit For
+				EndIf
+			Else
+				If Tester_Select(i) = True And Tester_Fill(i) = False Then
+					Exit For
+				EndIf
+			EndIf
+		Next
+		If i > 3 Then
+		'都满穴 或 排料
+'			selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
+'			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+'			testingNum = 8 * Tester_Testing(3) + 4 * Tester_Testing(2) + 2 * Tester_Testing(1) + Tester_Testing(0)
+			For i = 0 To 3
+				If ReTest_ Then
+					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+				Else
+					If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+				EndIf
+			Next
+			If i > 3 Then
+				'所有测试机，都在测试中都在测试中
+				Print "所有选中的测试机，都在测试中。前往预判位置。"
+				MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+				realbox = 0
+				i_index = 0
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+							
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					EndIf
+				Next
+				Select i_index
+					Case 0
+						TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = C_1
+					Case 1
+						TargetPosition_Num = 3
+						FinalPosition1 = C_2
+					Case 2
+						TargetPosition_Num = 4
+						FinalPosition1 = C_3
+					Case 3
+						TargetPosition_Num = 5
+						FinalPosition1 = C_4
+				Send
+				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate4_lable1:
+				For i = 0 To 3
+					If ReTest_ Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Else
+						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					EndIf
+				Next
+				If i > 3 Then
+					Wait 0.2
+					'一直判断
+					GoTo TesterOperate4_lable1
+				EndIf
+				GoTo TesterOperate4_lable2
+			Else
+TesterOperate4_lable2:
+                GoSub TesterOperate4SuckSub
+				
+				'放
+				'若被测试机被选择屏蔽，需要先取走产品。
+				If NeedChancel(i) = False Then
+				'取放
+					GoSub TesterOperate4ReleaseSub
+				Else
+					Tester_Select(i) = False
+					NeedChancel(i) = False
+					Go FinalPosition +X(10)
+				EndIf
+			EndIf
+		Else
+'单放
+			GoSub TesterOperate4ReleaseSub
+		EndIf
+	Else
+		If Discharge <> 0 Then
+			For i = 0 To 3
+				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+					Exit For
+				EndIf
+			Next
+			fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+			If fillNum <> 0 Then
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中
+					Print "测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 0
+					For i = 0 To 3
+						If Tester_Select(i) = True And Tester_Fill(i) = True Then
+							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+								realbox = TesterTimeElapse(i)
+								i_index = i
+							EndIf
+						EndIf
+					Next
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = D_1
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = D_2
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = D_3
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = D_4
+					Send
+					FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate4_lable4:
+					For i = 0 To 3
+						If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+							Exit For
+						EndIf
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo TesterOperate4_lable4
+					EndIf
+					GoTo TesterOperate4_lable5
+				Else
+TesterOperate4_lable5:
+	                GoSub TesterOperate4SuckSub
+					Go FinalPosition +X(10)
+
+					If NeedChancel(i) = True Then
+						Tester_Select(i) = False
+						NeedChancel(i) = False
+					EndIf
+				EndIf
+			Else
+			'所有治具都为空
+			EndIf
+
+		EndIf
+	EndIf
+'取产品子函数	
+TesterOperate4SuckSub:
+	'取
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = C_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = C_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = C_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = C_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",C"
+	
+	PickHave(2) = PickAction(2)
+	Tester_Fill(i) = False;
+	
+	If PickHave(2) = True Then
+		If Tester_Pass(i) <> 0 Then
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4					
+			Pick_P_Msg(2) = 0
+			NgContinue(i) = 0
+		Else
+			
+			If ReTest_ = True Then
+				If Tester_ReTestFalg(i) = True Then
+					Pick_P_Msg(2) = 1
+				Else
+					Pick_P_Msg(2) = 2 + i
+				EndIf
+			Else
+				Pick_P_Msg(2) = 1
+			EndIf
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
+
+			If NgContinue(i) >= NgContinueNum Then
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+		EndIf
+	Else
+		Go FinalPosition +X(10)
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+	EndIf
+Return
+
+TesterOperate4ReleaseSub:
+'有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = D_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = D_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = D_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = D_4
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(3, i + 1)
+	Tester_Fill(i) = True;
+	If ReTest_ Then
+		If Pick_P_Msg(3) = -1 Then
+			Tester_ReTestFalg(i) = False
+		Else
+			Tester_ReTestFalg(i) = True
+		EndIf
+	Else
+		Tester_ReTestFalg(i) = False
+	EndIf
+	'退出来，发送启动命令
+	Go FinalPosition +X(20)
+	Tester_Testing(i) = True
+	PickAorC$(i) = "D"
+Return
+
+Fend
+'num
+'0:A
+'1:B
+'2:C
+'3:D
+Function UnloadOperate(num As Integer)
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4	
+
+'Pallet 0:A Pass Cui
+'Pallet 1:B Pass Cui
+'Pallet 2:C Pass Cui
+'Pallet 3:D Pass Cui
+
+'Pallet 4:A Ng+ Cui
+'Pallet 5:B Ng+ Cui
+'Pallet 6:C Ng+ Cui
+'Pallet 7:D Ng+ Cui
+
+'Pallet 8:A Ng- Cui
+'Pallet 9:B Ng- Cui
+'Pallet 10:C Ng- Cui
+'Pallet 11:D Ng- Cui
+	If PickHave(num) = True Then
+		If Pick_P_Msg(num) = 0 Then
+			GoSub UnloadOperate_Pass
+		ElseIf Pick_P_Msg(num) = 1 Then
+			GoSub UnloadOperate_Ng
+		EndIf
+	EndIf
+	
+UnloadOperate_Pass:
+	If Sw(PassTrayRdy) = 0 Or PassTraySigleDown = 0 Then
+		TargetPosition_Num = 6
+		FinalPosition = PassEmptyYield :Z(0)
+		Print "Pass下料盘，未准备好"
+		MsgSend$ = "Pass下料盘，未准备好"
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(PassTrayRdy) = 0 And PassTraySigleDown = 1
+	TargetPosition_Num = 6
+	FinalPosition = Pallet(num, PassTrayPalletNum)
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(num, -1)
+	PassTrayPalletNum = PassTrayPalletNum + 1
+	If PassTrayPalletNum > 12 Then
+		Go PassEmptyYield :Z(0)
+		Print "Pass下料盘，换料"
+		MsgSend$ = "Pass下料盘，换料"
+		On PassTrayFull
+		PassTrayPalletNum = 1
+	EndIf
+	
+Return
+
+UnloadOperate_Ng:
+	If Sw(NgTrayRdy) = 0 Or NgTraySigleDown = 0 Then
+		TargetPosition_Num = 7
+		FinalPosition = NgEmptyYield :Z(0)
+		Print "Ng下料盘，满"
+		MsgSend$ = "Ng下料盘，满"
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
+	TargetPosition_Num = 7
+	If NgTrayPalletNum <= 12 Then
+		FinalPosition = Pallet(num + 4, NgTrayPalletNum)
+	Else
+		FinalPosition = Pallet(num + 8, NgTrayPalletNum - 12)
+	EndIf
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(num, -1)
+	NgTrayPalletNum = NgTrayPalletNum + 1
+	If NgTrayPalletNum > 21 Then
+		Go NgEmptyYield :Z(0)
+		Print "Ng下料盘，换料"
+		MsgSend$ = "Ng下料盘，换料"
+		Pause
+		NgTrayPalletNum = 1
+	EndIf
+Return
+
+Fend
+
 Function ScanBarcodeOpetate(num As Integer, picksting$ As String)
 
 	TargetPosition_Num = 1
@@ -526,7 +1791,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 Fend
 '吸取动作
 'num:吸嘴索引
-Function PickAction(num As Integer)
+Function PickAction(num As Integer) As Boolean
 '0 : A
 '1 : B
 '2 : C
@@ -803,8 +2068,8 @@ Function TesterStart1
 	
 	Do
 		If Tester_Select(0) = True Then
-			Print "测试机1，等待开始测试"
-			MsgSend$ = "测试机1，等待开始测试"
+			Print "测试机AL，等待开始测试"
+			MsgSend$ = "测试机AL，等待开始测试"
 			Do While Tester_Testing(0) = False
 				If Tester_Select(0) = False Then
 					Exit Do
@@ -849,14 +2114,167 @@ Function TesterStart1
 		EndIf
 	Loop
 Fend
+'测试机2测试过程
+Function TesterStart2
+	
+	Do
+		If Tester_Select(1) = True Then
+			Print "测试机AR，等待开始测试"
+			MsgSend$ = "测试机AR，等待开始测试"
+			Do While Tester_Testing(1) = False
+				If Tester_Select(1) = False Then
+					Exit Do
+				EndIf
+				Wait 0.2
+			Loop
+			If Tester_Testing(1) = True Then
+				
+				Tester_Pass(1) = 0
+				Tester_Ng(1) = 0
+				Tester_Timeout(1) = 0
+				Print "测试机AR，开始测试"
+				MsgSend$ = "测试机AR，开始测试"
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "Start,2," + PickAorC$(1)
+				TmReset 1
+				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
+					TesterTimeElapse(1) = Tmr(1)
+				
+					If Tester_Select(1) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+				On AR_Suck, Forced
+				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
+				Off AR_Suck, Forced
+				TesterTimeElapse(1) = 0
+				Tester_Testing(1) = False
+			EndIf
+		Else
+			Tester_Fill(1) = False
+			Tester_Testing(1) = False
+			TesterTimeElapse(1) = 0
+			Wait 0.1
+			Off AR_Suck, Forced
+		EndIf
+	Loop
+Fend
+'测试机3测试过程
+Function TesterStart3
+	
+	Do
+		If Tester_Select(2) = True Then
+			Print "测试机BL，等待开始测试"
+			MsgSend$ = "测试机BL，等待开始测试"
+			Do While Tester_Testing(2) = False
+				If Tester_Select(2) = False Then
+					Exit Do
+				EndIf
+				Wait 0.2
+			Loop
+			If Tester_Testing(2) = True Then
+				
+				Tester_Pass(2) = 0
+				Tester_Ng(2) = 0
+				Tester_Timeout(2) = 0
+				Print "测试机BL，开始测试"
+				MsgSend$ = "测试机BL，开始测试"
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "Start,3," + PickAorC$(2)
+				TmReset 2
+				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
+					TesterTimeElapse(2) = Tmr(2)
+				
+					If Tester_Select(2) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+				On BL_Suck, Forced
+				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
+				Off BL_Suck, Forced
+				TesterTimeElapse(2) = 0
+				Tester_Testing(2) = False
+			EndIf
+		Else
+			Tester_Fill(2) = False
+			Tester_Testing(2) = False
+			TesterTimeElapse(2) = 0
+			Wait 0.1
+			Off BL_Suck, Forced
+		EndIf
+	Loop
+Fend
+'测试机4测试过程
+Function TesterStart4
+	
+	Do
+		If Tester_Select(3) = True Then
+			Print "测试机BR，等待开始测试"
+			MsgSend$ = "测试机BR，等待开始测试"
+			Do While Tester_Testing(3) = False
+				If Tester_Select(3) = False Then
+					Exit Do
+				EndIf
+				Wait 0.2
+			Loop
+			If Tester_Testing(3) = True Then
+				
+				Tester_Pass(3) = 0
+				Tester_Ng(3) = 0
+				Tester_Timeout(3) = 0
+				Print "测试机BR，开始测试"
+				MsgSend$ = "测试机BR，开始测试"
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "Start,4," + PickAorC$(3)
+				TmReset 3
+				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
+					TesterTimeElapse(3) = Tmr(3)
+				
+					If Tester_Select(3) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+				On BR_Suck, Forced
+				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
+				Off BR_Suck, Forced
+				TesterTimeElapse(3) = 0
+				Tester_Testing(3) = False
+			EndIf
+		Else
+			Tester_Fill(3) = False
+			Tester_Testing(3) = False
+			TesterTimeElapse(3) = 0
+			Wait 0.1
+			Off BR_Suck, Forced
+		EndIf
+	Loop
+Fend
 Function TrapInterruptAbort
 	Integer i
 	Out 0, 0, Forced
 	Out 1, 0, Forced
-'	For i = 0 To 3
-'		Pick_Have(i) = False
-'	Next
-'	Discharge = 0
+	For i = 0 To 3
+		PickHave(i) = False
+	Next
+	Discharge = 0
 
 Fend
 

@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/09 09:26:00:388,DS:0000002022,CS:06508,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2016/12/11 09:52:58:645,DS:0000002033,CS:10863,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -9,15 +9,15 @@ ProgramFile1 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=663
-		nHeight=438
+		nWidth=783
+		nHeight=598
 	}
 }
 nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -39,32 +39,32 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=382
+		nTop=14
 		nWidth=682
 		nHeight=383
 	}
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
 		nWidth=849
 		nHeight=485
 	}
-	nWinState=2
+	nWinState=0
 }
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=0
-		nHeight=0
+		nLeft=679
+		nTop=489
+		nWidth=478
+		nHeight=347
 	}
 }
 Simulator {
@@ -99,8 +99,8 @@ RobotMgr {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=698
+		nHeight=478
 	}
 }
 UserErrorEditor {
@@ -138,7 +138,7 @@ ProjectExplorer {
 	bIncludesOpened=False
 	bLabelsOpened=True
 	bMacrosOpened=False
-	bFunctionsOpened=False
+	bFunctionsOpened=True
 	bVisionOpened=False
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False

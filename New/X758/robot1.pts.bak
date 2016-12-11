@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/12/09 02:37:47:188,DS:0000010727,CS:26956,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2016/12/11 01:30:01:221,DS:0000011310,CS:00367,MA:C6-8E-8F-74-5D-89,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
 nNumberOfJoints=4
-nNumberOfPoints=37
+nNumberOfPoints=39
 Point1 {
 	nNumber=0
 	sLabel=""
@@ -527,6 +527,32 @@ Point20 {
 	bSimVisible=False
 }
 Point21 {
+	nNumber=32
+	sLabel="PassEmptyYield"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point22 {
 	nNumber=41
 	sLabel="A_1"
 	sDescription=""
@@ -552,7 +578,7 @@ Point21 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point22 {
+Point23 {
 	nNumber=42
 	sLabel="A_2"
 	sDescription=""
@@ -578,7 +604,7 @@ Point22 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point23 {
+Point24 {
 	nNumber=43
 	sLabel="A_3"
 	sDescription=""
@@ -604,7 +630,7 @@ Point23 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point24 {
+Point25 {
 	nNumber=44
 	sLabel="A_4"
 	sDescription=""
@@ -630,7 +656,7 @@ Point24 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point25 {
+Point26 {
 	nNumber=51
 	sLabel="B_1"
 	sDescription=""
@@ -656,7 +682,7 @@ Point25 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point26 {
+Point27 {
 	nNumber=52
 	sLabel="B_2"
 	sDescription=""
@@ -682,7 +708,7 @@ Point26 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point27 {
+Point28 {
 	nNumber=53
 	sLabel="B_3"
 	sDescription=""
@@ -708,7 +734,7 @@ Point27 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point28 {
+Point29 {
 	nNumber=54
 	sLabel="B_4"
 	sDescription=""
@@ -734,7 +760,7 @@ Point28 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point29 {
+Point30 {
 	nNumber=61
 	sLabel="C_1"
 	sDescription=""
@@ -760,7 +786,7 @@ Point29 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point30 {
+Point31 {
 	nNumber=62
 	sLabel="C_2"
 	sDescription=""
@@ -786,7 +812,7 @@ Point30 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point31 {
+Point32 {
 	nNumber=63
 	sLabel="C_3"
 	sDescription=""
@@ -812,7 +838,7 @@ Point31 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point32 {
+Point33 {
 	nNumber=64
 	sLabel="C_4"
 	sDescription=""
@@ -838,7 +864,7 @@ Point32 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point33 {
+Point34 {
 	nNumber=71
 	sLabel="D_1"
 	sDescription=""
@@ -864,7 +890,7 @@ Point33 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point34 {
+Point35 {
 	nNumber=72
 	sLabel="D_2"
 	sDescription=""
@@ -890,7 +916,7 @@ Point34 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point35 {
+Point36 {
 	nNumber=73
 	sLabel="D_3"
 	sDescription=""
@@ -916,7 +942,7 @@ Point35 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point36 {
+Point37 {
 	nNumber=74
 	sLabel="D_4"
 	sDescription=""
@@ -942,7 +968,33 @@ Point36 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point37 {
+Point38 {
+	nNumber=998
+	sLabel="FinalPosition1"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point39 {
 	nNumber=999
 	sLabel="FinalPosition"
 	sDescription=""
