@@ -29,7 +29,7 @@ Global Preserve Boolean FeedFill(6)
 
 Global Boolean PickHave(4)
 Global Preserve Integer PassTrayPalletNum, NgTrayPalletNum
-Global Integer FeedReadySigleDown, PassTraySigleDown, NgTraySigleDown
+Global Integer FeedReadySigleDown, PassTraySigleDown, NgTraySigleDown, INP_HomeSigleDown
 
 Global Preserve Boolean ReTest_
 
@@ -38,6 +38,7 @@ Global Integer Discharge
 Global Integer S_Position
 
 '主函数
+
 
 Function main
 	Integer i
@@ -50,51 +51,74 @@ Function main
 	Xqt TesterStart3, NoEmgAbort
 	Xqt TesterStart4, NoEmgAbort
 	Xqt AllMonitor, NoEmgAbort
+	Call InitAction
+	Call HomeReturnAction
 main_label1:
 	
 	Do
-		'判断吸嘴上是否有料
-		For i = 0 To 3
-			If PickHave(i) = True Then
-				Exit For
-			EndIf
-		Next
-		If i > 3 Then
-			'抓手，全无产品
-			If Discharge = 0 Then
-				Call PickFeedOperate1
-				If Sw(FeedReady) = 1 And FeedReadySigleDown = 1 Then
-					Call PickFeedOperate2
-				EndIf
-			Else
-				fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
-				'治具里也为空，在排料
-				If fillNum = 0 Then
-					Print "排料完成"
-					MsgSend$ = "排料完成"
-					Wait 1
-					Exit Do
-				EndIf
-			EndIf
+
+		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+		If fillNum = -15 Then
+			Call TesterOperate01
+			Call UnloadOperate(0)
+		Else
+			Call PickFeedOperate0
+			Call TesterOperate02
 		EndIf
-		'操作A吸嘴
-		Call TesterOperate1
-		'操作B吸嘴
-		Call TesterOperate2
-		'下料
-		For i = 0 To 3
-			Call UnloadOperate(i)
-		Next
-		'操作C吸嘴
-		Call TesterOperate3
-		'操作D吸嘴
-		Call TesterOperate4
-		'下料
-		For i = 0 To 3
-			Call UnloadOperate(i)
-		Next
+
+'		'判断吸嘴上是否有料
+'		For i = 0 To 3
+'			If PickHave(i) = True Then
+'				Exit For
+'			EndIf
+'		Next
+'		If i > 3 Then
+'			'抓手，全无产品
+'			If Discharge = 0 Then
+'				Call PickFeedOperate0
+'			Else
+'				fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+'				'治具里也为空，在排料
+'				If fillNum = 0 Then
+'					Print "排料完成"
+'					MsgSend$ = "排料完成"
+'					Wait 1
+'					Exit Do
+'				EndIf
+'			EndIf
+'		EndIf
+'		'操作A吸嘴
+'		Call TesterOperate01
+'		'操作B吸嘴
+'		Call TesterOperate2
+'		'下料
+'		For i = 0 To 3
+'			Call UnloadOperate(i)
+'		Next
+'		'操作C吸嘴
+'		Call TesterOperate3
+'		'操作D吸嘴
+'		Call TesterOperate4
+'		'下料
+'		For i = 0 To 3
+'			Call UnloadOperate(i)
+'		Next
 	Loop
 	GoTo main_label1
+Fend
+Function InitAction
+	
+	Integer i
+	PickHave(0) = False
+	Pallet 1, PassTuiP1, PassTuiP2, PassTuiP3, 3, 4
+	For i = 0 To 2
+		FeedFill(i) = True
+	Next
+	For i = 0 To 3
+		Tester_Pass(i) = 0
+		Tester_Fill(i) = False
+		Tester_Testing(i) = False
+	Next
 Fend
 Function AllMonitor
 	Do
@@ -114,6 +138,12 @@ Function AllMonitor
 			NgTrayPalletNum = 1
 			NgTraySigleDown = 1
 		EndIf
+		
+		If Sw(INP_Home) = 0 Then
+			INP_HomeSigleDown = 1
+			Off SHome, Forced
+		EndIf
+		
 	Loop
 Fend
 Function test1
@@ -125,8 +155,62 @@ Function test1
 	OutW SpositionY, 65534
 Fend
 Function test2
-testlabel3:
-	Print "4"
+		TargetPosition_Num = 6
+		CurPosition_Num = 5
+		FinalPosition = PassTuiP1
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+Fend
+'单爪手取操作
+Function PickFeedOperate0
+	Integer i
+	Boolean scanflag, pickfeedflag
+PickFeedOperatelabel1:
+	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
+		TargetPosition_Num = 1
+		FinalPosition = FeedEmptyYield
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
+			Wait 0.2
+			If Discharge <> 0 Then
+                Exit Do
+			EndIf
+		Loop
+	EndIf
+	If Discharge = 0 Then
+		For i = 0 To 2
+			If FeedFill(i) Then
+				Exit For
+			EndIf
+		Next
+		If i > 2 Then
+			'料盘空了
+			Call IsFeedPanelEmpty
+			GoTo PickFeedOperatelabel1
+		Else
+'			scanflag = ScanBarcodeOpetate(i, "A")
+			scanflag = True
+			If scanflag Then
+				TargetPosition_Num = 1
+				FinalPosition = P(11 + i)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				pickfeedflag = PickAction(0)
+				pickfeedflag = True
+				FeedFill(i) = False
+				PickHave(0) = pickfeedflag
+				If pickfeedflag Then
+					Call IsFeedPanelEmpty
+				Else
+					BlowSuckFail(0)
+					Call IsFeedPanelEmpty
+				EndIf
+				
+			Else
+				FeedFill(i) = False
+				Call IsFeedPanelEmpty
+			EndIf
+		EndIf
+	EndIf
+	
 Fend
 '爪手A取操作
 Function PickFeedOperate1
@@ -243,20 +327,281 @@ Fend
 '判断上料盘是否取空
 Function IsFeedPanelEmpty As Boolean
 	Integer i
-	For i = 0 To 5
+	For i = 0 To 2
 		If FeedFill(i) Then
 			Exit For
 		EndIf
 	Next
-	If i > 5 Then
+	If i > 2 Then
 		'料盘空了
 		Go FeedEmptyYield
 		On FeedEmpty
+		For i = 0 To 2
+			FeedFill(i) = True
+		Next
 		FeedReadySigleDown = 0
 		IsFeedPanelEmpty = True
 	Else
 		IsFeedPanelEmpty = False
 	EndIf
+Fend
+'单爪手处理测试机程序，取
+Function TesterOperate01
+	Integer i, i_index
+	Integer rearnum
+	Integer selectNum, fillNum, testingNum
+	Real realbox
+	If PickHave(0) = False Then
+		'判断是否全为选测试机
+		Do
+			For i = 0 To 3
+				If Tester_Select(i) = True Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				Wait 1
+				Print "未选择测试机,参与测试！"
+				MsgSend$ = "未选择测试机，参与测试！"
+			Else
+				Exit Do
+			EndIf
+		Loop
+
+		For i = 0 To 3
+			If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+				Exit For
+			EndIf
+		Next
+		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+		If fillNum <> 0 Then
+			If i > 3 Then
+				'所有测试机，都在测试中都在测试中
+				Print "测试机，都在测试中。前往预判位置。"
+				MsgSend$ = "测试机，都在测试中。前往预判位置。"
+				realbox = 0
+				i_index = 0
+				For i = 0 To 3
+					If Tester_Select(i) = True And Tester_Fill(i) = True Then
+						If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 25 Then
+							realbox = TesterTimeElapse(i)
+							i_index = i
+						EndIf
+					EndIf
+				Next
+				Select i_index
+					Case 0
+						TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = A_1
+					Case 1
+						TargetPosition_Num = 3
+						FinalPosition1 = A_2
+					Case 2
+						TargetPosition_Num = 4
+						FinalPosition1 = A_3
+					Case 3
+						TargetPosition_Num = 5
+						FinalPosition1 = A_4
+				Send
+				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+TesterOperate1_lable4:
+				For i = 0 To 3
+					If Tester_Fill(i) = True And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+				Next
+				If i > 3 Then
+					Wait 0.2
+					'一直判断
+					GoTo TesterOperate1_lable4
+				EndIf
+				GoTo TesterOperate1_lable5
+			Else
+TesterOperate1_lable5:
+                GoSub TesterOperate1SuckSub
+				Go FinalPosition +X(10)
+
+				If NeedChancel(i) = True Then
+					Tester_Select(i) = False
+					NeedChancel(i) = False
+				EndIf
+			EndIf
+		Else
+		'所有治具都为空
+		EndIf
+
+	EndIf
+	Exit Function
+'取产品子函数	
+TesterOperate1SuckSub:
+	'取
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A_4
+			rearnum = 15
+	Send
+'	If Sw(rearnum) = 0 Then
+	If Sw(rearnum) = 1 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+'	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+	
+	PickHave(0) = PickAction(0)
+	PickHave(0) = True
+	Tester_Fill(i) = False;
+	
+	If PickHave(0) = True Then
+		If Tester_Pass(i) <> 0 Then
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4					
+			Pick_P_Msg(0) = 0
+			NgContinue(i) = 0
+		Else
+			
+
+			Pick_P_Msg(0) = 1
+	
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
+
+			If NgContinue(i) >= NgContinueNum Then
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+		EndIf
+	Else
+		Go FinalPosition +X(10)
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+	EndIf
+Return
+
+Fend
+'单爪手处理测试机程序，放
+Function TesterOperate02
+	Integer i, i_index
+	Integer rearnum
+	Integer selectNum, fillNum, testingNum
+	Real realbox
+	If PickHave(0) = True Then
+		'判断是否全为选测试机
+		Do
+			For i = 0 To 3
+				If Tester_Select(i) = True Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				Wait 1
+				Print "未选择测试机,参与测试！"
+				MsgSend$ = "未选择测试机，参与测试！"
+			Else
+				Exit Do
+			EndIf
+		Loop
+		'判断是否存在空穴
+		For i = 0 To 3
+
+			If Tester_Select(i) = True And Tester_Fill(i) = False Then
+				Exit For
+			EndIf
+
+		Next
+		If i > 3 Then
+		'都满
+		Else
+'单放
+			GoSub TesterOperate1ReleaseSub
+		EndIf
+
+	EndIf
+	Exit Function
+
+TesterOperate1ReleaseSub:
+'有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A_1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A_2
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A_3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A_4
+			rearnum = 15
+	Send
+'	If Sw(rearnum) = 0 Then
+	If Sw(rearnum) = 1 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+'	Wait Sw(rearnum) = 1
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call ReleaseAction(0, i + 1)
+	Tester_Fill(i) = True;
+	'退出来，发送启动命令
+	Go FinalPosition +X(20)
+	Tester_Testing(i) = True
+	PickAorC$(i) = "A"
+Return
+
 Fend
 'A抓手处理测试机程序
 Function TesterOperate1
@@ -1642,6 +1987,7 @@ Function UnloadOperate(num As Integer)
 			GoSub UnloadOperate_Ng
 		EndIf
 	EndIf
+	Exit Function
 	
 UnloadOperate_Pass:
 	If Sw(PassTrayRdy) = 0 Or PassTraySigleDown = 0 Then
@@ -1651,11 +1997,12 @@ UnloadOperate_Pass:
 		MsgSend$ = "Pass下料盘，未准备好"
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
-	Wait Sw(PassTrayRdy) = 0 And PassTraySigleDown = 1
+	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 	TargetPosition_Num = 6
-	FinalPosition = Pallet(num, PassTrayPalletNum)
+	FinalPosition = Pallet(num + 1, PassTrayPalletNum)
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
+	PickHave(num) = False
 	PassTrayPalletNum = PassTrayPalletNum + 1
 	If PassTrayPalletNum > 12 Then
 		Go PassEmptyYield :Z(0)
@@ -1678,12 +2025,13 @@ UnloadOperate_Ng:
 	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
 	TargetPosition_Num = 7
 	If NgTrayPalletNum <= 12 Then
-		FinalPosition = Pallet(num + 4, NgTrayPalletNum)
+		FinalPosition = Pallet(num + 5, NgTrayPalletNum)
 	Else
-		FinalPosition = Pallet(num + 8, NgTrayPalletNum - 12)
+		FinalPosition = Pallet(num + 9, NgTrayPalletNum - 12)
 	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
+	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
 	If NgTrayPalletNum > 21 Then
 		Go NgEmptyYield :Z(0)
@@ -1738,18 +2086,22 @@ Function HomeReturnAction
 	LimZ -61
 	Speed 50
 	SFree 1, 2
-	Pulse 375969, 315421, -74599, 29433
+	Pulse 375969, 315421, -81390, 29433
 	SLock 1
-	Pulse 194347, 315421, -74599, 29433
+	Pulse 194347, 315421, -81390, 29433
 	SFree 1
 	SLock 2
-	Pulse 375969, 315421, -74599, 29433
+	Pulse 375969, 315421, -81390, 29433
 	SLock 1
-	Pulse 375969, 315421, -74599, 29433
-	S_Position = 1000
+	Pulse 375969, 315421, -81390, 29433
+	S_Position = 0
 	OutW SpositionY, S_Position
 	On SHome
-	Wait InW(SPositionX) = S_Position
+	On FeedEmpty
+	On PassTrayFull
+	INP_HomeSigleDown = 0
+'	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position And INP_HomeSigleDown = 1
+	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
 	Print "Home Return Compelet"
 	
 	
@@ -1766,6 +2118,7 @@ Fend
 'firstPosition 目标位置
 'secendPosition 当前位置
 Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
+	LimZ -61
 	If firstPosition = secendPosition Then
 		Go FinalPosition
 	Else
@@ -1775,16 +2128,162 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Case 2
 						Jump FinalPosition
 					Case 3
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
 						Jump FinalPosition
 					Case 4
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
 						Jump FinalPosition
 					Case 5
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
 						Jump FinalPosition
 					Case 6
+						Jump HomePosition
+						
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Move FinalPosition
+				Send
+			Case 2
+				Select secendPosition
+					Case 1
 						Jump FinalPosition
-					Case 7
+					Case 3
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
 						Jump FinalPosition
-					Case 8
+					Case 4
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 5
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 6
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Move FinalPosition
+				Send
+			Case 3
+				Select secendPosition
+					Case 2
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 1
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 4
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 5
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 6
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Move FinalPosition
+				Send
+			Case 4
+				Select secendPosition
+					Case 2
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 1
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 3
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 5
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 6
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Move FinalPosition
+				Send
+			Case 5
+				Select secendPosition
+					Case 2
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 1
+						Jump HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 3
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 4
+						Jump HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 6
+						Jump HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+						Move FinalPosition
+				Send
+			Case 6
+				Select secendPosition
+					Case 2
+						Move HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 1
+						Move HomePosition
+						OutW SpositionY, CX(P500)
+						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 3
+						Move HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 4
+						Move HomePosition
+						OutW SpositionY, CX(P501)
+						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+						Jump FinalPosition
+					Case 5
+						Move HomePosition
+						OutW SpositionY, CX(P502)
+						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
 						Jump FinalPosition
 				Send
 		Send
@@ -2093,16 +2592,19 @@ Function TesterStart1
 				Loop
 				CmdSend$ = "Start,1," + PickAorC$(0)
 				TmReset 0
-				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
-					TesterTimeElapse(0) = Tmr(0)
+'				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
+'					TesterTimeElapse(0) = Tmr(0)
+'				
+'					If Tester_Select(0) = False Then
+'						Exit Do
+'					EndIf
+'					Wait 0.02
+'				Loop
+				Wait 50
+				Tester_Pass(0) = 1
 				
-					If Tester_Select(0) = False Then
-						Exit Do
-					EndIf
-					Wait 0.02
-				Loop
 				On AL_Suck, Forced
-				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
+'				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
 				Off AL_Suck, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
@@ -2144,16 +2646,18 @@ Function TesterStart2
 				Loop
 				CmdSend$ = "Start,2," + PickAorC$(1)
 				TmReset 1
-				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
-					TesterTimeElapse(1) = Tmr(1)
-				
-					If Tester_Select(1) = False Then
-						Exit Do
-					EndIf
-					Wait 0.02
-				Loop
+'				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
+'					TesterTimeElapse(1) = Tmr(1)
+'				
+'					If Tester_Select(1) = False Then
+'						Exit Do
+'					EndIf
+'					Wait 0.02
+'				Loop
+				Wait 50
+				Tester_Pass(1) = 1
 				On AR_Suck, Forced
-				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
+'				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
 				Off AR_Suck, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
@@ -2195,16 +2699,18 @@ Function TesterStart3
 				Loop
 				CmdSend$ = "Start,3," + PickAorC$(2)
 				TmReset 2
-				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
-					TesterTimeElapse(2) = Tmr(2)
-				
-					If Tester_Select(2) = False Then
-						Exit Do
-					EndIf
-					Wait 0.02
-				Loop
+'				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
+'					TesterTimeElapse(2) = Tmr(2)
+'				
+'					If Tester_Select(2) = False Then
+'						Exit Do
+'					EndIf
+'					Wait 0.02
+'				Loop
+				Wait 50
+				Tester_Pass(2) = 1
 				On BL_Suck, Forced
-				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
+'				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
 				Off BL_Suck, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
@@ -2246,16 +2752,18 @@ Function TesterStart4
 				Loop
 				CmdSend$ = "Start,4," + PickAorC$(3)
 				TmReset 3
-				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
-					TesterTimeElapse(3) = Tmr(3)
-				
-					If Tester_Select(3) = False Then
-						Exit Do
-					EndIf
-					Wait 0.02
-				Loop
+'				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
+'					TesterTimeElapse(3) = Tmr(3)
+'				
+'					If Tester_Select(3) = False Then
+'						Exit Do
+'					EndIf
+'					Wait 0.02
+'				Loop
+				Wait 50
+				Tester_Pass(3) = 1
 				On BR_Suck, Forced
-				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
+'				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
 				Off BR_Suck, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False

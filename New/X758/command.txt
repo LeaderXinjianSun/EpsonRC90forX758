@@ -2080,4 +2080,40 @@
 !!错误: 7007, 未定义指定的点编号。指定示教点编号。
 > PRINT CX(P500)
 !!错误: 7007, 未定义指定的点编号。指定示教点编号。
+> outw SpositionY,100
+> outw SpositionY,1000
+> outw SpositionY,0
+> outw SpositionY,1000
+> outw SpositionY,10000
+> outw SpositionY,0
+> outw SpositionY,10000
+> outw SpositionY,0
+> outw SpositionY,20000
+> outw SpositionY,0
+> outw SpositionY,1000
+> outw SpositionY,20000
+> outw SpositionY,0
+> outw SpositionY,0
+> outw SpositionY,3000
+> outw SpositionY,30000
+> outw SpositionY,60000
+> outw SpositionY,30000
+> outw SpositionY,10000
+> outw SpositionY,60000
+> outw SpositionY,10000
+> GO HERE /L
+> JUMP HERE /L
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 3
+> JUMP HERE /L LIMZ -61
+> outw SpositionY,60000
+> outw SpositionY,0
+> jtran 4,20
+> jtran 4,20
+> jtran 4,-40
+> move HomePosition
+> Jump HomePosition
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 3
+> Jump HomePosition limz -61
+!!错误: 4006, 目标点位置超过指定LimZ值。
+> go HomePosition
 > 
