@@ -35,7 +35,10 @@ Global Preserve Boolean ReTest_
 
 Global Integer Discharge
 
+Global Integer S_Position
+
 'Ö÷º¯Êý
+
 Function main
 	Integer i
 	Integer fillNum
@@ -114,21 +117,12 @@ Function AllMonitor
 	Loop
 Fend
 Function test1
-	Wait MemSw(0) = 1
-	If MemSw(1) = 1 Then
-		If MemSw(2) = 1 Then
-			GoTo testlabel1
-		EndIf
-		Print "1"
-testlabel2:
-		Print "3"
-	Else
-testlabel1:
-		If MemSw(3) = 1 Then
-			GoTo testlabel2
-		EndIf
-		Print "2"
-	EndIf
+'	MemOutW 0, 65535
+'	P500 = XY(MemInW(0), 0, 0, 0)
+'	Print CX(P500)
+'	PLabel 500, "XtestP1"
+'	SavePoints "robot1.pts"
+	OutW SpositionY, 65534
 Fend
 Function test2
 testlabel3:
@@ -1740,20 +1734,28 @@ Function HomeReturnAction
 	Motor Off
 	Motor On
 	Power Low
-	Weight 1
+	Weight 3
+	LimZ -61
 	Speed 50
 	SFree 1, 2
-	Pulse 64419, 286952, 0, -17947
+	Pulse 375969, 315421, -74599, 29433
 	SLock 1
-	Pulse 516846, 286952, 0, -17947
+	Pulse 194347, 315421, -74599, 29433
 	SFree 1
 	SLock 2
-	Pulse 64419, 286952, 0, -17947
+	Pulse 375969, 315421, -74599, 29433
 	SLock 1
-	Pulse 64419, 286952, 0, -17947
-	Power High
-	Speed 85
-	Accel 90, 90
+	Pulse 375969, 315421, -74599, 29433
+	S_Position = 1000
+	OutW SpositionY, S_Position
+	On SHome
+	Wait InW(SPositionX) = S_Position
+	Print "Home Return Compelet"
+	
+	
+'	Power High
+'	Speed 85
+'	Accel 90, 90
 '	Speed 100, 100, 90
 '	SpeedS 100
 '	Accel 100, 90, 100, 100, 100, 90

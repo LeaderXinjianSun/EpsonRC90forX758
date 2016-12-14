@@ -69,6 +69,7 @@ main_label1:
 				If fillNum = 0 Then
 					Print "排料完成"
 					MsgSend$ = "排料完成"
+					Wait 1
 					Exit Do
 				EndIf
 			EndIf
@@ -113,21 +114,11 @@ Function AllMonitor
 	Loop
 Fend
 Function test1
-	Wait MemSw(0) = 1
-	If MemSw(1) = 1 Then
-		If MemSw(2) = 1 Then
-			GoTo testlabel1
-		EndIf
-		Print "1"
-testlabel2:
-		Print "3"
-	Else
-testlabel1:
-		If MemSw(3) = 1 Then
-			GoTo testlabel2
-		EndIf
-		Print "2"
-	EndIf
+	MemOutW 0, 65535
+	P500 = XY(MemInW(0), 0, 0, 0)
+	Print CX(P500)
+	PLabel 500, "XtestP1"
+	SavePoints "robot1.pts"
 Fend
 Function test2
 testlabel3:

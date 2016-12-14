@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/12/11 09:52:58:645,DS:0000002033,CS:10863,MA:C6-8E-8F-74-5D-89,EI:           
-sActiveChild="Main.prg"
-bMdiMaximized=True
+ENVT0100,LM:2016/12/14 00:53:11:380,DS:0000002046,CS:56107,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="I/O±Í«©±‡º≠∆\x"
+bMdiMaximized=False
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -17,7 +17,7 @@ nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -33,16 +33,16 @@ CmdWindow {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=516
+		nHeight=366
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=382
-		nTop=14
+		nLeft=237
+		nTop=32
 		nWidth=682
 		nHeight=383
 	}
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=679
-		nTop=489
+		nLeft=568
+		nTop=230
 		nWidth=478
 		nHeight=347
 	}
@@ -100,7 +100,7 @@ RobotMgr {
 		nLeft=0
 		nTop=0
 		nWidth=698
-		nHeight=478
+		nHeight=477
 	}
 }
 UserErrorEditor {

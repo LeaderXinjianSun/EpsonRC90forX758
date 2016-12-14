@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/11 01:25:28:870,DS:0000003817,CS:20514,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2016/12/13 15:17:59:048,DS:0000004020,CS:29443,MA:00-0A-EB-80-DA-FC,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
 	nNumberOfLabels=31
@@ -162,10 +162,15 @@ InputByteLabels {
 	nNumberOfLabels=0
 }
 InputWordLabels {
-	nNumberOfLabels=0
+	nNumberOfLabels=1
+	Label1 {
+		nWord=50
+		sLabel="SPositionX"
+		sDescription=""
+	}
 }
 OutputBitLabels {
-	nNumberOfLabels=19
+	nNumberOfLabels=20
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -261,12 +266,22 @@ OutputBitLabels {
 		sLabel="NgTrayFull"
 		sDescription=""
 	}
+	Label20 {
+		nBit=518
+		sLabel="SHome"
+		sDescription=""
+	}
 }
 OutputByteLabels {
 	nNumberOfLabels=0
 }
 OutputWordLabels {
-	nNumberOfLabels=0
+	nNumberOfLabels=1
+	Label1 {
+		nWord=50
+		sLabel="SpositionY"
+		sDescription=""
+	}
 }
 MemoryBitLabels {
 	nNumberOfLabels=0
