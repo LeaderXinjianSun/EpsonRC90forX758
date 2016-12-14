@@ -1749,7 +1749,7 @@ Function HomeReturnAction
 	S_Position = 1000
 	OutW SpositionY, S_Position
 	On SHome
-	Wait InW(SPositionX) = S_Position
+	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
 	Print "Home Return Compelet"
 	
 	

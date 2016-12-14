@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/14 00:53:11:380,DS:0000002046,CS:56107,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/14 07:44:42:972,DS:0000002044,CS:55593,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="I/O±Í«©±‡º≠∆\x"
 bMdiMaximized=False
 nProgramFileCount=1
@@ -17,7 +17,7 @@ nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -39,7 +39,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=237
 		nTop=32
