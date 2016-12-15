@@ -167,7 +167,7 @@ Function PickFeedOperate0
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		TargetPosition_Num = 1
-		FinalPosition = FeedEmptyYield
+		FinalPosition = ChangeHandL
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
@@ -198,6 +198,7 @@ PickFeedOperatelabel1:
 				FeedFill(i) = False
 				PickHave(0) = pickfeedflag
 				If pickfeedflag Then
+					Go ChangeHandL
 					Call IsFeedPanelEmpty
 				Else
 					BlowSuckFail(0)
@@ -404,7 +405,7 @@ Function TesterOperate01
 						TargetPosition_Num = 5
 						FinalPosition1 = A_4
 				Send
-				FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+				FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 TesterOperate1_lable4:
 				For i = 0 To 3
@@ -588,7 +589,7 @@ TesterOperate1ReleaseSub:
 	If Sw(rearnum) = 1 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		FinalPosition = FinalPosition1 + XY(10, 0, 0, 0)
+		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 '	Wait Sw(rearnum) = 1
@@ -1999,7 +2000,8 @@ UnloadOperate_Pass:
 	EndIf
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 	TargetPosition_Num = 6
-	FinalPosition = Pallet(num + 1, PassTrayPalletNum)
+'	FinalPosition = Pallet(num + 1, PassTrayPalletNum)
+	FinalPosition = PassTui_RP1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
@@ -2085,16 +2087,20 @@ Function HomeReturnAction
 	Weight 3
 	LimZ -61
 	Speed 50
-	SFree 1, 2
-	Pulse 375969, 315421, -81390, 29433
-	SLock 1
-	Pulse 194347, 315421, -81390, 29433
-	SFree 1
-	SLock 2
-	Pulse 375969, 315421, -81390, 29433
-	SLock 1
-	Pulse 375969, 315421, -81390, 29433
-	S_Position = 0
+'	SFree 1, 2
+'	Pulse 378192, -313239, -77072, 93736
+'	SLock 1, 2
+'	Pulse 378192, -313239, -77072, 93736
+'	SFree 1
+'	SLock 2
+'	Pulse 378192, -313239, -77072, 93736
+'	SLock 1
+'	Pulse 378192, -313239, -77072, 93736
+	CurPosition_Num = 2
+	TargetPosition_Num = 1
+	FinalPosition = ChangeHandL
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	S_Position = 10000
 	OutW SpositionY, S_Position
 	On SHome
 	On FeedEmpty
@@ -2118,177 +2124,259 @@ Fend
 'firstPosition 目标位置
 'secendPosition 当前位置
 Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
+'TargetHand	
+'1 R
+'2 L
+	Integer TargetHand
 	LimZ -61
 	If firstPosition = secendPosition Then
 		Go FinalPosition
 	Else
-		Select firstPosition
+		Select secendPosition
 			Case 1
-				Select secendPosition
-					Case 2
-						Jump FinalPosition
-					Case 3
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 4
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 5
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 6
-						Jump HomePosition
-						
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Move FinalPosition
-				Send
+				TargetHand = 2
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P501)
+				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+				Jump FinalPosition
 			Case 2
-				Select secendPosition
-					Case 1
-						Jump FinalPosition
-					Case 3
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 4
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 5
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 6
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Move FinalPosition
-				Send
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P501)
+				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+				Jump FinalPosition
 			Case 3
-				Select secendPosition
-					Case 2
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 1
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 4
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 5
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 6
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Move FinalPosition
-				Send
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P503)
+				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+				Jump FinalPosition
 			Case 4
-				Select secendPosition
-					Case 2
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 1
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 3
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 5
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 6
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Move FinalPosition
-				Send
+				TargetHand = 2
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P502)
+				Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+				Jump FinalPosition
 			Case 5
-				Select secendPosition
-					Case 2
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 1
-						Jump HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 3
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 4
-						Jump HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 6
-						Jump HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Move FinalPosition
-				Send
+				TargetHand = 2
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P504)
+				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+				Jump FinalPosition
 			Case 6
-				Select secendPosition
-					Case 2
-						Move HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 1
-						Move HomePosition
-						OutW SpositionY, CX(P500)
-						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 3
-						Move HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 4
-						Move HomePosition
-						OutW SpositionY, CX(P501)
-						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-						Jump FinalPosition
-					Case 5
-						Move HomePosition
-						OutW SpositionY, CX(P502)
-						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-						Jump FinalPosition
-				Send
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P505)
+				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+				Jump FinalPosition
 		Send
+'		Select firstPosition
+'			'L
+'			Case 1
+'				Select secendPosition
+'
+'					Case 2
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 3
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P503)
+'						Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 4
+'						TargetHand = 2
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 5
+'						TargetHand = 2
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P504)
+'						Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 6
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P505)
+'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+'						Jump FinalPosition
+'				Send
+'			'R
+'			Case 2
+'				Select secendPosition
+'					Case 1
+'						TargetHand = 2
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 3
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P503)
+'						Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 4
+'						TargetHand = 2
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 5
+'						TargetHand = 2
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P505)
+'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 6
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P505)
+'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+'						Jump FinalPosition
+'				Send
+'			Case 3
+'				Select secendPosition
+'					Case 2
+'						TargetHand = 1
+'						GoSub ChangeHandAction
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 1
+'						Jump HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 4
+'						Jump HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 5
+'						Jump HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 6
+'						Jump HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Move FinalPosition
+'				Send
+'			Case 4
+'				Select secendPosition
+'					Case 2
+'						Jump HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 1
+'						Jump HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 3
+'						Jump HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 5
+'						Jump HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 6
+'						Jump HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Move FinalPosition
+'				Send
+'			Case 5
+'				Select secendPosition
+'					Case 2
+'						Jump HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 1
+'						Jump HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 3
+'						Jump HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 4
+'						Jump HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 6
+'						Jump HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Move FinalPosition
+'				Send
+'			Case 6
+'				Select secendPosition
+'					Case 2
+'						Move HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 1
+'						Move HomePosition
+'						OutW SpositionY, CX(P500)
+'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 3
+'						Move HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 4
+'						Move HomePosition
+'						OutW SpositionY, CX(P501)
+'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+'						Jump FinalPosition
+'					Case 5
+'						Move HomePosition
+'						OutW SpositionY, CX(P502)
+'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+'						Jump FinalPosition
+'				Send
+'		Send
 	EndIf
 	CurPosition_Num = secendPosition
+	Exit Function
+	
+ChangeHandAction:
+	If Hand(Here) = 1 Then
+		Jump ChangeHandL /R
+	Else
+		Jump ChangeHandL /L
+	EndIf
+	If TargetHand <> Hand(Here) Then
+
+		OutW SpositionY, CX(P504)
+		Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+		If Hand(Here) = 1 Then
+			Jump ChangeHandL /L
+		Else
+			Jump ChangeHandL /R
+		EndIf
+	EndIf
+
+Return
+
 Fend
 '吸取动作
 'num:吸嘴索引

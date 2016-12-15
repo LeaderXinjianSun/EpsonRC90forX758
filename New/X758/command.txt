@@ -2116,4 +2116,38 @@
 > Jump HomePosition limz -61
 !!错误: 4006, 目标点位置超过指定LimZ值。
 > go HomePosition
+> joint
+JOINT:  1:   91.096 deg 2: -136.475 deg 3:  -62.717 mm  4:  146.537 deg 
+> jtran 1,20
+> jtran 1,-20
+> jtran 2,20
+> joint
+JOINT:  1:   91.096 deg 2: -116.475 deg 3:  -62.717 mm  4:  146.534 deg 
+> jtran 2,20
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> jtran 2,20
+> joint
+JOINT:  1:   91.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  146.514 deg 
+> jtran 1,10
+> joint
+JOINT:  1:  101.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  146.514 deg 
+> jtran 4,-20
+> jtran 4,-20
+> joint
+JOINT:  1:  101.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  106.512 deg 
+> outw SpositionY,30000
+> outw SpositionY,20000
+> outw SpositionY,10000
+> outw SpositionY,37000
+> outw SpositionY,27000
+> cc
+> outw SpositionY,60000
+> outw SpositionY,50000
+> outw SpositionY,55000
+> outw SpositionY,60000
+> outw SpositionY,55000
+> outw SpositionY,10000
+> outw SpositionY,60000
+> jump ChangeHandR /l limz -61
+> jump ChangeHandR /r limz -61
 > 
