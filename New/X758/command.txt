@@ -2182,4 +2182,8 @@ JOINT:  1:  101.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  106.512 deg
 > go ChangeHandL /r
 > go GoPassTui_PassP1
 > go ChangeHandL /r
+> go ChangeHandL
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go ChangeHandL
+> go ChangeHandL /r
 > 
