@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/12/15 03:53:23:074,DS:0000002043,CS:28458,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/15 09:46:16:826,DS:0000002044,CS:00046,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -59,10 +59,10 @@ IOLabelEditor {
 	nWinState=0
 }
 IOMonitor {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=974
-		nTop=338
+		nLeft=749
+		nTop=365
 		nWidth=478
 		nHeight=347
 	}
@@ -77,10 +77,10 @@ Simulator {
 	}
 }
 TaskMgr {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=828
-		nTop=168
+		nLeft=414
+		nTop=431
 		nWidth=478
 		nHeight=261
 	}
@@ -95,7 +95,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0

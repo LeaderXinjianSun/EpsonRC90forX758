@@ -144,6 +144,10 @@ Function AllMonitor
 			Off SHome, Forced
 		EndIf
 		
+		If CmdSend$ <> "" Then
+			CmdSend$ = ""
+		EndIf
+		
 	Loop
 Fend
 Function test1
@@ -335,7 +339,7 @@ Function IsFeedPanelEmpty As Boolean
 	Next
 	If i > 2 Then
 		'料盘空了
-		Go FeedEmptyYield
+		Go ChangeHandL
 		On FeedEmpty
 		For i = 0 To 2
 			FeedFill(i) = True
@@ -405,7 +409,7 @@ Function TesterOperate01
 						TargetPosition_Num = 5
 						FinalPosition1 = A_4
 				Send
-				FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+				FinalPosition = FinalPosition1
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 TesterOperate1_lable4:
 				For i = 0 To 3
@@ -422,7 +426,7 @@ TesterOperate1_lable4:
 			Else
 TesterOperate1_lable5:
                 GoSub TesterOperate1SuckSub
-				Go FinalPosition +X(10)
+				Go FinalPosition
 
 				If NeedChancel(i) = True Then
 					Tester_Select(i) = False
@@ -461,7 +465,7 @@ TesterOperate1SuckSub:
 	If Sw(rearnum) = 1 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
+		FinalPosition = FinalPosition1
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 '	Wait Sw(rearnum) = 1
@@ -516,7 +520,7 @@ TesterOperate1SuckSub:
 			
 		EndIf
 	Else
-		Go FinalPosition +X(10)
+		Go FinalPosition
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
@@ -596,9 +600,10 @@ TesterOperate1ReleaseSub:
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(0, i + 1)
+	PickHave(0) = False
 	Tester_Fill(i) = True;
 	'退出来，发送启动命令
-	Go FinalPosition +X(20)
+'	Go FinalPosition +X(20)
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 Return
@@ -1992,11 +1997,11 @@ Function UnloadOperate(num As Integer)
 	
 UnloadOperate_Pass:
 	If Sw(PassTrayRdy) = 0 Or PassTraySigleDown = 0 Then
-		TargetPosition_Num = 6
-		FinalPosition = PassEmptyYield :Z(0)
+'		TargetPosition_Num = 6
+'		FinalPosition = PassTui_RP1
 		Print "Pass下料盘，未准备好"
 		MsgSend$ = "Pass下料盘，未准备好"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+'		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 	TargetPosition_Num = 6
@@ -2013,6 +2018,9 @@ UnloadOperate_Pass:
 		On PassTrayFull
 		PassTrayPalletNum = 1
 	EndIf
+	Pass GoPassTui_PassP3
+	Pass GoPassTui_PassP2
+	Pass GoPassTui_PassP1
 	
 Return
 
@@ -2096,18 +2104,19 @@ Function HomeReturnAction
 '	Pulse 378192, -313239, -77072, 93736
 '	SLock 1
 '	Pulse 378192, -313239, -77072, 93736
-	CurPosition_Num = 2
-	TargetPosition_Num = 1
-	FinalPosition = ChangeHandL
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	S_Position = 0
+	CurPosition_Num = 1
+	Jump ChangeHandL
+	
+	S_Position = 10000
 	OutW SpositionY, S_Position
 	On SHome
 	On FeedEmpty
 	On PassTrayFull
 	INP_HomeSigleDown = 0
 '	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position And INP_HomeSigleDown = 1
-	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
+'	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
+	Wait InW(SPositionX) = S_Position
+
 	Print "Home Return Compelet"
 	
 	
@@ -2168,6 +2177,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P505)
 				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+				Pass GoPassTui_PassP1
+				Pass GoPassTui_PassP2
+				Pass GoPassTui_PassP3
 				Jump FinalPosition
 		Send
 '		Select firstPosition

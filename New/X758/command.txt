@@ -2151,3 +2151,35 @@ JOINT:  1:  101.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  106.512 deg
 > jump ChangeHandR /l limz -61
 > jump ChangeHandR /r limz -61
 > 
+> Go Here -X(100)
+> go ChangeHandL
+!!错误: 2309, 安全装置开启时无法执行运动命令。
+> go here +y(200)
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go here +y(200)
+> jtran 4,-90
+> jtran 1,30
+> jtran 4,-30
+> jump PassTui_RP1
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 3
+> jump PassTui_RP1 limz -61
+> jump ChangeHandL limz -61
+> jump ChangeHandL /r limz -61
+> go here +y(200)
+> jtran 4,-180
+> jump PassTui_RP1 limz -61
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 1
+> jump ChangeHandL /r limz -61
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> jump ChangeHandL /r limz -61
+> go here +y(200)
+> jtran 4,-90
+> jtran 4,-45
+> jump PassTui_RP1 limz -61
+> go GoPassTui_PassP3
+> go GoPassTui_PassP2
+> go GoPassTui_PassP1
+> go ChangeHandL /r
+> go GoPassTui_PassP1
+> go ChangeHandL /r
+> 
