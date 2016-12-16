@@ -2186,4 +2186,121 @@ JOINT:  1:  101.097 deg 2:  -96.479 deg 3:  -62.721 mm  4:  106.512 deg
 !!错误: 4031, 电机处于关闭状态时无法执行运动命令。
 > go ChangeHandL
 > go ChangeHandL /r
+> whele
+!!错误: 3100, 语法错误。
+> where
+WORLD:  X:  550.000 mm  Y:    0.000 mm  Z:    0.000 mm  U:    0.000 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:    0.000 deg 2:    0.000 deg 3:    0.000 mm  4:    0.000 deg 
+PULSE:  1:        0 pls 2:        0 pls 3:        0 pls 4:        0 pls 
+> jump ChangeHandL limz -61
+!!错误: 2513, 指定的点标签未定义。
+> jump here limz -61
+> jump here limz -61 /l 
+!!错误: 3100, 语法错误。
+> jump here /l limz -61
+> where
+WORLD:  X:  -11.221 mm  Y:  187.341 mm  Z:  -66.579 mm  U:  189.745 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:  176.476 deg 2: -137.356 deg 3:  -66.579 mm  4:  150.624 deg 
+PULSE:  1:   642528 pls 2:  -312561 pls 3:   -81812 pls 4:   102826 pls 
+> where
+WORLD:  X:   68.995 mm  Y:  271.216 mm  Z:  -61.908 mm  U:  192.283 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:  140.679 deg 2: -112.788 deg 3:  -61.908 mm  4:  164.392 deg 
+PULSE:  1:   512196 pls 2:  -256656 pls 3:   -76072 pls 4:   112225 pls 
+> where
+WORLD:  X:  -10.746 mm  Y:  188.159 mm  Z:  -66.568 mm  U:  189.607 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:  176.144 deg 2: -137.153 deg 3:  -66.568 mm  4:  150.617 deg 
+PULSE:  1:   641320 pls 2:  -312100 pls 3:   -81799 pls 4:   102821 pls 
+> where
+WORLD:  X:  -10.746 mm  Y:  188.159 mm  Z:  -66.568 mm  U:  189.607 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:  176.144 deg 2: -137.153 deg 3:  -66.568 mm  4:  150.617 deg 
+PULSE:  1:   641320 pls 2:  -312100 pls 3:   -81799 pls 4:   102821 pls 
+> outw SpositionY,60000
+> go here /r
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go here /r
+> outw SpositionY,10000
+> where
+WORLD:  X:  -10.801 mm  Y:  188.215 mm  Z:  -66.579 mm  U:  189.553 deg V:    0.000 deg W:    0.000 deg 
+JOINT:  1:   10.422 deg 2:  137.138 deg 3:  -66.579 mm  4:   41.991 deg 
+PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls 
+> sfree 1,2,3,4
+> GO ChangeHandL /R
+> outw SpositionY,37000
+> sfree 1,2,3,4
+> go ChangeHandL /r
+> slock 1,2,3,4
+> go ChangeHandL /r
+> go ChangeHandL
+> outw SpositionY,27000
+> sfree 1,2,3,4
+> Slock 1,2,3,4
+> go A3PASS2
+> go A3PASS1
+> go A3PASS3
+> go A3PASS3
+> go A3PASS1
+> go ChangeHandL
+> outw SpositionY,55000
+> sfree 1,2,3,4
+> SLOCK 1,2,3,4
+> GO A4PASS2
+> GO A4PASS1
+> GO ChangeHandL
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;GO A_4
+> PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;PASS ChangeHandL
+> outw SpositionY,60000
+> GO A4PASS1
+> SFREE 1,2,3,4
+> GO PCui3P2 :Z(-69)
+> slock 1,2,3,4
+> go PassTui_LP1
+> pass PCui3P3;PASS PCui3P2;PASS PCui3P1;GO ChangeHandL
+> outw SpositionY,55000
+> PASS PCui3P1;PASS PassTuiP2;PASS PCui3P3
+> GO ChangeHandL
+> PASS PCui3P1;PASS PCui3P2;PASS PCui3P3
+> PASS PCui3P2
+> PASS PCui3P1
+> PASS PCui3P2
+> PASS PCui4P1
+> SFREE 1,2,3,4
+> outw SpositionY,60000
+> pass PCui3P3;PASS PCui3P2;PASS PCui3P1;GO ChangeHandL
+> SLOCK 1,2,3,4
+> pass PCui3P3;PASS PCui3P2;PASS PCui3P1;GO ChangeHandL
+> GO HERE /R
+> GO GoPassTui_PassP1
+> PASS PCui1P3;PASS PCui1P2;PASS PCui1P1;GO ChangeHandL /R
+> SLOCK 1,2,3,4
+> PASS PCui1P3;PASS PCui1P2;PASS PCui1P1;GO ChangeHandL /R
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 2
+> PASS PCui1P4;PASS PCui1P3;PASS PCui1P2;PASS PCui1P1;GO ChangeHandL /R
+> PASS PCui1P1;PASS PCui1P2;PASS PCui1P3;PASS PCui1P4;
+> PASS PCui1P4;PASS PCui1P3;PASS PCui1P2;PASS PCui1P1;GO ChangeHandL /R
+> outw SpositionY,37000
+> PASS PCui1P1;PASS PCui1P2;
+> PASS NCuiP3;PASS NCuiP2;PASS NCuiP1;
+> go ChangeHandL /r
+> outw SpositionY,60000
+> PASS PCui1P1;PASS PCui1P2;PASS PCui1P3;PASS PCui1P4;
+> PASS PCui1P4;PASS PCui1P3;PASS PCui1P2;PASS PCui1P1;
+> go ChangeHandL /r
+> GO ChangeHandL
+> PASS PCui3P1;PASS PCui3P2;PASS PCui3P3;
+> PASS PCui3P3;PASS PCui3P2;PASS PCui3P1;
+> GO ChangeHandL
+> go ChangeHandL /r
+> PASS PCui1P1;PASS PCui1P2;
+> Slock 1,2,3,4
+> pass ShikePassP2;pass ShikePassP1;
+> go ChangeHandL /r
+> go ChangeHandL
+> outw SpositionY,55000
+> go ChangeHandL /r
+> go PCui1P1
+> go PCui1P2
+> go PCui1P3
+> go PCui1P4
+> PASS PCUI2P3;PASS PCUI2P2;PASS PCUI2P1;
+> go ChangeHandL /r
 > 

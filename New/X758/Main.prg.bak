@@ -38,6 +38,8 @@ Global Integer Discharge
 Global Integer S_Position
 
 Global Boolean HomeReturnComplete
+'路径规划用
+Global Integer PassStepNum
 '主函数
 
 
@@ -48,18 +50,32 @@ Function main
 	Trap Abort Xqt TrapInterruptAbort
 	Trap Error Xqt TrapInterruptAbort
 	Xqt TesterStart1, NoEmgAbort
+	Wait 0.2
 	Xqt TesterStart2, NoEmgAbort
+	Wait 0.2
 	Xqt TesterStart3, NoEmgAbort
+	Wait 0.2
 	Xqt TesterStart4, NoEmgAbort
 	Xqt AllMonitor, NoEmgAbort
 	Call InitAction
+	
+	Print "排料完成"
+	MsgSend$ = "排料完成"
 	Call HomeReturnAction
 main_label1:
 	
 	Do
 
 		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
-		If fillNum = -15 Then
+		If fillNum = -15 Or Discharge <> 0 Then
+		'如果全满，则取料
+		'如果排料，则取料
+			If Discharge <> 0 And fillNum = 0 Then
+				Discharge = 0
+				Print "排料完成"
+				MsgSend$ = "排料完成"
+				Exit Do
+			EndIf
 			Call TesterOperate01
 			Call UnloadOperate(0)
 		Else
@@ -67,43 +83,7 @@ main_label1:
 			Call TesterOperate02
 		EndIf
 
-'		'判断吸嘴上是否有料
-'		For i = 0 To 3
-'			If PickHave(i) = True Then
-'				Exit For
-'			EndIf
-'		Next
-'		If i > 3 Then
-'			'抓手，全无产品
-'			If Discharge = 0 Then
-'				Call PickFeedOperate0
-'			Else
-'				fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
-'				'治具里也为空，在排料
-'				If fillNum = 0 Then
-'					Print "排料完成"
-'					MsgSend$ = "排料完成"
-'					Wait 1
-'					Exit Do
-'				EndIf
-'			EndIf
-'		EndIf
-'		'操作A吸嘴
-'		Call TesterOperate01
-'		'操作B吸嘴
-'		Call TesterOperate2
-'		'下料
-'		For i = 0 To 3
-'			Call UnloadOperate(i)
-'		Next
-'		'操作C吸嘴
-'		Call TesterOperate3
-'		'操作D吸嘴
-'		Call TesterOperate4
-'		'下料
-'		For i = 0 To 3
-'			Call UnloadOperate(i)
-'		Next
+
 	Loop
 	GoTo main_label1
 Fend
@@ -121,32 +101,35 @@ Function InitAction
 		Tester_Testing(i) = False
 	Next
 	HomeReturnComplete = False
+	PassStepNum = 0
+	FeedReadySigleDown = 1
+	PassTraySigleDown = 1
 Fend
 Function AllMonitor
 	Do
 		Wait 0.1
-		If HomeReturnComplete Then
-			If Sw(FeedReady) = 0 Then
-				FeedReadySigleDown = 1
-				Off FeedEmpty, Forced
-			EndIf
-			
-			If Sw(PassTrayRdy) = 0 Then
-				PassTrayPalletNum = 1
-				PassTraySigleDown = 1
-				Off PassTrayFull, Forced
-			EndIf
-			
-			If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
-				NgTrayPalletNum = 1
-				NgTraySigleDown = 1
-			EndIf
-			
-			If Sw(INP_Home) = 0 Then
-				INP_HomeSigleDown = 1
-				Off SHome, Forced
-			EndIf
+
+		If Sw(FeedReady) = 0 Then
+			FeedReadySigleDown = 1
+			Off FeedEmpty, Forced
 		EndIf
+		
+		If Sw(PassTrayRdy) = 0 Then
+			PassTrayPalletNum = 1
+			PassTraySigleDown = 1
+			Off PassTrayFull, Forced
+		EndIf
+		
+		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
+			NgTrayPalletNum = 1
+			NgTraySigleDown = 1
+		EndIf
+		
+		If Sw(INP_Home) = 0 Then
+			INP_HomeSigleDown = 1
+			Off SHome, Forced
+		EndIf
+
 
 		
 		If CmdSend$ <> "" Then
@@ -164,10 +147,7 @@ Function test1
 	OutW SpositionY, 65534
 Fend
 Function test2
-		TargetPosition_Num = 6
-		CurPosition_Num = 5
-		FinalPosition = PassTuiP1
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+
 Fend
 '单爪手取操作
 Function PickFeedOperate0
@@ -175,8 +155,9 @@ Function PickFeedOperate0
 	Boolean scanflag, pickfeedflag
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
+		'上料等
 		TargetPosition_Num = 1
-		FinalPosition = ChangeHandL
+		FinalPosition = ChangeHandL :Z(-61)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
@@ -231,7 +212,7 @@ Function PickFeedOperate1
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		TargetPosition_Num = 1
-		FinalPosition = FeedEmptyYield
+		FinalPosition = ChangeHandL
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
@@ -281,7 +262,7 @@ Function PickFeedOperate2
 PickFeedOperatelabel2:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		TargetPosition_Num = 1
-		FinalPosition = FeedEmptyYield
+		FinalPosition = ChangeHandL
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
@@ -410,16 +391,16 @@ Function TesterOperate01
 					Case 0
 						TargetPosition_Num = 2
 						'A_1，依据TesterOperate1更改
-						FinalPosition1 = A_1
+						FinalPosition1 = A1PASS1
 					Case 1
 						TargetPosition_Num = 3
-						FinalPosition1 = A_2
+						FinalPosition1 = A2PASS1
 					Case 2
 						TargetPosition_Num = 4
-						FinalPosition1 = A_3
+						FinalPosition1 = A3PASS3
 					Case 3
 						TargetPosition_Num = 5
-						FinalPosition1 = A_4
+						FinalPosition1 = A4PASS3
 				Send
 				FinalPosition = FinalPosition1
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -437,8 +418,8 @@ TesterOperate1_lable4:
 				GoTo TesterOperate1_lable5
 			Else
 TesterOperate1_lable5:
+				
                 GoSub TesterOperate1SuckSub
-				Go FinalPosition
 
 				If NeedChancel(i) = True Then
 					Tester_Select(i) = False
@@ -454,6 +435,34 @@ TesterOperate1_lable5:
 '取产品子函数	
 TesterOperate1SuckSub:
 	'取
+
+'	If Sw(rearnum) = 0 Then
+	If Sw(rearnum) = 1 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		Select i
+			Case 0
+				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+				rearnum = 4
+			Case 1
+				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				rearnum = 5
+			Case 2
+				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS3
+				rearnum = 14
+			Case 3
+				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+		FinalPosition = FinalPosition1
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+'	Wait Sw(rearnum) = 1
 	Select i
 		Case 0
 			TargetPosition_Num = 2
@@ -473,14 +482,6 @@ TesterOperate1SuckSub:
 			FinalPosition1 = A_4
 			rearnum = 15
 	Send
-'	If Sw(rearnum) = 0 Then
-	If Sw(rearnum) = 1 Then
-		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		FinalPosition = FinalPosition1
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	EndIf
-'	Wait Sw(rearnum) = 1
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	If CmdSend$ <> "" Then
@@ -489,7 +490,7 @@ TesterOperate1SuckSub:
 	Do While CmdSend$ <> ""
 		Wait 0.1
 	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
 	PickHave(0) = PickAction(0)
 	PickHave(0) = True
@@ -572,6 +573,9 @@ Function TesterOperate02
 		Next
 		If i > 3 Then
 		'都满
+			Print "测试机都满,无法再放产品!"
+			MsgSend$ = "测试机都满,无法再放产品!"
+			Pause
 		Else
 '单放
 			GoSub TesterOperate1ReleaseSub
@@ -582,6 +586,34 @@ Function TesterOperate02
 
 TesterOperate1ReleaseSub:
 '有空穴
+
+'	If Sw(rearnum) = 0 Then
+	If Sw(rearnum) = 1 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		Select i
+			Case 0
+				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+				rearnum = 4
+			Case 1
+				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				rearnum = 5
+			Case 2
+				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS3
+				rearnum = 14
+			Case 3
+				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+		FinalPosition = FinalPosition1
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+'	Wait Sw(rearnum) = 1
 	Select i
 		Case 0
 			TargetPosition_Num = 2
@@ -601,14 +633,6 @@ TesterOperate1ReleaseSub:
 			FinalPosition1 = A_4
 			rearnum = 15
 	Send
-'	If Sw(rearnum) = 0 Then
-	If Sw(rearnum) = 1 Then
-		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		FinalPosition = FinalPosition1 + XY(30, 0, 0, 0)
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	EndIf
-'	Wait Sw(rearnum) = 1
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(0, i + 1)
@@ -2018,28 +2042,25 @@ UnloadOperate_Pass:
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 	TargetPosition_Num = 6
 '	FinalPosition = Pallet(num + 1, PassTrayPalletNum)
-	FinalPosition = PassTui_RP1
+	FinalPosition = ChangeHandL
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	PassTrayPalletNum = PassTrayPalletNum + 1
 	If PassTrayPalletNum > 12 Then
-		Go PassEmptyYield :Z(0)
+'		Go PassEmptyYield :Z(0)
 		Print "Pass下料盘，换料"
 		MsgSend$ = "Pass下料盘，换料"
 		On PassTrayFull
 		PassTrayPalletNum = 1
 	EndIf
-	Pass GoPassTui_PassP3
-	Pass GoPassTui_PassP2
-	Pass GoPassTui_PassP1
 	
 Return
 
 UnloadOperate_Ng:
 	If Sw(NgTrayRdy) = 0 Or NgTraySigleDown = 0 Then
 		TargetPosition_Num = 7
-		FinalPosition = NgEmptyYield :Z(0)
+'		FinalPosition = NgEmptyYield :Z(0)
 		Print "Ng下料盘，满"
 		MsgSend$ = "Ng下料盘，满"
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -2056,7 +2077,7 @@ UnloadOperate_Ng:
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
 	If NgTrayPalletNum > 21 Then
-		Go NgEmptyYield :Z(0)
+'		Go NgEmptyYield :Z(0)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
 		Pause
@@ -2107,6 +2128,8 @@ Function HomeReturnAction
 	Weight 3
 	LimZ -61
 	Speed 50
+	Boolean HomeSuccessFlage
+
 '	SFree 1, 2
 '	Pulse 378192, -313239, -77072, 93736
 '	SLock 1, 2
@@ -2116,9 +2139,46 @@ Function HomeReturnAction
 '	Pulse 378192, -313239, -77072, 93736
 '	SLock 1
 '	Pulse 378192, -313239, -77072, 93736
+	Go Here :Z(-61)
+	SFree 1, 2, 3, 4
+	Do
+		
+		
+		HomeSuccessFlage = True
+		If Hand(Here) = 2 Then
+			
+		Else
+			HomeSuccessFlage = False
+			Print "请将机械手调整为左手姿势"
+		EndIf
+		If CX(Here) > -100 And CX(Here) < 100 Then
+		
+		Else
+			HomeSuccessFlage = False
+			Print "X方向偏差超限"
+		EndIf
+		If CY(Here) > 150 And CY(Here) < 350 Then
+		
+		Else
+			HomeSuccessFlage = False
+			Print "Y方向偏差超限"
+		EndIf
+		
+		If HomeSuccessFlage Then
+			Print "初始位置符合要求"
+			Exit Do
+		Else
+
+			Pause
+		EndIf
+
+	Loop
+	SLock 1, 2, 3, 4
+	Go Here :Y(373)
+	Go Here :U(189.745)
 	CurPosition_Num = 1
-	Jump ChangeHandL
-	
+	Go ChangeHandL
+'	Pause
 	S_Position = 10000
 	OutW SpositionY, S_Position
 '	On SHome
@@ -2139,7 +2199,7 @@ Function HomeReturnAction
 '	SpeedS 100
 '	Accel 100, 90, 100, 100, 100, 90
 '	AccelS 100, 90
-	CurPosition_Num = 7
+	CurPosition_Num = 1
 Fend
 '路径规划
 'firstPosition 目标位置
@@ -2148,8 +2208,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 'TargetHand	
 '1 R
 '2 L
-	Integer TargetHand
+	Integer TargetHand, i
 	LimZ -61
+	If PassStepNum > 0 Then
+		For i = 0 To PassStepNum - 1
+			Pass P(349 + PassStepNum - i)
+		Next
+		
+	EndIf
+	PassStepNum = 0
 	If firstPosition = secendPosition Then
 		Go FinalPosition
 	Else
@@ -2165,219 +2232,220 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P501)
 				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-				Jump FinalPosition
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = A1PASS1
+				PassStepNum = PassStepNum + 1
+				'去A1，若上料未准备好，则等待
+				Wait Sw(FeedReady) = 1 And FeedReadySigleDown = 1
+				
+				Pass A1PASS1
+				Go FinalPosition
 			Case 3
 				TargetHand = 1
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P503)
 				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
-				Jump FinalPosition
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = A2PASS1
+				PassStepNum = PassStepNum + 1
+				
+				Pass A2PASS1
+				Go FinalPosition
 			Case 4
 				TargetHand = 2
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P502)
 				Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-				Jump FinalPosition
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = A3PASS1
+				PassStepNum = PassStepNum + 1
+				Pass A3PASS1
+				
+				RoutePassP3 = A3PASS2
+				PassStepNum = PassStepNum + 1
+				Pass A3PASS2
+				
+				RoutePassP4 = A3PASS3
+				PassStepNum = PassStepNum + 1
+				Pass A3PASS3
+				
+				Go FinalPosition
 			Case 5
 				TargetHand = 2
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P504)
 				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
-				Jump FinalPosition
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = A4PASS1
+				PassStepNum = PassStepNum + 1
+				Pass A4PASS1
+				
+				RoutePassP3 = A4PASS2
+				PassStepNum = PassStepNum + 1
+				Pass A4PASS2
+				
+				RoutePassP4 = A4PASS3
+				PassStepNum = PassStepNum + 1
+				Pass A4PASS3
+				
+				Go FinalPosition
 			Case 6
 				TargetHand = 1
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P505)
 				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-				Pass GoPassTui_PassP1
-				Pass GoPassTui_PassP2
-				Pass GoPassTui_PassP3
-				Jump FinalPosition
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = PCui1P1
+				PassStepNum = PassStepNum + 1
+				Pass PCui1P1
+				
+				RoutePassP3 = PCui1P2
+				PassStepNum = PassStepNum + 1
+				Pass PCui1P2
+				
+				RoutePassP4 = PCui1P3
+				PassStepNum = PassStepNum + 1
+				Pass PCui1P3
+				
+				RoutePassP5 = PCui1P4
+				PassStepNum = PassStepNum + 1
+				Pass PCui1P4
+				
+				Go FinalPosition
+				
+			Case 7
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P504)
+				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = PCui2P1
+				PassStepNum = PassStepNum + 1
+				Pass PCui2P1
+				
+				RoutePassP3 = PCui2P2
+				PassStepNum = PassStepNum + 1
+				Pass PCui2P2
+				
+				RoutePassP4 = PCui2P3
+				PassStepNum = PassStepNum + 1
+				Pass PCui2P3
+				
+				RoutePassP5 = PCui2P4
+				PassStepNum = PassStepNum + 1
+				Pass PCui2P4
+				
+				Go FinalPosition
+	
+		
+			Case 8
+				TargetHand = 2
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P506)
+				Wait InW(SPositionX) = CX(P506) And Sw(INP) = 1
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = PCui3P1
+				PassStepNum = PassStepNum + 1
+				Pass PCui3P1
+				
+				RoutePassP3 = PCui3P2
+				PassStepNum = PassStepNum + 1
+				Pass PCui3P2
+				
+				RoutePassP4 = PCui3P3
+				PassStepNum = PassStepNum + 1
+				Pass PCui3P3
+				
+				Go FinalPosition
+				
+			Case 9
+				TargetHand = 2
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P505)
+				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = PCui4P1
+				PassStepNum = PassStepNum + 1
+				Pass PCui4P1
+				
+				RoutePassP3 = PCui4P2
+				PassStepNum = PassStepNum + 1
+				Pass PCui4P2
+				
+				RoutePassP4 = PCui4P3
+				PassStepNum = PassStepNum + 1
+				Pass PCui4P3
+				
+				Go FinalPosition
+				
+			Case 10
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P503)
+				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = NCuip1
+				PassStepNum = PassStepNum + 1
+				Pass NCuip1
+				
+				RoutePassP3 = NCuip2
+				PassStepNum = PassStepNum + 1
+				Pass NCuip2
+				
+				RoutePassP4 = NCuip3
+				PassStepNum = PassStepNum + 1
+				Pass NCuip3
+				
+				Go FinalPosition
+				
+			Case 11
+				TargetHand = 1
+				GoSub ChangeHandAction
+				OutW SpositionY, CX(P503)
+				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+				
+				RoutePassP1 = Here
+				PassStepNum = PassStepNum + 1
+				
+				RoutePassP2 = ShikePassP1
+				PassStepNum = PassStepNum + 1
+				Pass ShikePassP1
+				
+				RoutePassP3 = ShikePassP2
+				PassStepNum = PassStepNum + 1
+				Pass ShikePassP2
+				
+				
+				Go FinalPosition
 		Send
-'		Select firstPosition
-'			'L
-'			Case 1
-'				Select secendPosition
-'
-'					Case 2
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 3
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P503)
-'						Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 4
-'						TargetHand = 2
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 5
-'						TargetHand = 2
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P504)
-'						Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 6
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P505)
-'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-'						Jump FinalPosition
-'				Send
-'			'R
-'			Case 2
-'				Select secendPosition
-'					Case 1
-'						TargetHand = 2
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 3
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P503)
-'						Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 4
-'						TargetHand = 2
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 5
-'						TargetHand = 2
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P505)
-'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 6
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P505)
-'						Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-'						Jump FinalPosition
-'				Send
-'			Case 3
-'				Select secendPosition
-'					Case 2
-'						TargetHand = 1
-'						GoSub ChangeHandAction
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 1
-'						Jump HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 4
-'						Jump HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 5
-'						Jump HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 6
-'						Jump HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Move FinalPosition
-'				Send
-'			Case 4
-'				Select secendPosition
-'					Case 2
-'						Jump HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 1
-'						Jump HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 3
-'						Jump HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 5
-'						Jump HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 6
-'						Jump HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Move FinalPosition
-'				Send
-'			Case 5
-'				Select secendPosition
-'					Case 2
-'						Jump HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 1
-'						Jump HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 3
-'						Jump HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 4
-'						Jump HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 6
-'						Jump HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Move FinalPosition
-'				Send
-'			Case 6
-'				Select secendPosition
-'					Case 2
-'						Move HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 1
-'						Move HomePosition
-'						OutW SpositionY, CX(P500)
-'						Wait InW(SPositionX) = CX(P500) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 3
-'						Move HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 4
-'						Move HomePosition
-'						OutW SpositionY, CX(P501)
-'						Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-'						Jump FinalPosition
-'					Case 5
-'						Move HomePosition
-'						OutW SpositionY, CX(P502)
-'						Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
-'						Jump FinalPosition
-'				Send
-'		Send
+
 	EndIf
 	CurPosition_Num = secendPosition
 	Exit Function
