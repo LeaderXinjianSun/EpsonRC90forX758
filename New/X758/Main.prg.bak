@@ -58,12 +58,16 @@ Function main
 	Xqt TesterStart4, NoEmgAbort
 	Xqt AllMonitor, NoEmgAbort
 	Call InitAction
+	Wait 0.2
+	Print "请按复位按钮，开始复位"
+	MsgSend$ = "请按复位按钮，开始复位"
+	Wait Sw(ResetButton) = 1
 	
-	Print "排料完成"
-	MsgSend$ = "排料完成"
 	Call HomeReturnAction
 main_label1:
-	
+	Print "请按开始按钮，开始运行"
+	MsgSend$ = "请按开始按钮，开始运行"
+	Wait Sw(StartButton) = 1
 	Do
 
 		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
@@ -100,6 +104,12 @@ Function InitAction
 		Tester_Fill(i) = False
 		Tester_Testing(i) = False
 	Next
+	'PASS Cui 阵列
+	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 3, 2
+	Pallet 2, PCui2_1, PCui2_2, PCui2_1, 1, 2
+	Pallet 3, PCui3_1, PCui3_2, PCui3_1, 3, 1
+	'NG Cui 阵列
+	Pallet 4, NCui1, NCui2, NCui3, 10, 2
 	HomeReturnComplete = False
 	PassStepNum = 0
 	FeedReadySigleDown = 1
@@ -639,7 +649,26 @@ TesterOperate1ReleaseSub:
 	PickHave(0) = False
 	Tester_Fill(i) = True;
 	'退出来，发送启动命令
-'	Go FinalPosition +X(20)
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+	Go FinalPosition1
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 Return
@@ -2033,22 +2062,44 @@ Function UnloadOperate(num As Integer)
 	
 UnloadOperate_Pass:
 	If Sw(PassTrayRdy) = 0 Or PassTraySigleDown = 0 Then
-'		TargetPosition_Num = 6
-'		FinalPosition = PassTui_RP1
+		If PassTrayPalletNum <= 6 Then
+			TargetPosition_Num = 6
+			FinalPosition = PCui1P4
+		ElseIf PassTrayPalletNum <= 8 Then
+			TargetPosition_Num = 7
+			FinalPosition = PCui2P4
+		ElseIf PassTrayPalletNum <= 11 Then
+			TargetPosition_Num = 8
+			FinalPosition = PCui3P3
+		Else
+			TargetPosition_Num = 9
+			FinalPosition = PCui4P3
+		EndIf
 		Print "Pass下料盘，未准备好"
 		MsgSend$ = "Pass下料盘，未准备好"
-'		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
-	TargetPosition_Num = 6
-'	FinalPosition = Pallet(num + 1, PassTrayPalletNum)
-	FinalPosition = ChangeHandL
+	If PassTrayPalletNum <= 6 Then
+		TargetPosition_Num = 6
+		FinalPosition = Pallet(1, PassTrayPalletNum)
+	ElseIf PassTrayPalletNum <= 8 Then
+		TargetPosition_Num = 7
+		FinalPosition = Pallet(2, PassTrayPalletNum - 6)
+	ElseIf PassTrayPalletNum <= 11 Then
+		TargetPosition_Num = 8
+		FinalPosition = Pallet(3, PassTrayPalletNum - 8)
+	Else
+		TargetPosition_Num = 9
+		FinalPosition = PCui4
+	EndIf
+
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	PassTrayPalletNum = PassTrayPalletNum + 1
 	If PassTrayPalletNum > 12 Then
-'		Go PassEmptyYield :Z(0)
+		Go P(349 + PassStepNum)
 		Print "Pass下料盘，换料"
 		MsgSend$ = "Pass下料盘，换料"
 		On PassTrayFull
@@ -2059,25 +2110,23 @@ Return
 
 UnloadOperate_Ng:
 	If Sw(NgTrayRdy) = 0 Or NgTraySigleDown = 0 Then
-		TargetPosition_Num = 7
-'		FinalPosition = NgEmptyYield :Z(0)
+		TargetPosition_Num = 10
+		FinalPosition = NCuiP3
 		Print "Ng下料盘，满"
 		MsgSend$ = "Ng下料盘，满"
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
-	TargetPosition_Num = 7
-	If NgTrayPalletNum <= 12 Then
-		FinalPosition = Pallet(num + 5, NgTrayPalletNum)
-	Else
-		FinalPosition = Pallet(num + 9, NgTrayPalletNum - 12)
-	EndIf
+	TargetPosition_Num = 10
+
+	FinalPosition = Pallet(4, NgTrayPalletNum)
+
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 21 Then
-'		Go NgEmptyYield :Z(0)
+	If NgTrayPalletNum > 20 Then
+		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
 		Pause
