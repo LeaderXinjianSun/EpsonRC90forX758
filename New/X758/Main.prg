@@ -98,11 +98,7 @@ Function InitAction
 	For i = 0 To 2
 		FeedFill(i) = True
 	Next
-	For i = 0 To 3
-		Tester_Pass(i) = 0
-		Tester_Fill(i) = False
-		Tester_Testing(i) = False
-	Next
+
 	'PASS Cui 阵列
 	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 3, 2
 	Pallet 2, PCui2_1, PCui2_2, PCui2_1, 1, 2
@@ -113,6 +109,18 @@ Function InitAction
 	PassStepNum = 0
 	FeedReadySigleDown = 1
 	PassTraySigleDown = 1
+Fend
+Function ClearAction
+	Integer i
+	For i = 0 To 3
+		Tester_Pass(i) = 0
+		Tester_Ng(i) = 0
+		Tester_Timeout(i) = 0
+		Tester_Fill(i) = False
+		Tester_Testing(i) = False
+		
+	'	Tester_Ng(4), Tester_Timeout(4)
+	Next
 Fend
 Function AllMonitor
 	Do
@@ -2655,7 +2663,7 @@ Function bgmain
 Fend
 '接收上位机的命令
 Function TcpIpCmdRev
-	Integer chknet1, errTask;
+	Integer chknet1, errTask, i;
 	OpenNet #201 As Server
 	Print "端口201打开"
 	WaitNet #201
@@ -2669,8 +2677,78 @@ Function TcpIpCmdRev
 			CmdRevStr$(0) = ""
 			StringSplit(CmdRev$, ";")
 			Select CmdRevStr$(0)
-				Case "Coord"
-					CmdSend$ = "Coord," + Str$(CX(Here)) + "," + Str$(CY(Here)) + "," + Str$(CZ(Here)) + "," + Str$(CU(Here))
+				Case "Select"
+					For i = 0 To 3
+						If CmdRevStr$(i + 1) = "1" Then
+							Tester_Select(i) = True
+						Else
+							Tester_Select(i) = False
+						EndIf
+					Next
+				Case "InitPar"
+					Call InitAction
+				Case "Clear"
+					Call ClearAction
+				Case "ScanResult"
+					Select CmdRevStr$(2)
+						Case "A"
+							Select CmdRevStr$(1)
+								Case "Pass"
+									ScanResult = 1
+								Case "Ng"
+									ScanResult = 2
+								Case "TimeOut"
+									ScanResult = 3
+							Send
+'						Case "C"
+'							Select CmdRevStr$(1)
+'								Case "Pass"
+'									ScanResultC = 1
+'								Case "Ng"
+'									ScanResultC = 2
+'								Case "TimeOut"
+'									ScanResultC = 3
+'							Send
+					Send
+				Case "TestResult"
+					Select CmdRevStr$(2)
+						Case "1"
+							Select CmdRevStr$(1)
+								Case "Pass"
+									Tester_Pass(0) = 1
+								Case "Ng"
+									Tester_Ng(0) = 1
+								Case "TimeOut"
+									Tester_Timeout(0) = 1
+							Send
+						Case "2"
+							Select CmdRevStr$(1)
+								Case "Pass"
+									Tester_Pass(1) = 1
+								Case "Ng"
+									Tester_Ng(1) = 1
+								Case "TimeOut"
+									Tester_Timeout(1) = 1
+							Send
+						Case "3"
+							Select CmdRevStr$(1)
+								Case "Pass"
+									Tester_Pass(2) = 1
+								Case "Ng"
+									Tester_Ng(2) = 1
+								Case "TimeOut"
+									Tester_Timeout(2) = 1
+							Send
+						Case "4"
+							Select CmdRevStr$(1)
+								Case "Pass"
+									Tester_Pass(3) = 1
+								Case "Ng"
+									Tester_Ng(3) = 1
+								Case "TimeOut"
+									Tester_Timeout(3) = 1
+							Send
+					Send
 			Send
 			CmdRev$ = ""
 		Else

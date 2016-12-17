@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/17 01:56:48:159,DS:0000002057,CS:12334,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/17 12:46:24:571,DS:0000002057,CS:12332,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -36,7 +36,7 @@ CmdWindow {
 		nWidth=516
 		nHeight=366
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=True

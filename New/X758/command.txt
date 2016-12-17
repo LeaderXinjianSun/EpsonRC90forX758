@@ -2303,4 +2303,5 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > go PCui1P4
 > PASS PCUI2P3;PASS PCUI2P2;PASS PCUI2P1;
 > go ChangeHandL /r
+> outw SpositionY,1234
 > 
