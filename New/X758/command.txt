@@ -2304,4 +2304,34 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > PASS PCUI2P3;PASS PCUI2P2;PASS PCUI2P1;
 > go ChangeHandL /r
 > outw SpositionY,1234
+> outw SpositionY,10000
+> outw SpositionY,60000
+> outw SpositionY,20000
+> 
+> outw SpositionY,10000
+> outw SpositionY,20000
+!!´íÎó: 2319, ½ô¼±Í£Ö¹×´Ì¬ÏÂÎÞ·¨Ö´ÐÐI/OÃüÁî¡£
+> outw SpositionY,20000
+> outw SpositionY,10000
+> outw SpositionY,55000
+> go ChangeHandL /r
+> outw SpositionY,10000
+> pass A1PASS1;go a_1
+> outw SpositionY,9400
+> outw SpositionY,9000
+> PASS A1PASS1;PASS ChangeHandL /R
+> outw SpositionY,37000
+> PASS A2PASS1;PASS A_2
+> outw SpositionY,36000
+> SLOCK 1,2,3,4
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> outw SpositionY,55000
+> GO ChangeHandL
+> outw SpositionY,10000
+> GO APickFeed2
+> slock 1,2,3,4
+> go APickFeed3
+> go APickFeed2
+> go ChangeHandL
 > 

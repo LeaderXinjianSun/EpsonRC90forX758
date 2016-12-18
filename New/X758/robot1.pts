@@ -1,11 +1,10 @@
-ENVT0100,LM:2016/12/16 12:27:59:994,DS:0000026413,CS:00064,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/18 10:16:58:084,DS:0000027008,CS:30465,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
-nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
 nNumberOfJoints=4
-nNumberOfPoints=88
+nNumberOfPoints=90
 Point1 {
 	nNumber=0
 	sLabel=""
@@ -36,18 +35,18 @@ Point2 {
 	nNumber=1
 	sLabel="ScanPosition1"
 	sDescription=""
-	nUndefined=262143
-	rX=0
-	rY=0
-	rZ=0
-	rU=0
+	nUndefined=0
+	rX=35.689
+	rY=253.085
+	rZ=-68.52
+	rU=150.315
 	rV=0
 	rW=0
 	rR=0
 	rS=0
 	rT=0
 	nLocal=0
-	nHand=1
+	nHand=2
 	nElbow=1
 	nWrist=1
 	nJ1Flag=0
@@ -62,18 +61,18 @@ Point3 {
 	nNumber=2
 	sLabel="ScanPosition2"
 	sDescription=""
-	nUndefined=262143
-	rX=0
-	rY=0
-	rZ=0
-	rU=0
+	nUndefined=0
+	rX=97.904
+	rY=264.519
+	rZ=-68.52
+	rU=150.326
 	rV=0
 	rW=0
 	rR=0
 	rS=0
 	rT=0
 	nLocal=0
-	nHand=1
+	nHand=2
 	nElbow=1
 	nWrist=1
 	nJ1Flag=0
@@ -88,18 +87,18 @@ Point4 {
 	nNumber=3
 	sLabel="ScanPosition3"
 	sDescription=""
-	nUndefined=262143
-	rX=0
-	rY=0
-	rZ=0
-	rU=0
+	nUndefined=0
+	rX=159.381
+	rY=275.445
+	rZ=-68.52
+	rU=105.606
 	rV=0
 	rW=0
 	rR=0
 	rS=0
 	rT=0
 	nLocal=0
-	nHand=1
+	nHand=2
 	nElbow=1
 	nWrist=1
 	nJ1Flag=0
@@ -115,10 +114,10 @@ Point5 {
 	sLabel="APickFeed1"
 	sDescription=""
 	nUndefined=0
-	rX=-84.875
-	rY=384.437
-	rZ=-118.905
-	rU=189.262
+	rX=-82.88
+	rY=381.561
+	rZ=-118.853
+	rU=189.805
 	rV=0
 	rW=0
 	rR=0
@@ -141,10 +140,10 @@ Point6 {
 	sLabel="APickFeed2"
 	sDescription=""
 	nUndefined=0
-	rX=-17.16
-	rY=380.6
-	rZ=-118.18
-	rU=190.506
+	rX=-14.944
+	rY=377.485
+	rZ=-118.11
+	rU=191.113
 	rV=0
 	rW=0
 	rR=0
@@ -167,10 +166,10 @@ Point7 {
 	sLabel="APickFeed3"
 	sDescription=""
 	nUndefined=0
-	rX=50.58
-	rY=378.75
-	rZ=-117.628
-	rU=190.425
+	rX=52.568
+	rY=379.712
+	rZ=-116.8
+	rU=190.55
 	rV=0
 	rW=0
 	rR=0
@@ -193,10 +192,10 @@ Point8 {
 	sLabel="A_1"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=312.611
-	rY=386.079
-	rZ=-116.307
-	rU=191.092
+	rX=314.963
+	rY=377.237
+	rZ=-119.763
+	rU=191.018
 	rV=0
 	rW=0
 	rR=0
@@ -219,10 +218,10 @@ Point9 {
 	sLabel="A_2"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=311.48
-	rY=378.356
-	rZ=-110.594
-	rU=192.323
+	rX=314.855
+	rY=376.823
+	rZ=-121.107
+	rU=189.859
 	rV=0
 	rW=0
 	rR=0
@@ -2243,6 +2242,58 @@ Point86 {
 	bSimVisible=False
 }
 Point87 {
+	nNumber=506
+	sLabel=""
+	sDescription=""
+	nUndefined=448
+	rX=9000
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point88 {
+	nNumber=507
+	sLabel=""
+	sDescription=""
+	nUndefined=448
+	rX=36000
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point89 {
 	nNumber=998
 	sLabel="FinalPosition1"
 	sDescription=""
@@ -2268,7 +2319,7 @@ Point87 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point88 {
+Point90 {
 	nNumber=999
 	sLabel="FinalPosition"
 	sDescription=""

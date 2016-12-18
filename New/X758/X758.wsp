@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/17 12:46:24:571,DS:0000002057,CS:12332,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/18 12:47:15:337,DS:0000002057,CS:14373,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -7,8 +7,8 @@ ProgramFile1 {
 	bOpened=True
 	nWinState=2
 	Window {
-		nLeft=42
-		nTop=141
+		nLeft=37
+		nTop=140
 		nWidth=663
 		nHeight=437
 	}
@@ -29,14 +29,14 @@ PointFile1 {
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=74
 		nTop=56
 		nWidth=516
 		nHeight=366
 	}
-	nWinState=2
+	nWinState=0
 }
 RunWindow {
 	bOpened=True
@@ -49,7 +49,7 @@ RunWindow {
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=544
-		nTop=159
+		nLeft=601
+		nTop=186
 		nWidth=478
 		nHeight=346
 	}

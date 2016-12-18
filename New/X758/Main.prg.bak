@@ -25,11 +25,14 @@ Global Integer Pick_P_Msg(4)
 Global Real TesterTimeElapse(4)
 
 Global Integer ScanResult
+Global Preserve Boolean PreFeedFill(6)
 Global Preserve Boolean FeedFill(6)
 
 Global Boolean PickHave(4)
 Global Preserve Integer PassTrayPalletNum, NgTrayPalletNum
 Global Integer FeedReadySigleDown, PassTraySigleDown, NgTraySigleDown, INP_HomeSigleDown
+
+Global Preserve Integer FeedPanelNum
 
 Global Preserve Boolean ReTest_
 
@@ -95,9 +98,6 @@ Function InitAction
 	
 	Integer i
 	PickHave(0) = False
-	For i = 0 To 2
-		FeedFill(i) = True
-	Next
 
 	'PASS Cui 阵列
 	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 3, 2
@@ -123,35 +123,77 @@ Function ClearAction
 	Next
 Fend
 Function AllMonitor
+	
+	Integer FeedReady_, PassTrayRdy_, INP_Home_, i
+	FeedReady_ = Sw(FeedReady)
+	PassTrayRdy_ = Sw(PassTrayRdy)
+	INP_Home_ = Sw(INP_Home)
 	Do
 		Wait 0.1
+		If FeedReady_ <> Sw(FeedReady) Then
+			FeedReady_ = Sw(FeedReady)
+			If Sw(FeedReady) = 1 Then
+				For i = 0 To 2
+					If FeedPanelNum > 1 Then
+						FeedFill(i) = PreFeedFill(i)
+						FeedPanelNum = 0
+					Else
+						FeedFill(i) = PreFeedFill(i + 3)
+						
+					EndIf
+				Next
 
-		If Sw(FeedReady) = 0 Then
-			FeedReadySigleDown = 1
-			Off FeedEmpty, Forced
+			Else
+				FeedReadySigleDown = 1
+				Off FeedEmpty, Forced
+			EndIf
 		EndIf
 		
-		If Sw(PassTrayRdy) = 0 Then
-			PassTrayPalletNum = 1
-			PassTraySigleDown = 1
-			Off PassTrayFull, Forced
+		If PassTrayRdy_ <> Sw(PassTrayRdy) Then
+			PassTrayRdy_ = Sw(PassTrayRdy)
+			If Sw(PassTrayRdy) = 1 Then
+
+			Else
+				PassTrayPalletNum = 1
+				PassTraySigleDown = 1
+				Off PassTrayFull, Forced
+			EndIf
 		EndIf
+		
+		If INP_Home_ <> Sw(INP_Home) Then
+			INP_Home_ = Sw(INP_Home)
+			If Sw(INP_Home_) = 1 Then
+
+			Else
+				INP_HomeSigleDown = 1
+				Off SHome, Forced
+			EndIf
+		EndIf
+		
+'		If Sw(FeedReady) = 0 Then
+'			FeedReadySigleDown = 1
+'			Off FeedEmpty, Forced
+'		EndIf
+		
+'		If Sw(PassTrayRdy) = 0 Then
+'			PassTrayPalletNum = 1
+'			PassTraySigleDown = 1
+'			Off PassTrayFull, Forced
+'		EndIf
 		
 		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
 			NgTrayPalletNum = 1
 			NgTraySigleDown = 1
 		EndIf
 		
-		If Sw(INP_Home) = 0 Then
-			INP_HomeSigleDown = 1
-			Off SHome, Forced
-		EndIf
+'		If Sw(INP_Home) = 0 Then
+'			INP_HomeSigleDown = 1
+'			Off SHome, Forced
+'		EndIf
 
 
 		
-		If CmdSend$ <> "" Then
-			CmdSend$ = ""
-		EndIf
+
 		
 	Loop
 Fend
@@ -182,6 +224,7 @@ PickFeedOperatelabel1:
                 Exit Do
 			EndIf
 		Loop
+		
 	EndIf
 	If Discharge = 0 Then
 		For i = 0 To 2
@@ -215,6 +258,7 @@ PickFeedOperatelabel1:
 				EndIf
 				
 			Else
+				'没扫上，则为石刻不良
 				FeedFill(i) = False
 				Call IsFeedPanelEmpty
 			EndIf
@@ -336,7 +380,7 @@ PickFeedOperatelabel2_2:
 Fend
 '判断上料盘是否取空
 Function IsFeedPanelEmpty As Boolean
-	Integer i
+	Integer i, j
 	For i = 0 To 2
 		If FeedFill(i) Then
 			Exit For
@@ -348,11 +392,9 @@ Function IsFeedPanelEmpty As Boolean
 		Sense MemSw(99) = 1
 		Jump ChangeHandL Sense
 		On FeedEmpty
-		For i = 0 To 2
-			FeedFill(i) = True
-		Next
 		FeedReadySigleDown = 0
 		IsFeedPanelEmpty = True
+		FeedPanelNum = FeedPanelNum + 1
 	Else
 		IsFeedPanelEmpty = False
 	EndIf
@@ -2235,15 +2277,15 @@ Function HomeReturnAction
 	CurPosition_Num = 1
 	Go ChangeHandL
 '	Pause
-	S_Position = 10000
+	S_Position = CX(P501)
 	OutW SpositionY, S_Position
-'	On SHome
-	On FeedEmpty
-	On PassTrayFull
+	On SHome
+'	On FeedEmpty
+'	On PassTrayFull
 '	INP_HomeSigleDown = 0
-'	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position And INP_HomeSigleDown = 1
+	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position And INP_HomeSigleDown = 1
 '	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
-	Wait InW(SPositionX) = S_Position
+'	Wait InW(SPositionX) = S_Position
 	HomeReturnComplete = True
 	Print "Home Return Compelet"
 	
@@ -2286,8 +2328,8 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 			Case 2
 				TargetHand = 1
 				GoSub ChangeHandAction
-				OutW SpositionY, CX(P501)
-				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+				OutW SpositionY, CX(P506)
+				Wait InW(SPositionX) = CX(P506) And Sw(INP) = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -2302,8 +2344,8 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 			Case 3
 				TargetHand = 1
 				GoSub ChangeHandAction
-				OutW SpositionY, CX(P503)
-				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+				OutW SpositionY, CX(P507)
+				Wait InW(SPositionX) = CX(P507) And Sw(INP) = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -2748,6 +2790,15 @@ Function TcpIpCmdRev
 								Case "TimeOut"
 									Tester_Timeout(3) = 1
 							Send
+					Send
+					Case "FeedFill"
+						For i = 0 To 5
+							If CmdRevStr$(i + 1) = "1" Then
+								PreFeedFill(i) = True
+							Else
+								PreFeedFill(i) = False
+							EndIf
+						Next
 			Send
 			CmdRev$ = ""
 		Else
@@ -2897,19 +2948,20 @@ Function TesterStart1
 				Loop
 				CmdSend$ = "Start,1," + PickAorC$(0)
 				TmReset 0
-'				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
-'					TesterTimeElapse(0) = Tmr(0)
-'				
-'					If Tester_Select(0) = False Then
-'						Exit Do
-'					EndIf
-'					Wait 0.02
-'				Loop
-				Wait 50
-				Tester_Pass(0) = 1
+				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
+				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
+					TesterTimeElapse(0) = Tmr(0)
+				
+					If Tester_Select(0) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+				
+				
 				
 				On AL_Suck, Forced
-'				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
+				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
 				Off AL_Suck, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
@@ -2951,18 +3003,18 @@ Function TesterStart2
 				Loop
 				CmdSend$ = "Start,2," + PickAorC$(1)
 				TmReset 1
-'				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
-'					TesterTimeElapse(1) = Tmr(1)
-'				
-'					If Tester_Select(1) = False Then
-'						Exit Do
-'					EndIf
-'					Wait 0.02
-'				Loop
-				Wait 50
-				Tester_Pass(1) = 1
+				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
+				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
+					TesterTimeElapse(1) = Tmr(1)
+				
+					If Tester_Select(1) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+
 				On AR_Suck, Forced
-'				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
+				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
 				Off AR_Suck, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
@@ -3004,18 +3056,18 @@ Function TesterStart3
 				Loop
 				CmdSend$ = "Start,3," + PickAorC$(2)
 				TmReset 2
-'				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
-'					TesterTimeElapse(2) = Tmr(2)
-'				
-'					If Tester_Select(2) = False Then
-'						Exit Do
-'					EndIf
-'					Wait 0.02
-'				Loop
-				Wait 50
-				Tester_Pass(2) = 1
+				Wait Sw(BLRear) = 0 And Sw(BLUp) = 0
+				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
+					TesterTimeElapse(2) = Tmr(2)
+				
+					If Tester_Select(2) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
+
 				On BL_Suck, Forced
-'				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
+				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
 				Off BL_Suck, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
@@ -3057,18 +3109,19 @@ Function TesterStart4
 				Loop
 				CmdSend$ = "Start,4," + PickAorC$(3)
 				TmReset 3
-'				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
-'					TesterTimeElapse(3) = Tmr(3)
-'				
-'					If Tester_Select(3) = False Then
-'						Exit Do
-'					EndIf
-'					Wait 0.02
-'				Loop
+				Wait Sw(BRRear) = 0 And Sw(BRUp) = 0
+				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
+					TesterTimeElapse(3) = Tmr(3)
+				
+					If Tester_Select(3) = False Then
+						Exit Do
+					EndIf
+					Wait 0.02
+				Loop
 				Wait 50
 				Tester_Pass(3) = 1
 				On BR_Suck, Forced
-'				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
+				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
 				Off BR_Suck, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False
