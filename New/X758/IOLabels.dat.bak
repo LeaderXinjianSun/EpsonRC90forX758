@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/17 01:50:36:588,DS:0000004363,CS:06992,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/17 02:58:37:016,DS:0000004363,CS:06227,MA:00-15-17-CD-76-F0,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
 	nNumberOfLabels=36
@@ -189,7 +189,7 @@ InputByteLabels {
 InputWordLabels {
 	nNumberOfLabels=1
 	Label1 {
-		nWord=50
+		nWord=35
 		sLabel="SPositionX"
 		sDescription=""
 	}
@@ -303,7 +303,7 @@ OutputByteLabels {
 OutputWordLabels {
 	nNumberOfLabels=1
 	Label1 {
-		nWord=50
+		nWord=35
 		sLabel="SpositionY"
 		sDescription=""
 	}

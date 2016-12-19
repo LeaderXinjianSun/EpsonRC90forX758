@@ -40,7 +40,6 @@ Global Integer Discharge
 
 Global Integer S_Position
 
-Global Boolean HomeReturnComplete
 '路径规划用
 Global Integer PassStepNum
 '主函数
@@ -48,10 +47,11 @@ Global Integer PassStepNum
 
 Function main
 	Integer i
-	Integer fillNum
+	Integer fillNum, selectNum
 	Trap Emergency Xqt TrapInterruptAbort
 	Trap Abort Xqt TrapInterruptAbort
 	Trap Error Xqt TrapInterruptAbort
+	Wait 0.2
 	Xqt TesterStart1, NoEmgAbort
 	Wait 0.2
 	Xqt TesterStart2, NoEmgAbort
@@ -65,16 +65,20 @@ Function main
 	Print "请按复位按钮，开始复位"
 	MsgSend$ = "请按复位按钮，开始复位"
 	Wait Sw(ResetButton) = 1
-	
+	Off RollValve
 	Call HomeReturnAction
+	Print "等待上料、下料结束"
+	MsgSend$ = "等待上料、下料结束"
+'	Wait Sw(FeedReady) = 0 And Sw(PassTrayRdy) = 0
+	Wait Sw(FeedReady) = 1 And Sw(PassTrayRdy) = 1
 main_label1:
 	Print "请按开始按钮，开始运行"
 	MsgSend$ = "请按开始按钮，开始运行"
 	Wait Sw(StartButton) = 1
 	Do
-
+		selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
 		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
-		If fillNum = -15 Or Discharge <> 0 Then
+		If (fillNum = selectNum And fillNum <> 0) Or Discharge <> 0 Then
 		'如果全满，则取料
 		'如果排料，则取料
 			If Discharge <> 0 And fillNum = 0 Then
@@ -100,15 +104,16 @@ Function InitAction
 	PickHave(0) = False
 
 	'PASS Cui 阵列
-	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 3, 2
-	Pallet 2, PCui2_1, PCui2_2, PCui2_1, 1, 2
-	Pallet 3, PCui3_1, PCui3_2, PCui3_1, 3, 1
+	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 2, 3
+	Pallet 2, PCui2_1, PCui2_2, PCui2_1, 2, 1
+	Pallet 3, PCui3_1, PCui3_2, PCui3_1, 1, 3
 	'NG Cui 阵列
-	Pallet 4, NCui1, NCui2, NCui3, 10, 2
-	HomeReturnComplete = False
+	Pallet 4, NCui1, NCui2, NCui3, 2, 10
 	PassStepNum = 0
-	FeedReadySigleDown = 1
-	PassTraySigleDown = 1
+	
+	For i = 0 To 5
+		PreFeedFill(i) = True
+	Next
 Fend
 Function ClearAction
 	Integer i
@@ -119,30 +124,43 @@ Function ClearAction
 		Tester_Fill(i) = False
 		Tester_Testing(i) = False
 		
+		
 	'	Tester_Ng(4), Tester_Timeout(4)
 	Next
+	FeedPanelNum = 0
+	For i = 0 To 5
+		FeedFill(i) = True
+	Next
+	For i = 0 To 5
+		PreFeedFill(i) = True
+	Next
+	FeedReadySigleDown = 1
+	PassTraySigleDown = 1
+	NgTrayPalletNum = 1
+	NgTraySigleDown = 1
+	FeedPanelNum = 0
+	
 Fend
 Function AllMonitor
 	
-	Integer FeedReady_, PassTrayRdy_, INP_Home_, i
+	Integer FeedReady_, PassTrayRdy_, INP_Home_, i, NgTrayRdy_
 	FeedReady_ = Sw(FeedReady)
 	PassTrayRdy_ = Sw(PassTrayRdy)
 	INP_Home_ = Sw(INP_Home)
+	NgTrayRdy_ = Sw(NgTrayRdy)
 	Do
 		Wait 0.1
 		If FeedReady_ <> Sw(FeedReady) Then
 			FeedReady_ = Sw(FeedReady)
 			If Sw(FeedReady) = 1 Then
-				For i = 0 To 2
-					If FeedPanelNum > 1 Then
-						FeedFill(i) = PreFeedFill(i)
-						FeedPanelNum = 0
-					Else
-						FeedFill(i) = PreFeedFill(i + 3)
-						
-					EndIf
+				
+				For i = 0 To 5
+					FeedFill(i) = PreFeedFill(i)
 				Next
-
+				
+				FeedReadySigleDown = 1
+			
+				
 			Else
 				FeedReadySigleDown = 1
 				Off FeedEmpty, Forced
@@ -152,7 +170,7 @@ Function AllMonitor
 		If PassTrayRdy_ <> Sw(PassTrayRdy) Then
 			PassTrayRdy_ = Sw(PassTrayRdy)
 			If Sw(PassTrayRdy) = 1 Then
-
+				PassTraySigleDown = 1
 			Else
 				PassTrayPalletNum = 1
 				PassTraySigleDown = 1
@@ -163,10 +181,21 @@ Function AllMonitor
 		If INP_Home_ <> Sw(INP_Home) Then
 			INP_Home_ = Sw(INP_Home)
 			If Sw(INP_Home_) = 1 Then
-
+				INP_HomeSigleDown = 1
 			Else
 				INP_HomeSigleDown = 1
 				Off SHome, Forced
+			EndIf
+		EndIf
+		
+		If NgTrayRdy_ <> Sw(NgTrayRdy) Then
+			NgTrayRdy_ = Sw(NgTrayRdy)
+			If Sw(NgTrayRdy) = 1 Then
+				NgTraySigleDown = 1
+			Else
+				NgTrayPalletNum = 1
+				NgTraySigleDown = 1
+				Off NgTrayFull, Forced
 			EndIf
 		EndIf
 		
@@ -181,20 +210,15 @@ Function AllMonitor
 '			Off PassTrayFull, Forced
 '		EndIf
 		
-		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
-			NgTrayPalletNum = 1
-			NgTraySigleDown = 1
-		EndIf
+'		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
+'			NgTrayPalletNum = 1
+'			NgTraySigleDown = 1
+'		EndIf
 		
 '		If Sw(INP_Home) = 0 Then
 '			INP_HomeSigleDown = 1
 '			Off SHome, Forced
-'		EndIf
-
-
-		
-
-		
+'		EndIf		
 	Loop
 Fend
 Function test1
@@ -210,13 +234,18 @@ Function test2
 Fend
 '单爪手取操作
 Function PickFeedOperate0
-	Integer i
-	Boolean scanflag, pickfeedflag
+
+	Boolean scanflag, pickfeedflag, fullflag
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		'上料等
 		TargetPosition_Num = 1
-		FinalPosition = ChangeHandL :Z(-61)
+		If Hand = 1 Then
+			FinalPosition = ChangeHandL /R :Z(-61)
+		Else
+			FinalPosition = ChangeHandL /L :Z(-61)
+		EndIf
+		
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
@@ -226,43 +255,59 @@ PickFeedOperatelabel1:
 		Loop
 		
 	EndIf
+	
 	If Discharge = 0 Then
-		For i = 0 To 2
-			If FeedFill(i) Then
-				Exit For
-			EndIf
-		Next
-		If i > 2 Then
-			'料盘空了
-			Call IsFeedPanelEmpty
-			GoTo PickFeedOperatelabel1
-		Else
-'			scanflag = ScanBarcodeOpetate(i, "A")
-			scanflag = True
+		If FeedFill(FeedPanelNum) = True Then
+			scanflag = ScanBarcodeOpetate(FeedPanelNum Mod 3, "A")
 			If scanflag Then
 				TargetPosition_Num = 1
-				FinalPosition = P(11 + i)
+				If Hand = 1 Then
+					FinalPosition = P(20 + FeedPanelNum)
+				Else
+					FinalPosition = P(11 + FeedPanelNum)
+				EndIf
+				
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 				pickfeedflag = PickAction(0)
-				pickfeedflag = True
-				FeedFill(i) = False
+				FeedFill(FeedPanelNum) = False
 				PickHave(0) = pickfeedflag
 				If pickfeedflag Then
 					MemOn 99
 					Sense MemSw(99)
-					Jump ChangeHandL Sense
-					Call IsFeedPanelEmpty
+					If Hand = 1 Then
+						Jump ChangeHandL /R Sense
+					Else
+						Jump ChangeHandL /L Sense
+					EndIf
+					
+					FeedPanelNum = FeedPanelNum + 1
+					Call IsFeedPanelEmpty(False)
 				Else
 					BlowSuckFail(0)
-					Call IsFeedPanelEmpty
+					FeedPanelNum = FeedPanelNum + 1
+					fullflag = IsFeedPanelEmpty(True)
+					If fullflag Then
+						GoTo PickFeedOperatelabel1
+					EndIf
 				EndIf
 				
 			Else
 				'没扫上，则为石刻不良
-				FeedFill(i) = False
-				Call IsFeedPanelEmpty
+				Print "石刻不良"
+				MsgSend$ = "石刻不良"
+				Pause
+				FeedFill(FeedPanelNum) = False
+				FeedPanelNum = FeedPanelNum + 1
+				fullflag = IsFeedPanelEmpty(True)
+				If fullflag Then
+					GoTo PickFeedOperatelabel1
+				EndIf
 			EndIf
+		Else
+			
 		EndIf
+
+		
 	EndIf
 	
 Fend
@@ -290,7 +335,7 @@ PickFeedOperatelabel1:
 		Next
 		If i > 5 Then
 			'料盘空了
-			Call IsFeedPanelEmpty
+'			Call IsFeedPanelEmpty(True)
 			GoTo PickFeedOperatelabel1
 		Else
 			scanflag = ScanBarcodeOpetate(i, "A")
@@ -302,15 +347,15 @@ PickFeedOperatelabel1:
 				FeedFill(i) = False
 				PickHave(0) = pickfeedflag
 				If pickfeedflag Then
-					Call IsFeedPanelEmpty
+'					Call IsFeedPanelEmpty
 				Else
 					BlowSuckFail(0)
-					Call IsFeedPanelEmpty
+'					Call IsFeedPanelEmpty
 				EndIf
 				
 			Else
 				FeedFill(i) = False
-				Call IsFeedPanelEmpty
+'				Call IsFeedPanelEmpty
 			EndIf
 		EndIf
 	EndIf
@@ -346,7 +391,7 @@ PickFeedOperatelabel2:
 			Next
 			If i > 2 Then
 				'料盘空了
-				Call IsFeedPanelEmpty
+'				Call IsFeedPanelEmpty
 	'			GoTo PickFeedOperatelabel2
 			Else
 				GoTo PickFeedOperatelabel2_2
@@ -363,10 +408,10 @@ PickFeedOperatelabel2_2:
 				PickHave(2) = pickfeedflag
 				If pickfeedflag Then
 					
-					Call IsFeedPanelEmpty
+'					Call IsFeedPanelEmpty
 				Else
 					BlowSuckFail(2)
-					Call IsFeedPanelEmpty
+'					Call IsFeedPanelEmpty
 					GoTo PickFeedOperatelabel2
 				EndIf
 				
@@ -379,23 +424,34 @@ PickFeedOperatelabel2_2:
 
 Fend
 '判断上料盘是否取空
-Function IsFeedPanelEmpty As Boolean
-	Integer i, j
-	For i = 0 To 2
-		If FeedFill(i) Then
-			Exit For
-		EndIf
-	Next
-	If i > 2 Then
+Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
+'	Integer i, j
+	If FeedPanelNum > 5 Then
 		'料盘空了
 		MemOn 99
 		Sense MemSw(99) = 1
-		Jump ChangeHandL Sense
+		If Hand = 1 Then
+			Jump ChangeHandL /R Sense
+		Else
+			Jump ChangeHandL /L Sense
+		EndIf
+		
+		Off RollValve
+		If needwait Then
+			Wait 3
+		EndIf
 		On FeedEmpty
 		FeedReadySigleDown = 0
 		IsFeedPanelEmpty = True
-		FeedPanelNum = FeedPanelNum + 1
+		FeedPanelNum = 0
+
 	Else
+		If FeedPanelNum = 3 Then
+			On RollValve
+			If needwait Then
+				Wait 3
+			EndIf
+		EndIf
 		IsFeedPanelEmpty = False
 	EndIf
 Fend
@@ -495,33 +551,33 @@ TesterOperate1_lable5:
 TesterOperate1SuckSub:
 	'取
 
-'	If Sw(rearnum) = 0 Then
-	If Sw(rearnum) = 1 Then
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		Select i
-			Case 0
-				TargetPosition_Num = 2
-				'A_1，依据TesterOperate1更改
-				FinalPosition1 = A1PASS1
-				rearnum = 4
-			Case 1
-				TargetPosition_Num = 3
-				FinalPosition1 = A2PASS1
-				rearnum = 5
-			Case 2
-				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS3
-				rearnum = 14
-			Case 3
-				TargetPosition_Num = 5
-				FinalPosition1 = A4PASS3
-				rearnum = 15
-		Send
+
 		FinalPosition = FinalPosition1
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
-'	Wait Sw(rearnum) = 1
+	Wait Sw(rearnum) = 1
 	Select i
 		Case 0
 			TargetPosition_Num = 2
@@ -543,16 +599,16 @@ TesterOperate1SuckSub:
 	Send
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+'	If CmdSend$ <> "" Then
+'		Print "有命令 " + CmdSend$ + " 待发送！"
+'	EndIf
+'	Do While CmdSend$ <> ""
+'		Wait 0.1
+'	Loop
+'	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
 	PickHave(0) = PickAction(0)
-	PickHave(0) = True
+
 	Tester_Fill(i) = False;
 	
 	If PickHave(0) = True Then
@@ -592,10 +648,30 @@ TesterOperate1SuckSub:
 			
 		EndIf
 	Else
-		Go FinalPosition
+		Select i
+			Case 0
+				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+				rearnum = 4
+			Case 1
+				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				rearnum = 5
+			Case 2
+				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS3
+				rearnum = 14
+			Case 3
+				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+		Go FinalPosition1
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
+		Off i * 2
 	EndIf
 Return
 
@@ -645,34 +721,34 @@ Function TesterOperate02
 
 TesterOperate1ReleaseSub:
 '有空穴
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
 
-'	If Sw(rearnum) = 0 Then
-	If Sw(rearnum) = 1 Then
+	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		Select i
-			Case 0
-				TargetPosition_Num = 2
-				'A_1，依据TesterOperate1更改
-				FinalPosition1 = A1PASS1
-				rearnum = 4
-			Case 1
-				TargetPosition_Num = 3
-				FinalPosition1 = A2PASS1
-				rearnum = 5
-			Case 2
-				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS3
-				rearnum = 14
-			Case 3
-				TargetPosition_Num = 5
-				FinalPosition1 = A4PASS3
-				rearnum = 15
-		Send
+
 		FinalPosition = FinalPosition1
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
-'	Wait Sw(rearnum) = 1
+	Wait Sw(rearnum) = 1
 	Select i
 		Case 0
 			TargetPosition_Num = 2
@@ -2196,7 +2272,12 @@ Function ScanBarcodeOpetate(num As Integer, picksting$ As String)
 '		Wait 0.1
 '	Loop
 '	CmdSend$ = "TakePhoto"
-	FinalPosition = P(1 + num)
+	If Hand = 1 Then
+		FinalPosition = P(4 + num)
+	Else
+		FinalPosition = P(1 + num)
+	EndIf
+	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Wait 0.2
 	If CmdSend$ <> "" Then
@@ -2223,7 +2304,7 @@ Function HomeReturnAction
 	Motor Off
 	Motor On
 	Power Low
-	Weight 3
+	Weight 1
 	LimZ -61
 	Speed 50
 	Boolean HomeSuccessFlage
@@ -2243,12 +2324,12 @@ Function HomeReturnAction
 		
 		
 		HomeSuccessFlage = True
-		If Hand(Here) = 2 Then
-			
-		Else
-			HomeSuccessFlage = False
-			Print "请将机械手调整为左手姿势"
-		EndIf
+'		If Hand(Here) = 2 Then
+'			
+'		Else
+'			HomeSuccessFlage = False
+'			Print "请将机械手调整为左手姿势"
+'		EndIf
 		If CX(Here) > -100 And CX(Here) < 100 Then
 		
 		Else
@@ -2275,23 +2356,33 @@ Function HomeReturnAction
 	Go Here :Y(373)
 	Go Here :U(189.745)
 	CurPosition_Num = 1
-	Go ChangeHandL
+	If Hand = 1 Then
+		Go ChangeHandL /R
+	Else
+		Go ChangeHandL
+	EndIf
+	
 '	Pause
 	S_Position = CX(P501)
 	OutW SpositionY, S_Position
-	On SHome
+	If Sw(INP_Home) = 0 Then
+		On SHome
+		INP_HomeSigleDown = 0
+		Wait Sw(INP_Home) = 1 And INP_HomeSigleDown = 1
+	EndIf
+	Wait InW(SPositionX) = S_Position
 '	On FeedEmpty
 '	On PassTrayFull
-	INP_HomeSigleDown = 0
-	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position And INP_HomeSigleDown = 1
+	
+	
 '	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
 '	Wait InW(SPositionX) = S_Position
-	HomeReturnComplete = True
+
 	Print "Home Return Compelet"
 	
 	
 	Power High
-	Speed 85
+	Speed 30
 	Accel 90, 90
 '	Speed 100, 100, 90
 '	SpeedS 100
@@ -2307,20 +2398,22 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 '1 R
 '2 L
 	Integer TargetHand, i
+	Int32 SpBox
 	LimZ -61
-	If PassStepNum > 0 Then
+	If PassStepNum > 0 And firstPosition <> secendPosition Then
 		For i = 0 To PassStepNum - 1
 			Pass P(349 + PassStepNum - i)
 		Next
-		
+		PassStepNum = 0
 	EndIf
-	PassStepNum = 0
+	
 	If firstPosition = secendPosition Then
 		Go FinalPosition
 	Else
+		PassStepNum = 0
 		Select secendPosition
 			Case 1
-				TargetHand = 2
+				TargetHand = Hand
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P501)
 				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
@@ -2555,14 +2648,20 @@ ChangeHandAction:
 		Jump ChangeHandL /L
 	EndIf
 	If TargetHand <> Hand(Here) Then
-
-		OutW SpositionY, CX(P504)
-		Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+		If InW(SPositionX) <> CX(P504) Then
+			SpBox = InW(SPositionX)
+			OutW SpositionY, CX(P504)
+			Wait InW(SPositionX) <> SpBox
+			Wait 0.5
+		EndIf
 		If Hand(Here) = 1 Then
 			Jump ChangeHandL /L
 		Else
 			Jump ChangeHandL /R
 		EndIf
+		
+		Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+
 	EndIf
 
 Return
@@ -2602,7 +2701,7 @@ Function PickAction(num As Integer) As Boolean
 	Wait 0.2
 	Wait Sw(vacuumnum), 0.1
 	Off valvenum
-	Wait 0.2
+	Wait 0.5
 	If Sw(vacuumnum) = 0 Then
 		PickAction = False
 	Else
@@ -2640,8 +2739,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			blownum = 7
 			vacuumnum = 3
 	Send
-	Off blownum; On valvenum
-	Wait 0.2
+
 	On blownum; Off sucknum
 	Select Flexnum
 		Case 1
@@ -2654,13 +2752,11 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			On BR_Suck
 	Send
 	Wait 0.05
-	Off blownum
-	Wait 0.1
-	On blownum
-	Wait 0.05
- 	Off blownum
+	
  	Wait 0.1
- 	Off valvenum
+	On valvenum
+	Wait 0.2
+ 	Off valvenum; Off blownum
 	Wait 0.2
 Fend
 '吸取失败，吹动作
@@ -2723,8 +2819,12 @@ Function TcpIpCmdRev
 					For i = 0 To 3
 						If CmdRevStr$(i + 1) = "1" Then
 							Tester_Select(i) = True
+							NeedChancel(i) = False
 						Else
-							Tester_Select(i) = False
+							If Tester_Select(i) Then
+								NeedChancel(i) = True
+							EndIf
+							
 						EndIf
 					Next
 				Case "InitPar"
@@ -2948,7 +3048,7 @@ Function TesterStart1
 				Loop
 				CmdSend$ = "Start,1," + PickAorC$(0)
 				TmReset 0
-				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
+'				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
 				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
 					TesterTimeElapse(0) = Tmr(0)
 				
@@ -3003,7 +3103,7 @@ Function TesterStart2
 				Loop
 				CmdSend$ = "Start,2," + PickAorC$(1)
 				TmReset 1
-				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
+'				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
 				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
 					TesterTimeElapse(1) = Tmr(1)
 				
@@ -3056,7 +3156,7 @@ Function TesterStart3
 				Loop
 				CmdSend$ = "Start,3," + PickAorC$(2)
 				TmReset 2
-				Wait Sw(BLRear) = 0 And Sw(BLUp) = 0
+'				Wait Sw(BLRear) = 0 And Sw(BLUp) = 0
 				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
 					TesterTimeElapse(2) = Tmr(2)
 				
@@ -3109,7 +3209,7 @@ Function TesterStart4
 				Loop
 				CmdSend$ = "Start,4," + PickAorC$(3)
 				TmReset 3
-				Wait Sw(BRRear) = 0 And Sw(BRUp) = 0
+'				Wait Sw(BRRear) = 0 And Sw(BRUp) = 0
 				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
 					TesterTimeElapse(3) = Tmr(3)
 				

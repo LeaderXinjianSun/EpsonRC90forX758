@@ -2334,4 +2334,109 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > go APickFeed3
 > go APickFeed2
 > go ChangeHandL
+> outw SpositionY,10000
+> motor On
+!!错误: 4025, 紧急停止条件下无法执行运动命令。
+> go ChangeHandL /r
+> go ChangeHandL
+> go ChangeHandL /r
+> outw SpositionY,55000
+> go ChangeHandL
+> outw SpositionY,10000
+> go ChangeHandL
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go ChangeHandL /r
+> go ChangeHandL
+> go ChangeHandL /r
+> go ChangeHandL
+> go ChangeHandL /r
+> go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,9000
+> outw SpositionY,10000
+> go ChangeHandL  /r
+> go ScanPosition1 /r
+> go ChangeHandL /r
+> outw SpositionY,9000
+> PASS A1PASS1;GO A_1
+> outw SpositionY,8900
+> outw SpositionY,8950
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,55000
+> GO ChangeHandL 
+> outw SpositionY,10000
+> GO ChangeHandL
+> GO ChangeHandL /R
+> GO ChangeHandL /R
+> GO ChangeHandL
+> go ChangeHandL
+> pass A2PASS1;go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> outw SpositionY,60000
+> outw SpositionY,10000
+> go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass A1PASS1;go  A_1
+> pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> outw SpositionY,60000
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,36000
+> pass A2PASS1;go A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,60000
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,60000
+> PASS PCui1P1;PASS PCui1P2;PASS PCui1P3;PASS PCui1P4;
+> outw SpositionY,55000
+> PASS PCui2P4;PASS PCui2P3;PASS PCui2P2;PASS PCui2P1;
+> go ChangeHandL /r
+> go ChangeHandL
+> outw SpositionY,60000
+> PASS PCui3P1;PASS PCui3P2;PASS PCui3P3;
+> outw SpositionY,55000
+> PASS PCui4P3;PASS PCui4P2;PASS PCui4P1;
+> GO ChangeHandL
+> GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
 > 
