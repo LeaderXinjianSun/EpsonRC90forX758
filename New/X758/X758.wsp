@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/12/19 16:11:31:213,DS:0000002061,CS:38132,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="运行远程控制台"
+ENVT0100,LM:2016/12/20 20:04:15:838,DS:0000002057,CS:26999,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=37
 		nTop=140
@@ -29,7 +29,7 @@ PointFile1 {
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=74
 		nTop=56
@@ -46,7 +46,7 @@ RunWindow {
 		nWidth=682
 		nHeight=383
 	}
-	nWinState=2
+	nWinState=0
 }
 IOLabelEditor {
 	bOpened=False
@@ -59,10 +59,10 @@ IOLabelEditor {
 	nWinState=2
 }
 IOMonitor {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=899
-		nTop=439
+		nLeft=815
+		nTop=290
 		nWidth=478
 		nHeight=327
 	}
@@ -79,8 +79,8 @@ Simulator {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=869
-		nTop=413
+		nLeft=743
+		nTop=384
 		nWidth=478
 		nHeight=262
 	}

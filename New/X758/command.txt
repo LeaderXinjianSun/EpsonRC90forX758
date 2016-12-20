@@ -2439,4 +2439,63 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > GO ChangeHandL /R
 > outw SpositionY,10000
 > GO ChangeHandL /R
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> GO ChangeHandL /R
+> outw SpositionY,10000
+> outw SpositionY,60000
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> PASS NCuiP3;PASS NCuiP2;PASS NCuiP1;GO ChangeHandL /R
+> go ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO  ChangeHandL /R
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO  ChangeHandL /r
+> outw SpositionY,10000
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;GO A_1
+> PASS A1PASS1;GO ChangeHandL /R
+> outw SpositionY,8950
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,36000
+> PASS A2PASS1;GO A_2
+> PASS A2PASS1;GO ChangeHandL /R
+> outw SpositionY,10000
+> GO ChangeHandL /R
+> outw SpositionY,8950
+> PASS A1PASS1;go A_1
+> pass A1PASS1;go ChangeHandL /r
 > 

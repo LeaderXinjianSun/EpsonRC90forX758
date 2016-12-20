@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/19 16:06:48:190,DS:0000030714,CS:29801,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/20 03:47:27:619,DS:0000030717,CS:37047,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -972,10 +972,10 @@ Point38 {
 	sLabel="NCui2"
 	sDescription=""
 	nUndefined=0
-	rX=-379.287
-	rY=-279.469
+	rX=-365.116
+	rY=-264.705
 	rZ=-125.723
-	rU=101.077
+	rU=101.075
 	rV=0
 	rW=0
 	rR=0
@@ -1206,10 +1206,10 @@ Point47 {
 	sLabel="PCui4"
 	sDescription="PASSÅÌÇøÓx"
 	nUndefined=0
-	rX=146.73
-	rY=-227.864
-	rZ=-68.832
-	rU=99.566
+	rX=120.896
+	rY=-236.082
+	rZ=-111.179
+	rU=101.073
 	rV=0
 	rW=0
 	rR=0
