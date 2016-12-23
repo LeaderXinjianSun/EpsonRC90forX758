@@ -45,6 +45,8 @@ Global Integer PassStepNum
 '主函数
 Global Integer LoopTestFlexIndex
 
+Global Boolean IsLoopTestMode
+
 Function main
 	Integer i
 	Integer fillNum, selectNum
@@ -62,6 +64,7 @@ Function main
 	Xqt AllMonitor, NoEmgAbort
 	Call InitAction
 	Wait 0.2
+	IsLoopTestMode = False
 	Print "请按复位按钮，开始复位"
 	MsgSend$ = "请按复位按钮，开始复位"
 	Wait Sw(ResetButton) = 1
@@ -141,15 +144,16 @@ Function main1
 	Wait 0.2
 	Print "单穴反复测试模式"
 	MsgSend$ = "单穴反复测试模式"
+	IsLoopTestMode = True
 	Wait 0.2
-	Print "请按复位按钮，开始复位"
-	MsgSend$ = "请按复位按钮，开始复位"
-	Wait Sw(ResetButton) = 1
+'	Print "请按复位按钮，开始复位"
+'	MsgSend$ = "请按复位按钮，开始复位"
+'	Wait Sw(ResetButton) = 1
 	Call HomeReturnAction
 	Wait 0.2
-	Print "请按开始按钮，开始运行"
-	MsgSend$ = "请按开始按钮，开始运行"
-	Wait Sw(StartButton) = 1
+'	Print "请按开始按钮，开始运行"
+'	MsgSend$ = "请按开始按钮，开始运行"
+'	Wait Sw(StartButton) = 1
 	PickHave(0) = False
 		
 	If LoopTestFlexIndex > 0 And LoopTestFlexIndex < 4 Then
@@ -160,7 +164,9 @@ Function main1
 	
 	Tester_Fill(i) = False
 	Tester_Testing(i) = False
-	
+	Print "单穴测试模式，开始"
+	MsgSend$ = "单穴测试模式，开始"
+	Pause
 	Do
 		'取
 		Call TesterOperate001(i)
@@ -563,7 +569,8 @@ Function TesterOperate001(i As Integer)
 	If PickHave(i) = False Then
 		If Tester_Fill(i) = False Then
 		'从上料盘取料	
-			scanflag = ScanBarcodeOpetate(0, "A")
+'			scanflag = ScanBarcodeOpetate(0, "A")
+			scanflag = True
 			If scanflag = True Then
 				TargetPosition_Num = 1
 				If Hand = 1 Then
@@ -652,18 +659,22 @@ TesterOperate001SuckSub:
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
+			Off AL_Suck
 		Case 1
 			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
+			Off AR_Suck
 		Case 2
 			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
+			Off BL_Suck
 		Case 3
 			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
+			Off BR_Suck
 	Send
 	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
@@ -730,6 +741,7 @@ TesterOperate001SuckSub:
 		Print "测试机" + Str$(i + 1) + "，测试完成"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，测试完成"
 		Pause
+		MsgSend$ = "单穴测试，一次完成"
 	EndIf
 Return
 Fend
@@ -856,7 +868,7 @@ TesterOperate002ReleaseSub:
 			rearnum = 15
 	Send
 	Go FinalPosition1
-	Tester_Testing(i) = True
+'	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 Return
 Fend
@@ -2835,7 +2847,10 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				RoutePassP2 = A1PASS1
 				PassStepNum = PassStepNum + 1
 				'去A1，若上料未准备好，则等待
-				Wait Sw(FeedReady) = 1 And FeedReadySigleDown = 1
+				If IsLoopTestMode = False Then
+					Wait Sw(FeedReady) = 1 And FeedReadySigleDown = 1
+				EndIf
+				
 				
 				Pass A1PASS1
 				Go FinalPosition

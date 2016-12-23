@@ -2614,4 +2614,20 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
  0
 > print Int(Rnd(4))
  3
+> go ChangeHandL /r
+> go APickFeedR1
+> go ChangeHandL /r
+> outw SpositionY,10000
+> go APickFeedR1
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go APickFeedR1
+> go APickFeedR1
+> GO ChangeHandL /R
+> PASS A1PASS1;GO A_1
+> GO A1PASS1
+> outw SpositionY,8950
+> GO A_1
+> GO A1PASS1
+> SPEED 50
+> GO ChangeHandL /R
 > 

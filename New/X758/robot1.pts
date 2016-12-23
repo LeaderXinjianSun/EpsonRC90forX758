@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/20 04:45:36:311,DS:0000030717,CS:38836,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2016/12/23 07:34:37:592,DS:0000030718,CS:45487,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -504,10 +504,10 @@ Point20 {
 	sLabel="A_1"
 	sDescription="ึฮพ฿ัจ"
 	nUndefined=0
-	rX=313.928
+	rX=314.228
 	rY=381.978
-	rZ=-120.004
-	rU=189.29
+	rZ=-113.904
+	rU=189.289
 	rV=0
 	rW=0
 	rR=0
