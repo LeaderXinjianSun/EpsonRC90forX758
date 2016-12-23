@@ -2498,4 +2498,120 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > outw SpositionY,8950
 > PASS A1PASS1;go A_1
 > pass A1PASS1;go ChangeHandL /r
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 0
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 0
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 0
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 0
+> print Int(Rnd(4))
+ 1
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 2
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(3))
+ 1
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 1
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 1
+> print Int(Rnd(4))
+ 1
+> print Int(Rnd(4))
+ 3
+> print Int(Rnd(4))
+ 3
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(30)/10)
+ 3
+> print Int(Rnd(30)/10)
+ 0
+> print Int(Rnd(30)/10)
+ 0
+> print Int(Rnd(30)/10)
+ 1
+> print Int(Rnd(30)/10)
+ 0
+> print Int(Rnd(30)/10)
+ 0
+> print  rnd(30)
+ 27.669067382813
+> print  rnd(30)
+ 6.5249633789063
+> print  rnd(30)
+ 1.8878173828125
+> print  rnd(30)
+ 28.740234375
+> print int(29.9)
+ 29
+> print int(3.9)
+ 3
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 1
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 3
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 3
+> print Int(Rnd(4))
+ 2
+> print Int(Rnd(4))
+ 3
+> print Int(Rnd(4))
+ 0
+> print Int(Rnd(4))
+ 3
 > 
