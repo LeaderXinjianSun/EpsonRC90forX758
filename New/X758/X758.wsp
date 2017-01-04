@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/01/04 01:48:36:162,DS:0000002056,CS:00887,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="Main.prg"
+ENVT0100,LM:2017/01/04 05:19:00:730,DS:0000002061,CS:44641,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="机器人管理芢x"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=37
 		nTop=140

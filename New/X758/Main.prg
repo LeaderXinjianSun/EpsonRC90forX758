@@ -3217,7 +3217,7 @@ ChangeHandAction:
 			SpBox = InW(SPositionX)
 			OutW SpositionY, CX(P504)
 			Wait InW(SPositionX) <> SpBox
-			Wait 0.5
+'			Wait 0.5
 		EndIf
 		If Hand(Here) = 1 Then
 			Jump ChangeHandL /L

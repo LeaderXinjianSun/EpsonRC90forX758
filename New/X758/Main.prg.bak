@@ -1550,11 +1550,11 @@ TesterOperate1SuckSub:
 '	Loop
 '	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
-	PickHave(0) = PickAction(0)
+	PickHave(1) = PickAction(1)
 
 	Tester_Fill(i) = False;
 	
-	If PickHave(0) = True Then
+	If PickHave(1) = True Then
 		If Tester_Pass(i) <> 0 Then
 'Pick_P_Msg
 '-1:New
@@ -1564,12 +1564,12 @@ TesterOperate1SuckSub:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4					
-			Pick_P_Msg(0) = 0
+			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
 		Else
 			
 
-			Pick_P_Msg(0) = 1
+			Pick_P_Msg(1) = 1
 	
 			'ÅÐ¶Ï³¬Ê±
 			If Tester_Timeout(i) <> 0 Then

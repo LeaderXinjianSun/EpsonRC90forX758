@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/12/23 07:34:37:592,DS:0000030718,CS:45487,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/04 03:13:09:942,DS:0000030656,CS:02308,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -194,7 +194,7 @@ Point8 {
 	nUndefined=0
 	rX=-83.391
 	rY=383.755
-	rZ=-118.917
+	rZ=-141
 	rU=189.174
 	rV=0
 	rW=0
@@ -220,7 +220,7 @@ Point9 {
 	nUndefined=0
 	rX=-14.691
 	rY=379.304
-	rZ=-118.2
+	rZ=-141
 	rU=190.269
 	rV=0
 	rW=0
@@ -246,7 +246,7 @@ Point10 {
 	nUndefined=0
 	rX=52.65
 	rY=380.332
-	rZ=-117.584
+	rZ=-141
 	rU=189.818
 	rV=0
 	rW=0
@@ -272,7 +272,7 @@ Point11 {
 	nUndefined=0
 	rX=-83.528
 	rY=381.594
-	rZ=-118.897
+	rZ=-141
 	rU=189.715
 	rV=0
 	rW=0
@@ -298,7 +298,7 @@ Point12 {
 	nUndefined=0
 	rX=-14.991
 	rY=379.304
-	rZ=-118.2
+	rZ=-141
 	rU=190.268
 	rV=0
 	rW=0
@@ -324,7 +324,7 @@ Point13 {
 	nUndefined=0
 	rX=52.35
 	rY=380.732
-	rZ=-119.094
+	rZ=-141
 	rU=189.815
 	rV=0
 	rW=0
@@ -350,7 +350,7 @@ Point14 {
 	nUndefined=0
 	rX=-85.419
 	rY=391.555
-	rZ=-123.412
+	rZ=-141
 	rU=189.675
 	rV=0
 	rW=0
@@ -376,7 +376,7 @@ Point15 {
 	nUndefined=0
 	rX=-16.094
 	rY=391.074
-	rZ=-119.403
+	rZ=-141
 	rU=189.704
 	rV=0
 	rW=0
@@ -402,7 +402,7 @@ Point16 {
 	nUndefined=0
 	rX=53.408
 	rY=391.533
-	rZ=-118.064
+	rZ=-141
 	rU=189.545
 	rV=0
 	rW=0
@@ -428,7 +428,7 @@ Point17 {
 	nUndefined=0
 	rX=-85.387
 	rY=390.101
-	rZ=-123.424
+	rZ=-141
 	rU=190.088
 	rV=0
 	rW=0
@@ -454,7 +454,7 @@ Point18 {
 	nUndefined=0
 	rX=-15.602
 	rY=391.015
-	rZ=-119.565
+	rZ=-141
 	rU=189.748
 	rV=0
 	rW=0
@@ -480,7 +480,7 @@ Point19 {
 	nUndefined=0
 	rX=53.778
 	rY=388.662
-	rZ=-119.048
+	rZ=-141
 	rU=190.494
 	rV=0
 	rW=0
@@ -506,7 +506,7 @@ Point20 {
 	nUndefined=0
 	rX=314.228
 	rY=381.978
-	rZ=-113.904
+	rZ=-141
 	rU=189.289
 	rV=0
 	rW=0
@@ -532,7 +532,7 @@ Point21 {
 	nUndefined=0
 	rX=315.236
 	rY=377.181
-	rZ=-121.116
+	rZ=-141
 	rU=189.527
 	rV=0
 	rW=0
@@ -558,7 +558,7 @@ Point22 {
 	nUndefined=0
 	rX=310.323
 	rY=-102.025
-	rZ=-87.091
+	rZ=-141
 	rU=193.35
 	rV=0
 	rW=0
@@ -584,7 +584,7 @@ Point23 {
 	nUndefined=0
 	rX=306.856
 	rY=-90.586
-	rZ=-87.347
+	rZ=-141
 	rU=189.714
 	rV=0
 	rW=0
@@ -1442,8 +1442,8 @@ Point56 {
 	nUndefined=0
 	rX=127.804
 	rY=309.967
-	rZ=-101.752
-	rU=214.745
+	rZ=-141
+	rU=203.14
 	rV=0
 	rW=0
 	rR=0
@@ -1466,10 +1466,10 @@ Point57 {
 	sLabel="A2PASS1"
 	sDescription="A2¹¤Î»¹x"
 	nUndefined=0
-	rX=84.681
+	rX=84.682
 	rY=284.36
-	rZ=-110.707
-	rU=209.246
+	rZ=-132.036
+	rU=198.165
 	rV=0
 	rW=0
 	rR=0
@@ -1934,10 +1934,10 @@ Point75 {
 	sLabel="NCuiP2"
 	sDescription=""
 	nUndefined=0
-	rX=14.705
+	rX=11.594
 	rY=294.459
 	rZ=-69.899
-	rU=61.51
+	rU=52.552
 	rV=0
 	rW=0
 	rR=0
