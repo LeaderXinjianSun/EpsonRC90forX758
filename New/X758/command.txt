@@ -2820,4 +2820,69 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > PASS NCuiP3;PASS NCuiP2;PASS NCuiP1;GO ChangeHandL /R
 > OUTW SpositionY,8950
 > PASS A1PASS1
+> go ChangeHandL /r
+> outw SpositionY,50000
+> pass PCui1P1;pass PCui1P2;pass PCui1P3;pass PCui1P4;
+> go PCui2_1
+> outw SpositionY,55000
+> go PCui1_1
+> outw SpositionY,60000
+> go PCui1_2
+> go PCui1_3
+> go PCui1_4
+!!错误: 2513, 指定的点标签未定义。
+> go PCui1_1
+> speed 30
+> go PCui1_3
+> go PCui1_1
+> outw SpositionY,50000
+> go PCui2_1
+> pass PCui2P4;pass PCui2P3;pass PCui2P2;pass PCui2P1;
+> go ChangeHandL /r
+> speed 50
+> go ChangeHandL /l
+> pass PCUI4P1;pass PCUI4P2;pass PCUI4P3;
+> GO PCui4
+> outw SpositionY,60000
+> go pcui3_1
+> pass PCUI3P3;pass PCUI3P2;pass PCUI3P1;
+> go ChangeHandL 
+> outw SpositionY,10000
+> go ScanPosition1
+> go APickFeed1
+> go APickFeed2
+> go ChangeHandL 
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass A1PASS1;go A_1
+> go B_1
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> go A_1
+> go B_1
+> pass a1pass1;go ChangeHandL /r
+> pass a1pass1;go ChangeHandL /r
+> outw SpositionY,36000
+> pass A2PASS1;go B_2
+> go A_2
+> go a_2;PASS A2PASS1;GO ChangeHandL /R
+!!错误: 5041, 低功率状态下电动机转矩输出失败。检查电源电缆连接、机器人、制动器、驱动器或电动机。, Robot 1, Joint 4
+> GO A2PASS1
+> GO A_2
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> GO A_2
+> GO B_1
+> GO ChangeHandL /R
+> PASS A2PASS1;GO A_2
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> GO A2PASS1
+> GO ChangeHandL /R
+> PASS A2PASS1;GO A_2
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> GO A2PASS1
+> GO ChangeHandL /R
+> PASS A2PASS1;PASS B_2;GO A_2
+> PASS B_2;PASS A2PASS1;GO ChangeHandL /R
+> OUTW SpositionY,8950
+> PASS A1PASS1;GO A_1
+> pass A1PASS1;go ChangeHandL /r
 > 

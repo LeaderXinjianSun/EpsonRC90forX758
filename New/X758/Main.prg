@@ -47,6 +47,8 @@ Global Integer LoopTestFlexIndex
 
 Global Boolean IsLoopTestMode
 
+Global Boolean NeedAnotherMove(4)
+
 Function main
 	Integer i
 	Integer fillNum, selectNum
@@ -254,11 +256,12 @@ Function InitAction
 	PickHave(0) = False
 
 	'PASS Cui 阵列
-	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 2, 3
-	Pallet 2, PCui2_1, PCui2_2, PCui2_1, 2, 1
-	Pallet 3, PCui3_1, PCui3_1, PCui3_2, 1, 3
+	Pallet 1, PCui1_1, PCui1_2, PCui1_3, 2, 2
+	Pallet 2, PCui2_1, PCui2_2, PCui2_3, 2, 2
+	Pallet 3, PCui3_1, PCui3_1, PCui3_2, 1, 2
+	Pallet 4, PCui4_1, PCui4_1, PCui4_2, 1, 2
 	'NG Cui 阵列
-	Pallet 4, NCui1, NCui2, NCui3, 2, 10
+	Pallet 5, NCui1, NCui2, NCui3, 2, 8
 	PassStepNum = 0
 	
 	For i = 0 To 5
@@ -1531,6 +1534,7 @@ TesterOperate1SuckSub:
 			TargetPosition_Num = 3
 			FinalPosition1 = B_2
 			rearnum = 5
+			
 		Case 2
 			TargetPosition_Num = 4
 			FinalPosition1 = B_3
@@ -1657,6 +1661,7 @@ TesterOperate1ReleaseSub:
 		Case 1
 			TargetPosition_Num = 3
 			FinalPosition1 = A_2
+			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
@@ -2767,18 +2772,18 @@ UnloadOperate_Pass:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
-	If PassTrayPalletNum <= 6 Then
+	If PassTrayPalletNum <= 4 Then
 		TargetPosition_Num = 6
 		FinalPosition = Pallet(1, PassTrayPalletNum)
 	ElseIf PassTrayPalletNum <= 8 Then
 		TargetPosition_Num = 7
-		FinalPosition = Pallet(2, PassTrayPalletNum - 6)
-	ElseIf PassTrayPalletNum <= 11 Then
+		FinalPosition = Pallet(2, PassTrayPalletNum - 4)
+	ElseIf PassTrayPalletNum <= 10 Then
 		TargetPosition_Num = 8
 		FinalPosition = Pallet(3, PassTrayPalletNum - 8)
 	Else
 		TargetPosition_Num = 9
-		FinalPosition = PCui4
+		FinalPosition = Pallet(4, PassTrayPalletNum - 10)
 	EndIf
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -2806,13 +2811,13 @@ UnloadOperate_Ng:
 	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
 	TargetPosition_Num = 10
 
-	FinalPosition = Pallet(4, NgTrayPalletNum)
+	FinalPosition = Pallet(5, NgTrayPalletNum)
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 19 Then
+	If NgTrayPalletNum > 15 Then
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
@@ -3012,6 +3017,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				PassStepNum = PassStepNum + 1
 				
 				Pass A2PASS1
+				If NeedAnotherMove(1) Then
+					RoutePassP2 = B_2
+					PassStepNum = PassStepNum + 1
+					Pass B_2
+					NeedAnotherMove(1) = False
+				EndIf
 				Go FinalPosition
 			Case 4
 				TargetHand = 2
