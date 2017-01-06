@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/05 16:10:20:819,DS:0000031307,CS:20756,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/06 01:27:27:734,DS:0000031311,CS:23811,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -608,10 +608,10 @@ Point24 {
 	sLabel="B_1"
 	sDescription=""
 	nUndefined=0
-	rX=276.573
-	rY=365.398
-	rZ=-140.849
-	rU=189.746
+	rX=275.064
+	rY=359.577
+	rZ=-141.193
+	rU=191.012
 	rV=0
 	rW=0
 	rR=0
@@ -1494,7 +1494,7 @@ Point58 {
 	nUndefined=0
 	rX=127.804
 	rY=309.967
-	rZ=-141
+	rZ=-116.069
 	rU=203.14
 	rV=0
 	rW=0

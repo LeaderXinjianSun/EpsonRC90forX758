@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/01/05 16:32:09:968,DS:0000002054,CS:53360,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="ÃüÁ\x"
+ENVT0100,LM:2017/01/06 03:34:18:495,DS:0000002056,CS:01653,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=37
 		nTop=140
@@ -36,10 +36,10 @@ CmdWindow {
 		nWidth=516
 		nHeight=366
 	}
-	nWinState=2
+	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=44
 		nTop=70
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=848
-		nTop=500
+		nLeft=604
+		nTop=142
 		nWidth=478
 		nHeight=327
 	}
@@ -79,8 +79,8 @@ Simulator {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=743
-		nTop=384
+		nLeft=742
+		nTop=392
 		nWidth=478
 		nHeight=262
 	}

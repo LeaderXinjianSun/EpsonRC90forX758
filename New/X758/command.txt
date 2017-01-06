@@ -2885,4 +2885,26 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > OUTW SpositionY,8950
 > PASS A1PASS1;GO A_1
 > pass A1PASS1;go ChangeHandL /r
+> go ChangeHandL /r
+> go ShikePassP1
+> outw SpositionY,60000
+> go shikepassp2
+> go shikep1
+> go ShikeP4
+> pass ShikePassP2;pass ShikePassP1;go ChangeHandL /r
+> outw SpositionY,10000
+> go ScanPosition1
+> go ChangeHandL /r
+> outw SpositionY ,10000
+> speed 50
+> go ChangeHandL /r
+> pass A1PASS1;go ChangeHandL /r
+> GO A1PASS1
+> go ChangeHandL /r
+> Out 0, 0, Forced
+> Out 1, 0, Forced
+> outw SpositionY,10000
+> go  APickFeedR1
+> go ChangeHandL /r
+> go APickFeedR1
 > 

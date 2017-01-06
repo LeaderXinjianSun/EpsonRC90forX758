@@ -48,6 +48,7 @@ Global Integer LoopTestFlexIndex
 Global Boolean IsLoopTestMode
 
 Global Boolean NeedAnotherMove(4)
+Global Boolean Position2NeedNeedAnotherMove
 
 Function main
 	Integer i
@@ -267,6 +268,7 @@ Function InitAction
 	For i = 0 To 5
 		PreFeedFill(i) = True
 	Next
+	FeedPanelNum = 0
 Fend
 Function ClearAction
 	Integer i
@@ -422,6 +424,7 @@ PickFeedOperatelabel1:
 				
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 				pickfeedflag = PickAction(0)
+				
 				FeedFill(FeedPanelNum) = False
 				PickHave(0) = pickfeedflag
 				If pickfeedflag Then
@@ -487,7 +490,8 @@ PickFeedOperatelabel1:
 				EndIf
 			EndIf
 		Else
-			
+			FeedPanelNum = FeedPanelNum + 1;
+			Call IsFeedPanelEmpty(True)
 		EndIf
 
 		
@@ -1373,6 +1377,7 @@ Function TesterOperate1
 						TargetPosition_Num = 2
 						'A_1，依据TesterOperate1更改
 						FinalPosition1 = A1PASS1
+						Position2NeedNeedAnotherMove = True
 					Case 1
 						TargetPosition_Num = 3
 						FinalPosition1 = A2PASS1
@@ -1454,6 +1459,7 @@ TesterOperate1_lable2:
 							TargetPosition_Num = 2
 							'A_1，依据TesterOperate1更改
 							FinalPosition1 = A1PASS1
+							Position2NeedNeedAnotherMove = True
 						Case 1
 							TargetPosition_Num = 3
 							FinalPosition1 = A2PASS1
@@ -1502,6 +1508,7 @@ TesterOperate1SuckSub:
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
+			
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
@@ -1519,7 +1526,9 @@ TesterOperate1SuckSub:
 	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-
+		If i = 0 Then
+			Position2NeedNeedAnotherMove = True
+		EndIf
 		FinalPosition = FinalPosition1
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
@@ -1529,6 +1538,7 @@ TesterOperate1SuckSub:
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = B_1
+			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
@@ -1597,24 +1607,27 @@ TesterOperate1SuckSub:
 	Else
 		Select i
 			Case 0
-				TargetPosition_Num = 2
+'				TargetPosition_Num = 2
 				'A_1，依据TesterOperate1更改
 				FinalPosition1 = A1PASS1
+				Position2NeedNeedAnotherMove = True
 				rearnum = 4
 			Case 1
-				TargetPosition_Num = 3
+'				TargetPosition_Num = 3
 				FinalPosition1 = A2PASS1
 				rearnum = 5
 			Case 2
-				TargetPosition_Num = 4
+'				TargetPosition_Num = 4
 				FinalPosition1 = A3PASS3
 				rearnum = 14
 			Case 3
-				TargetPosition_Num = 5
+'				TargetPosition_Num = 5
 				FinalPosition1 = A4PASS3
 				rearnum = 15
 		Send
-		Go FinalPosition1
+'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
@@ -1629,6 +1642,7 @@ TesterOperate1ReleaseSub:
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
+			
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
@@ -1647,7 +1661,9 @@ TesterOperate1ReleaseSub:
 	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-
+		If i = 0 Then
+			Position2NeedNeedAnotherMove = True
+		EndIf
 		FinalPosition = FinalPosition1
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
@@ -1657,6 +1673,7 @@ TesterOperate1ReleaseSub:
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A_1
+			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
@@ -1680,24 +1697,25 @@ TesterOperate1ReleaseSub:
 	'退出来，发送启动命令
 	Select i
 		Case 0
-			TargetPosition_Num = 2
+'			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
 		Case 1
-			TargetPosition_Num = 3
+'			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
 		Case 2
-			TargetPosition_Num = 4
+'			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
 		Case 3
-			TargetPosition_Num = 5
+'			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
 	Send
-	Go FinalPosition1
+	TargetPosition_Num = -2
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 Return
@@ -2859,7 +2877,11 @@ Function ScanBarcodeOpetate(num As Integer, picksting$ As String)
 		Wait 0.2
 		Print "等待扫码结果 " + Str$(Tmr(7))
 	Loop
-
+	If Hand = 1 Then
+		Go ChangeHandL /R
+	Else
+		Go ChangeHandL /L
+	EndIf
 	If ScanResult <> 1 Then
 		ScanBarcodeOpetate = False
 	Else
@@ -2949,7 +2971,7 @@ Function HomeReturnAction
 	
 	
 	Power High
-	Speed 80
+	Speed 90
 	Accel 90, 90
 '	Speed 100, 100, 90
 '	SpeedS 100
@@ -2975,16 +2997,26 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	EndIf
 	
 	If firstPosition = secendPosition Then
+		If Position2NeedNeedAnotherMove = True And secendPosition = 2 Then
+
+			Pass A1PASS2
+
+			Pass B_1
+			Position2NeedNeedAnotherMove = False
+		EndIf
 		Go FinalPosition
+
 	Else
 		PassStepNum = 0
 		Select secendPosition
+			Case -2
+'				Go FinalPosition
 			Case 1
 				TargetHand = Hand
 				GoSub ChangeHandAction
 				OutW SpositionY, CX(P501)
 				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
-				Jump FinalPosition
+				Go FinalPosition
 			Case 2
 				TargetHand = 1
 				GoSub ChangeHandAction
@@ -3003,7 +3035,17 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				
 				Pass A1PASS1
+				If NeedAnotherMove(0) Then
+					RoutePassP3 = A1PASS2
+					PassStepNum = PassStepNum + 1
+					Pass A1PASS2
+					RoutePassP4 = B_1
+					PassStepNum = PassStepNum + 1
+					Pass B_1
+					NeedAnotherMove(0) = False
+				EndIf
 				Go FinalPosition
+				Position2NeedNeedAnotherMove = False
 			Case 3
 				TargetHand = 1
 				GoSub ChangeHandAction
@@ -3018,7 +3060,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Pass A2PASS1
 				If NeedAnotherMove(1) Then
-					RoutePassP2 = B_2
+					RoutePassP3 = B_2
 					PassStepNum = PassStepNum + 1
 					Pass B_2
 					NeedAnotherMove(1) = False
@@ -3195,8 +3237,8 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 			Case 11
 				TargetHand = 1
 				GoSub ChangeHandAction
-				OutW SpositionY, CX(P503)
-				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
+				OutW SpositionY, CX(P505)
+				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -3279,7 +3321,7 @@ Function PickAction(num As Integer) As Boolean
 	Off valvenum
 	Wait 0.5
 	If Sw(vacuumnum) = 0 Then
-		PickAction = False
+		PickAction = True
 	Else
 		PickAction = True
 	EndIf
