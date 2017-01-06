@@ -615,13 +615,16 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 '	Integer i, j
 	If FeedPanelNum > 5 Then
 		'аоел©уак
-		MemOn 99
-		Sense MemSw(99) = 1
-		If Hand = 1 Then
-			Jump ChangeHandL /R Sense
-		Else
-			Jump ChangeHandL /L Sense
+		If CurPosition_Num = 1 Then
+			MemOn 99
+			Sense MemSw(99) = 1
+			If Hand = 1 Then
+				Jump ChangeHandL /R Sense
+			Else
+				Jump ChangeHandL /L Sense
+			EndIf
 		EndIf
+
 		
 		Off RollValve
 		If needwait Then
@@ -2971,8 +2974,8 @@ Function HomeReturnAction
 	
 	
 	Power High
-	Speed 90
-	Accel 90, 90
+	Speed 40
+	Accel 50, 50
 '	Speed 100, 100, 90
 '	SpeedS 100
 '	Accel 100, 90, 100, 100, 100, 90

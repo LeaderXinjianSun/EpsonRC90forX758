@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/01/06 03:34:18:495,DS:0000002056,CS:01653,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="Main.prg"
+ENVT0100,LM:2017/01/06 09:23:17:856,DS:0000002060,CS:37428,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="机器人管理芢x"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=37
 		nTop=140
@@ -59,10 +59,10 @@ IOLabelEditor {
 	nWinState=0
 }
 IOMonitor {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=604
-		nTop=142
+		nLeft=720
+		nTop=410
 		nWidth=478
 		nHeight=327
 	}

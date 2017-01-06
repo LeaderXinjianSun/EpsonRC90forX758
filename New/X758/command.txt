@@ -2907,4 +2907,21 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > go  APickFeedR1
 > go ChangeHandL /r
 > go APickFeedR1
+> go ChangeHandL /r
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> go ChangeHandL /r
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go ChangeHandL /r
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> go ChangeHandL /r
+> go APickFeedR1
+> go ChangeHandL /r
+> go APickFeedR1
+> go ChangeHandL /r
+> slock 1,2,3,4
+> go ChangeHandL /r
+> go APickFeedR1
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go APickFeedR1
+> go APickFeedR1
 > 
