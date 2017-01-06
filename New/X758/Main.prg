@@ -49,6 +49,7 @@ Global Boolean IsLoopTestMode
 
 Global Boolean NeedAnotherMove(4)
 Global Boolean Position2NeedNeedAnotherMove
+Global Boolean isXqtting
 
 Function main
 	Integer i
@@ -268,7 +269,11 @@ Function InitAction
 	For i = 0 To 5
 		PreFeedFill(i) = True
 	Next
-	FeedPanelNum = 0
+	For i = 0 To 3
+		NeedAnotherMove(i) = False
+	Next
+	
+	Position2NeedNeedAnotherMove = False
 Fend
 Function ClearAction
 	Integer i
@@ -296,6 +301,41 @@ Function ClearAction
 	FeedPanelNum = 0
 	
 Fend
+Function XQTAction(num As Integer)
+'1:上料命令
+'2:下料命令
+	isXqtting = True
+	Select num
+		Case 1
+			Off RollValve, Forced
+			Off FeedEmpty, Forced
+			Wait 0.5
+			On FeedEmpty, Forced
+			FeedReadySigleDown = 0
+			PassTrayPalletNum = 1
+			Wait 0.5
+			Off FeedEmpty, Forced
+			FeedPanelNum = 0
+		Case 2
+			Off PassTrayFull, Forced
+			Wait 0.5
+			On PassTrayFull, Forced
+			PassTraySigleDown = 0
+			PassTrayPalletNum = 1
+			Wait 0.5
+			Off PassTrayFull, Forced
+		Case 3
+			Off SHome, Forced
+			Wait 0.5
+			On SHome, Forced
+			INP_HomeSigleDown = 0
+
+			Wait 0.5
+			Off SHome, Forced
+			
+	Send
+	isXqtting = False
+Fend
 Function AllMonitor
 	
 	Integer FeedReady_, PassTrayRdy_, INP_Home_, i, NgTrayRdy_
@@ -314,7 +354,7 @@ Function AllMonitor
 				Next
 				
 				FeedReadySigleDown = 1
-			
+				Off FeedEmpty, Forced
 				
 			Else
 				FeedReadySigleDown = 1
@@ -325,7 +365,9 @@ Function AllMonitor
 		If PassTrayRdy_ <> Sw(PassTrayRdy) Then
 			PassTrayRdy_ = Sw(PassTrayRdy)
 			If Sw(PassTrayRdy) = 1 Then
+				PassTrayPalletNum = 1
 				PassTraySigleDown = 1
+				Off PassTrayFull, Forced
 			Else
 				PassTrayPalletNum = 1
 				PassTraySigleDown = 1
@@ -337,6 +379,7 @@ Function AllMonitor
 			INP_Home_ = Sw(INP_Home)
 			If Sw(INP_Home_) = 1 Then
 				INP_HomeSigleDown = 1
+				Off SHome, Forced
 			Else
 				INP_HomeSigleDown = 1
 				Off SHome, Forced
@@ -346,7 +389,9 @@ Function AllMonitor
 		If NgTrayRdy_ <> Sw(NgTrayRdy) Then
 			NgTrayRdy_ = Sw(NgTrayRdy)
 			If Sw(NgTrayRdy) = 1 Then
+				NgTrayPalletNum = 1
 				NgTraySigleDown = 1
+				Off NgTrayFull, Forced
 			Else
 				NgTrayPalletNum = 1
 				NgTraySigleDown = 1
@@ -402,13 +447,18 @@ PickFeedOperatelabel1:
 		EndIf
 		
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Print "上料盘，未准备好"
+		MsgSend$ = "上料盘，未准备好"
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
 			If Discharge <> 0 Then
                 Exit Do
 			EndIf
 		Loop
-		
+		If Discharge = 0 Then
+			Print "上料盘，准备好"
+			MsgSend$ = "上料盘，准备好"
+		EndIf
 	EndIf
 	
 	If Discharge = 0 Then
@@ -484,7 +534,7 @@ PickFeedOperatelabel1:
 				EndIf
 				
 				FeedPanelNum = FeedPanelNum + 1
-				fullflag = IsFeedPanelEmpty(True)
+				fullflag = IsFeedPanelEmpty(False)
 				If fullflag Then
 					GoTo PickFeedOperatelabel1
 				EndIf
@@ -3324,7 +3374,7 @@ Function PickAction(num As Integer) As Boolean
 	Off valvenum
 	Wait 0.5
 	If Sw(vacuumnum) = 0 Then
-		PickAction = True
+		PickAction = False
 	Else
 		PickAction = True
 	EndIf
@@ -3536,6 +3586,18 @@ Function TcpIpCmdRev
 						Next
 				Case "Discharge"
 					Discharge = 1
+				Case "XQTAction"
+					If isXqtting = False Then
+						Select CmdRevStr$(1)
+							Case "1"
+								Xqt XQTAction(1), NoEmgAbort
+							Case "2"
+								Xqt XQTAction(2), NoEmgAbort
+							Case "3"
+								Xqt XQTAction(3), NoEmgAbort
+						Send
+					EndIf
+
 			Send
 			CmdRev$ = ""
 		Else
