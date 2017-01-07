@@ -2958,4 +2958,22 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > OUTW SpositionY,60000
 > GO PCui3_1
 > PASS PCui3P3;PASS PCui3P2;PASS PCui3P1;GO ChangeHandL /L
+> outw SpositionY,36000
+> pass A2PASS1;pass B_2;go B_2
+> pass B_2;pass A2PASS1;go ChangeHandL /r
+> pass A2PASS1;pass B_2;go B_2
+> pass A2PASS1;go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,10000
+> go apickfeedr1
+> 
+> outw SpositionY,36000
+> go A2PASS1
+> go B_2
+> GO A_2
+> PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL /R
+> PASS A2PASS1;PASS A2PASS2;PASS B_2;GO A_2
+> PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL /R
+> OUTW SpositionY,10000
+> SFREE 1,2,3,4
 > 

@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/06 14:09:49:066,DS:0000002056,CS:01915,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/07 09:13:18:660,DS:0000002056,CS:01663,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=761
-		nTop=138
+		nLeft=693
+		nTop=112
 		nWidth=478
 		nHeight=327
 	}
@@ -79,8 +79,8 @@ Simulator {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=742
-		nTop=392
+		nLeft=538
+		nTop=226
 		nWidth=478
 		nHeight=262
 	}

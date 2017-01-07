@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/06 12:35:46:154,DS:0000031660,CS:47562,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/06 12:46:16:367,DS:0000031661,CS:25634,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -1206,10 +1206,10 @@ Point47 {
 	sLabel="PCui4_1"
 	sDescription="PASSÅÌÇøÓx"
 	nUndefined=0
-	rX=110.087
+	rX=107.188
 	rY=-314.372
-	rZ=-132.535
-	rU=99.58
+	rZ=-128.674
+	rU=99.579
 	rV=0
 	rW=0
 	rR=0
@@ -1232,10 +1232,10 @@ Point48 {
 	sLabel="PCui4_2"
 	sDescription=""
 	nUndefined=0
-	rX=110.085
-	rY=-246.393
-	rZ=-132.535
-	rU=99.582
+	rX=105.784
+	rY=-248.186
+	rZ=-128.674
+	rU=99.561
 	rV=0
 	rW=0
 	rR=0
@@ -1258,10 +1258,10 @@ Point49 {
 	sLabel="PCui3_1"
 	sDescription="PASSÅÌÇøÓx"
 	nUndefined=0
-	rX=111.034
-	rY=-344.397
-	rZ=-132.535
-	rU=99.578
+	rX=106.835
+	rY=-349.197
+	rZ=-125.535
+	rU=99.577
 	rV=0
 	rW=0
 	rR=0
@@ -1284,10 +1284,10 @@ Point50 {
 	sLabel="PCui3_2"
 	sDescription=""
 	nUndefined=0
-	rX=111.034
-	rY=-278.842
-	rZ=-132.535
-	rU=99.576
+	rX=106.933
+	rY=-281.442
+	rZ=-125.724
+	rU=99.575
 	rV=0
 	rW=0
 	rR=0

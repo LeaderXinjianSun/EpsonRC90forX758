@@ -474,6 +474,10 @@ PickFeedOperatelabel1:
 				
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 				pickfeedflag = PickAction(0)
+				If pickfeedflag = False Then
+					Wait 1
+					pickfeedflag = PickAction(0)
+				EndIf
 				
 				FeedFill(FeedPanelNum) = False
 				PickHave(0) = pickfeedflag
@@ -525,16 +529,18 @@ PickFeedOperatelabel1:
 					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 					ReleaseAction(0, -1)
 					PickHave(0) = False
-					
+					FeedPanelNum = FeedPanelNum + 1
+					fullflag = IsFeedPanelEmpty(False)
 				Else
 					Print "上料盘，吸取失败"
 					MsgSend$ = "上料盘，吸取失败"
 					Go Here +Z(20)
 					Pause
+					FeedPanelNum = FeedPanelNum + 1
+					fullflag = IsFeedPanelEmpty(True)
 				EndIf
 				
-				FeedPanelNum = FeedPanelNum + 1
-				fullflag = IsFeedPanelEmpty(False)
+
 				If fullflag Then
 					GoTo PickFeedOperatelabel1
 				EndIf
@@ -1596,6 +1602,7 @@ TesterOperate1SuckSub:
 		Case 1
 			TargetPosition_Num = 3
 			FinalPosition1 = B_2
+			NeedAnotherMove(1) = True
 			rearnum = 5
 			
 		Case 2
@@ -1618,6 +1625,10 @@ TesterOperate1SuckSub:
 '	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
 	PickHave(1) = PickAction(1)
+	If PickHave(1) = False Then
+		Wait 1
+		PickHave(1) = PickAction(1)
+	EndIf
 
 	Tester_Fill(i) = False;
 	
@@ -1684,7 +1695,7 @@ TesterOperate1SuckSub:
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
-		Off i * 2
+		Off SuckB
 	EndIf
 Return
 
@@ -3059,6 +3070,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 		EndIf
 		Go FinalPosition
 
+
 	Else
 		PassStepNum = 0
 		Select secendPosition
@@ -3113,7 +3125,11 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Pass A2PASS1
 				If NeedAnotherMove(1) Then
-					RoutePassP3 = B_2
+					RoutePassP3 = A2PASS2
+					PassStepNum = PassStepNum + 1
+					Pass A2PASS2
+					
+					RoutePassP4 = B_2
 					PassStepNum = PassStepNum + 1
 					Pass B_2
 					NeedAnotherMove(1) = False
@@ -3310,6 +3326,10 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 
 	EndIf
 	CurPosition_Num = secendPosition
+	For i = 0 To 3
+		NeedAnotherMove(i) = False
+	Next
+'	Position2NeedNeedAnotherMove = False
 	Exit Function
 	
 ChangeHandAction:
@@ -3721,6 +3741,7 @@ Function StringSplit(StrSplit$ As String, CharSelect$ As String)
 Fend
 '测试机1测试过程
 Function TesterStart1
+	Boolean voccumflag
 	
 	Do
 		If Tester_Select(0) = True Then
@@ -3733,7 +3754,7 @@ Function TesterStart1
 				Wait 0.2
 			Loop
 			If Tester_Testing(0) = True Then
-				
+				voccumflag = True
 				Tester_Pass(0) = 0
 				Tester_Ng(0) = 0
 				Tester_Timeout(0) = 0
@@ -3750,10 +3771,15 @@ Function TesterStart1
 '				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
 				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
 					TesterTimeElapse(0) = Tmr(0)
-				
+					If voccumflag And Sw(ALUp) = 0 Then
+						Wait 0.5
+						Off AL_Suck, Forced
+						voccumflag = False
+					EndIf
 					If Tester_Select(0) = False Then
 						Exit Do
 					EndIf
+					
 					Wait 0.02
 				Loop
 				
@@ -3776,7 +3802,7 @@ Function TesterStart1
 Fend
 '测试机2测试过程
 Function TesterStart2
-	
+	Boolean voccumflag
 	Do
 		If Tester_Select(1) = True Then
 			Print "测试机AR，等待开始测试"
@@ -3788,7 +3814,7 @@ Function TesterStart2
 				Wait 0.2
 			Loop
 			If Tester_Testing(1) = True Then
-				
+				voccumflag = True
 				Tester_Pass(1) = 0
 				Tester_Ng(1) = 0
 				Tester_Timeout(1) = 0
@@ -3805,7 +3831,11 @@ Function TesterStart2
 '				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
 				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
 					TesterTimeElapse(1) = Tmr(1)
-				
+					If voccumflag And Sw(ARUp) = 0 Then
+						Wait 0.5
+						Off AR_Suck, Forced
+						voccumflag = False
+					EndIf
 					If Tester_Select(1) = False Then
 						Exit Do
 					EndIf
