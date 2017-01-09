@@ -48,8 +48,9 @@ Global Integer LoopTestFlexIndex
 Global Boolean IsLoopTestMode
 
 Global Boolean NeedAnotherMove(4)
-Global Boolean Position2NeedNeedAnotherMove
+Global Boolean isInWaitPosition(4)
 Global Boolean isXqtting
+'Global Boolean Position2NeedNeedAnotherMove
 
 Function main
 	Integer i
@@ -271,9 +272,10 @@ Function InitAction
 	Next
 	For i = 0 To 3
 		NeedAnotherMove(i) = False
+		isInWaitPosition(i) = False
 	Next
 	
-	Position2NeedNeedAnotherMove = False
+'	Position2NeedNeedAnotherMove = False
 Fend
 Function ClearAction
 	Integer i
@@ -1358,7 +1360,7 @@ Return
 Fend
 'A抓手处理测试机程序
 Function TesterOperate1
-	Integer i, i_index
+	Integer i, i_index, j
 	Integer rearnum
 	Integer selectNum, fillNum, testingNum
 	Real realbox
@@ -1436,10 +1438,12 @@ Function TesterOperate1
 						TargetPosition_Num = 2
 						'A_1，依据TesterOperate1更改
 						FinalPosition1 = A1PASS1
-						Position2NeedNeedAnotherMove = True
+'						Position2NeedNeedAnotherMove = True
+						
 					Case 1
 						TargetPosition_Num = 3
 						FinalPosition1 = A2PASS1
+						
 					Case 2
 						TargetPosition_Num = 4
 						FinalPosition1 = A3PASS3
@@ -1449,6 +1453,7 @@ Function TesterOperate1
 				Send
 				FinalPosition = FinalPosition1
 				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				isInWaitPosition(i_index) = True
 TesterOperate1_lable1:
 				For i = 0 To 3
 					If ReTest_ Then
@@ -1518,10 +1523,12 @@ TesterOperate1_lable2:
 							TargetPosition_Num = 2
 							'A_1，依据TesterOperate1更改
 							FinalPosition1 = A1PASS1
-							Position2NeedNeedAnotherMove = True
+'							Position2NeedNeedAnotherMove = True
+							
 						Case 1
 							TargetPosition_Num = 3
 							FinalPosition1 = A2PASS1
+							
 						Case 2
 							TargetPosition_Num = 4
 							FinalPosition1 = A3PASS3
@@ -1531,6 +1538,7 @@ TesterOperate1_lable2:
 					Send
 					FinalPosition = FinalPosition1
 					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+					isInWaitPosition(i_index) = True
 TesterOperate1_lable4:
 					For i = 0 To 3
 						If Tester_Fill(i) = True And Tester_Testing(i) = False Then
@@ -1585,11 +1593,16 @@ TesterOperate1SuckSub:
 	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		If i = 0 Then
-			Position2NeedNeedAnotherMove = True
+'		If i = 0 Then
+'			Position2NeedNeedAnotherMove = True
+'		EndIf
+		
+		If isInWaitPosition(i) = False Then
+			FinalPosition = FinalPosition1
+			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			isInWaitPosition(i) = True
 		EndIf
-		FinalPosition = FinalPosition1
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+
 	EndIf
 	Wait Sw(rearnum) = 1
 	Select i
@@ -1616,6 +1629,10 @@ TesterOperate1SuckSub:
 	Send
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+	
 '	If CmdSend$ <> "" Then
 '		Print "有命令 " + CmdSend$ + " 待发送！"
 '	EndIf
@@ -1674,11 +1691,13 @@ TesterOperate1SuckSub:
 '				TargetPosition_Num = 2
 				'A_1，依据TesterOperate1更改
 				FinalPosition1 = A1PASS1
-				Position2NeedNeedAnotherMove = True
+'				Position2NeedNeedAnotherMove = True
+				
 				rearnum = 4
 			Case 1
 '				TargetPosition_Num = 3
 				FinalPosition1 = A2PASS1
+				
 				rearnum = 5
 			Case 2
 '				TargetPosition_Num = 4
@@ -1692,6 +1711,9 @@ TesterOperate1SuckSub:
 '		Go FinalPosition1
 		TargetPosition_Num = -2
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
@@ -1725,11 +1747,14 @@ TesterOperate1ReleaseSub:
 	If Sw(rearnum) = 0 Then
 		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
 		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
-		If i = 0 Then
-			Position2NeedNeedAnotherMove = True
+'		If i = 0 Then
+'			Position2NeedNeedAnotherMove = True
+'		EndIf
+		If isInWaitPosition(i) = False Then
+			FinalPosition = FinalPosition1
+			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			isInWaitPosition(i) = True
 		EndIf
-		FinalPosition = FinalPosition1
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	Wait Sw(rearnum) = 1
 	Select i
@@ -1755,6 +1780,9 @@ TesterOperate1ReleaseSub:
 	Send
 	FinalPosition = FinalPosition1
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 	Call ReleaseAction(0, i + 1)
 	PickHave(0) = False
 	Tester_Fill(i) = True;
@@ -1780,6 +1808,9 @@ TesterOperate1ReleaseSub:
 	Send
 	TargetPosition_Num = -2
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 Return
@@ -3061,13 +3092,43 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	EndIf
 	
 	If firstPosition = secendPosition Then
-		If Position2NeedNeedAnotherMove = True And secendPosition = 2 Then
-
-			Pass A1PASS2
-
-			Pass B_1
-			Position2NeedNeedAnotherMove = False
-		EndIf
+		Select secendPosition
+			Case 2
+				If isInWaitPosition(0) Then
+					RoutePassP3 = A1PASS2
+					PassStepNum = PassStepNum + 1
+					Pass A1PASS2
+					RoutePassP4 = B_1
+					PassStepNum = PassStepNum + 1
+					Pass B_1
+					
+				EndIf
+			Case 3
+				If isInWaitPosition(1) Then
+					RoutePassP3 = A2PASS2
+					PassStepNum = PassStepNum + 1
+					Pass A2PASS2
+					
+					RoutePassP4 = B_2
+					PassStepNum = PassStepNum + 1
+					Pass B_2
+				EndIf
+			Case 4
+				If isInWaitPosition(2) Then
+					
+				EndIf
+			Case 5
+				If isInWaitPosition(3) Then
+					
+				EndIf
+		Send
+'		If Position2NeedNeedAnotherMove = True And secendPosition = 2 Then
+'
+'			Pass A1PASS2
+'
+'			Pass B_1
+'			Position2NeedNeedAnotherMove = False
+'		EndIf
 		Go FinalPosition
 
 
@@ -3095,7 +3156,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				PassStepNum = PassStepNum + 1
 				'去A1，若上料未准备好，则等待
 				If IsLoopTestMode = False Then
-					Wait Sw(FeedReady) = 1 And FeedReadySigleDown = 1
+					Wait(Sw(FeedReady) = 1 And FeedReadySigleDown = 1) Or Discharge <> 0
 				EndIf
 				
 				
@@ -3110,7 +3171,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					NeedAnotherMove(0) = False
 				EndIf
 				Go FinalPosition
-				Position2NeedNeedAnotherMove = False
+'				Position2NeedNeedAnotherMove = False
 			Case 3
 				TargetHand = 1
 				GoSub ChangeHandAction
@@ -3774,6 +3835,7 @@ Function TesterStart1
 					If voccumflag And Sw(ALUp) = 0 Then
 						Wait 0.5
 						Off AL_Suck, Forced
+						voccumflag = False
 					EndIf
 					If Tester_Select(0) = False Then
 						Exit Do
@@ -3801,7 +3863,7 @@ Function TesterStart1
 Fend
 '测试机2测试过程
 Function TesterStart2
-	
+	Boolean voccumflag
 	Do
 		If Tester_Select(1) = True Then
 			Print "测试机AR，等待开始测试"
@@ -3813,7 +3875,7 @@ Function TesterStart2
 				Wait 0.2
 			Loop
 			If Tester_Testing(1) = True Then
-				
+				voccumflag = True
 				Tester_Pass(1) = 0
 				Tester_Ng(1) = 0
 				Tester_Timeout(1) = 0
@@ -3830,7 +3892,11 @@ Function TesterStart2
 '				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
 				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
 					TesterTimeElapse(1) = Tmr(1)
-				
+					If voccumflag And Sw(ARUp) = 0 Then
+						Wait 0.5
+						Off AR_Suck, Forced
+						voccumflag = False
+					EndIf
 					If Tester_Select(1) = False Then
 						Exit Do
 					EndIf

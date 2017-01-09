@@ -2976,4 +2976,42 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL /R
 > OUTW SpositionY,10000
 > SFREE 1,2,3,4
+> outw SpositionY,8950
+> go apickfeedr1
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass A1PASS1;pass A1PASS2;pass b_1;go A_1
+> go B_1
+> pass b_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,36000
+> pass A2PASS1;pass A2PASS2;pass b_2;go A_2
+> pass b_2;pass a2pass2;pass A2PASS1;go ChangeHandL /r
+> pass A2PASS1;pass A2PASS2;pass b_2;go b_2
+> pass b_2;pass a2pass2;pass A2PASS1;go ChangeHandL /r
+> go A2PASS1
+> go ChangeHandL /r
+> pass A2PASS1;pass A2PASS2;pass b_2;go A_2
+> pass b_2;pass a2pass2;pass A2PASS1;go ChangeHandL /r
+> outw SpositionY,8950
+> go APickFeedR1
+> go here +z(30)
+> go APickFeedR1
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass A1PASS2;pass b_1;go A_1
+> pass b_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,36000
+> pass A2PASS1;pass A2PASS2;pass b_2;go A_2
+> pass b_2;pass A2PASS2;pass A2PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> go APickFeedr1
+> go APickFeedr2
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,10000
+> go APickFeed1
+> go ChangeHandL /l
 > 
