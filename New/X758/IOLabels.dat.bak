@@ -1,7 +1,7 @@
-ENVT0100,LM:2016/12/17 02:58:37:016,DS:0000004363,CS:06227,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/10 06:36:46:252,DS:0000004840,CS:14676,MA:00-15-17-CD-76-F0,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
-	nNumberOfLabels=36
+	nNumberOfLabels=42
 	Label1 {
 		nBit=0
 		sLabel="VacuumValueA"
@@ -182,6 +182,36 @@ InputBitLabels {
 		sLabel="ResetButton"
 		sDescription=""
 	}
+	Label37 {
+		nBit=534
+		sLabel="PreFill1"
+		sDescription=""
+	}
+	Label38 {
+		nBit=535
+		sLabel="PreFill2"
+		sDescription=""
+	}
+	Label39 {
+		nBit=536
+		sLabel="PreFill3"
+		sDescription=""
+	}
+	Label40 {
+		nBit=537
+		sLabel="PreFill4"
+		sDescription=""
+	}
+	Label41 {
+		nBit=538
+		sLabel="PreFill5"
+		sDescription=""
+	}
+	Label42 {
+		nBit=539
+		sLabel="PreFill6"
+		sDescription=""
+	}
 }
 InputByteLabels {
 	nNumberOfLabels=0
@@ -195,7 +225,7 @@ InputWordLabels {
 	}
 }
 OutputBitLabels {
-	nNumberOfLabels=20
+	nNumberOfLabels=21
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -294,6 +324,11 @@ OutputBitLabels {
 	Label20 {
 		nBit=518
 		sLabel="SHome"
+		sDescription=""
+	}
+	Label21 {
+		nBit=519
+		sLabel="RollValve"
 		sDescription=""
 	}
 }

@@ -1,7 +1,7 @@
-ENVT0100,LM:2016/12/19 10:56:30:334,DS:0000004432,CS:15703,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/10 07:01:22:392,DS:0000004840,CS:15699,MA:00-15-17-CD-76-F0,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
-	nNumberOfLabels=36
+	nNumberOfLabels=42
 	Label1 {
 		nBit=0
 		sLabel="VacuumValueA"
@@ -180,6 +180,36 @@ InputBitLabels {
 	Label36 {
 		nBit=533
 		sLabel="ResetButton"
+		sDescription=""
+	}
+	Label37 {
+		nBit=535
+		sLabel="PreFill1"
+		sDescription=""
+	}
+	Label38 {
+		nBit=536
+		sLabel="PreFill2"
+		sDescription=""
+	}
+	Label39 {
+		nBit=537
+		sLabel="PreFill3"
+		sDescription=""
+	}
+	Label40 {
+		nBit=538
+		sLabel="PreFill4"
+		sDescription=""
+	}
+	Label41 {
+		nBit=539
+		sLabel="PreFill5"
+		sDescription=""
+	}
+	Label42 {
+		nBit=540
+		sLabel="PreFill6"
 		sDescription=""
 	}
 }

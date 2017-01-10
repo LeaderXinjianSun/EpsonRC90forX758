@@ -3014,4 +3014,33 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > outw SpositionY,10000
 > go APickFeed1
 > go ChangeHandL /l
+> outw SpositionY,27000
+> outw SpositionY,10000
+> go apickfeedr1
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go apickfeedr1
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> go a3pass1
+> c
+> pass b_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+> outw SpositionY,10000
+> go APickFeed1
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass A3PASS4;pass B_3;go A_3
+> go b_3
+> pass b_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+> go A3PASS1
+> go a3pass2
+> pass a3pass1;go ChangeHandL
+> outw SpositionY,10000
+> go APickFeed1
+> go ChangeHandL
+> outw SpositionY,50000
+> go a4pass1
+> pass B_4;PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;GO ChangeHandL
+> GO A4PASS1
+> GO ChangeHandL
 > 

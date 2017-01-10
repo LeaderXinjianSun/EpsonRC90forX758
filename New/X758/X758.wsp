@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/01/09 14:37:12:626,DS:0000002063,CS:64151,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="运行远程控制台"
+ENVT0100,LM:2017/01/10 15:41:54:316,DS:0000002055,CS:06667,MA:00-15-17-CD-76-F0,EI:           
+sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=37
 		nTop=140
@@ -17,7 +17,7 @@ nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -46,10 +46,10 @@ RunWindow {
 		nWidth=682
 		nHeight=383
 	}
-	nWinState=2
+	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=613
-		nTop=260
+		nLeft=621
+		nTop=282
 		nWidth=478
 		nHeight=327
 	}
