@@ -3043,4 +3043,9 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > pass B_4;PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;GO ChangeHandL
 > GO A4PASS1
 > GO ChangeHandL
+> go ChangeHandL /r
+> outw SpositionY,27000
+> pass a3pass1;pass A3PASS2;pass a3pass3;pass a3pass4;go B_3
+> go B_3
+> pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
 > 
