@@ -3066,4 +3066,119 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
 > outw SpositionY,37000
 > go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,10000
+> go apickfeedr1
+> go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,10000
+> go ScanPositionP3R /l
+> go ChangeHandL /r
+!!´íÎó: 2318, ·¢ÏÖ´íÎóºóÎÞ·¨Ö´ÐÐ¶¯×÷ÃüÁî¡£
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,10000
+> go ScanPositionP3R /l
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go A_3
+> pass b_3;pass A3PASS4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go A_4
+> pass b_4;pass A4PASS4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> go ChangeHandL /l
+
+
+> > 
+
+> 
+
+> > 
+
+> 
+
+> > 
+
+> 
+> 
+
+> > 
+
+> 
+> 
+> 
+> 
+
+> > 
+
+
+> > 
+
+> 
+> 
+
+> 
+> > 
+
+> 
+> 
+> 
+
+> > 
+
+
+> > 
+
+> 
+
+> 
+> > 
+
+
+
+
+> > > > 
+
+> 
+> 
+
+> 
+> 
+
+> > 
+
+
+
+> > 
+> 
+> 
+
+
+
+> > > > 
+
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> 
+> > !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> !!´íÎó: 3100, Óï·¨´íÎó¡£
+> > 
+!!´íÎó: 3100, Óï·¨´íÎó¡£
+> outw SpositionY,50000
+> go ChangeHandL /r
+> outw SpositionY,10000
+> go ChangeHandL /r
 > 

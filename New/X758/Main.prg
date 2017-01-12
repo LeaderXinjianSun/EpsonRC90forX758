@@ -52,7 +52,7 @@ Global Boolean isInWaitPosition(4)
 Global Boolean isXqtting
 'Global Boolean Position2NeedNeedAnotherMove
 
-Global Preserve Boolean BarcodeMode
+Global Preserve Integer BarcodeMode
 
 Function main
 	Integer i
@@ -248,8 +248,16 @@ main_label1:
 			
 			Exit Do
 		EndIf
+			If PickHave(0) = False Then
+				Select BarcodeMode
+					Case 0
+						Call PickFeedOperate0
+					Case 1
+						Call PickFeedOperate1
+				Send
+				
+			EndIf
 	
-			Call PickFeedOperate0
 			Call TesterOperate1
 			Call UnloadOperate(1)
 	
@@ -642,9 +650,7 @@ PickFeedOperatelabel1:
 					PickHave(0) = False
 				EndIf
 				
-				If fullflag Then
-					GoTo PickFeedOperatelabel1
-				EndIf
+
 			Else
 				Print "上料盘，吸取失败"
 				MsgSend$ = "上料盘，吸取失败"
@@ -3767,6 +3773,14 @@ Function TcpIpCmdRev
 					Next
 				Case "NGContinueNum"
 					NgContinueNum = Val(CmdRevStr$(1))
+				Case "BarcodeMode"
+					Select CmdRevStr$(1)
+						Case "True"
+							BarcodeMode = 0
+						Case "False"
+							BarcodeMode = 1
+					Send
+					
 				Case "SingleTestModeStageNum"
 					LoopTestFlexIndex = Val(CmdRevStr$(1)) - 1
 				Case "InitPar"

@@ -52,7 +52,7 @@ Global Boolean isInWaitPosition(4)
 Global Boolean isXqtting
 'Global Boolean Position2NeedNeedAnotherMove
 
-Global Preserve Boolean BarcodeMode
+Global Preserve Integer BarcodeMode
 
 Function main
 	Integer i
@@ -248,8 +248,16 @@ main_label1:
 			
 			Exit Do
 		EndIf
+			If PickHave(0) = False Then
+				Select BarcodeMode
+					Case 0
+						Call PickFeedOperate0
+					Case 1
+						Call PickFeedOperate1
+				Send
+				
+			EndIf
 	
-			Call PickFeedOperate0
 			Call TesterOperate1
 			Call UnloadOperate(1)
 	
@@ -3767,6 +3775,14 @@ Function TcpIpCmdRev
 					Next
 				Case "NGContinueNum"
 					NgContinueNum = Val(CmdRevStr$(1))
+				Case "BarcodeMode"
+					Select CmdRevStr$(1)
+						Case "True"
+							BarcodeMode = 0
+						Case "False"
+							BarcodeMode = 1
+					Send
+					
 				Case "SingleTestModeStageNum"
 					LoopTestFlexIndex = Val(CmdRevStr$(1)) - 1
 				Case "InitPar"
@@ -4192,7 +4208,7 @@ Function TesterStart4
 					EndIf
 					Wait 0.02
 				Loop
-				Wait 50
+				
 				
 				On BR_Suck, Forced
 				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
