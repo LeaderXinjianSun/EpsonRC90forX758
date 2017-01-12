@@ -3622,8 +3622,8 @@ Function PickAction(num As Integer) As Boolean
 			vacuumnum = 3
 	Send
 	Off blownum; On valvenum; On sucknum
-	Wait 0.4
-	Wait Sw(vacuumnum), 0.1
+	Wait 0.8
+	Wait Sw(vacuumnum), 0.2
 	Off valvenum
 	Wait 0.5
 	If Sw(vacuumnum) = 0 Then
@@ -3665,6 +3665,13 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 	Send
 
 	On blownum; Off sucknum
+
+
+	
+ 	Wait 0.5
+ 	On valvenum
+
+ 	Wait 0.5
 	Select Flexnum
 		Case 1
 			On AL_Suck
@@ -3675,18 +3682,15 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 		Case 4
 			On BR_Suck
 	Send
-	Wait 0.05
-	
- 	Wait 0.1
- 	On valvenum
- 	Wait 0.2
+
  	If Flexnum <> -1 Then
- 		Wait 0.8
+ 		Wait 1
  	EndIf
 	
 	
  	Off valvenum; Off blownum
 	Wait 0.2
+
 Fend
 'ÎüÈ¡Ê§°Ü£¬´µ¶¯×÷
 'num:Îü×ìË÷Òý
@@ -4188,7 +4192,7 @@ Function TesterStart4
 					EndIf
 					Wait 0.02
 				Loop
-				Wait 50
+				
 				
 				On BR_Suck, Forced
 				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
