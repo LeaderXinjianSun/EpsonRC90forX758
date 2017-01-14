@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/12 14:36:58:833,DS:0000002068,CS:37528,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/14 12:22:17:855,DS:0000002067,CS:49313,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="运行远程控制台"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -59,10 +59,10 @@ IOLabelEditor {
 	nWinState=0
 }
 IOMonitor {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=775
-		nTop=210
+		nLeft=798
+		nTop=528
 		nWidth=478
 		nHeight=327
 	}
@@ -79,8 +79,8 @@ Simulator {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=722
-		nTop=152
+		nLeft=738
+		nTop=310
 		nWidth=478
 		nHeight=262
 	}

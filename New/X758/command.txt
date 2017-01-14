@@ -3181,4 +3181,29 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > go ChangeHandL /r
 > outw SpositionY,10000
 > go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,10000
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass B_4;go B_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass B_4;go B_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3
+> go B_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass pcui2p1;pass pcui2p2;pass pcui2p3;pass pcui2p4
+> go PCui2_1
+> pass pcui2p4;pass pcui2p3;pass pcui2p2;pass pcui2p1;go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3
+> pass a3pass3;pass a3pass4;pass b_3;go A_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go a_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
 > 

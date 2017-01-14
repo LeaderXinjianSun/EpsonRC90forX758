@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/12 14:00:51:192,DS:0000033246,CS:45278,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/14 12:05:10:056,DS:0000033245,CS:39622,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 bDisplayR=False
 bDisplayS=False
@@ -400,10 +400,10 @@ Point16 {
 	sLabel="APickFeedR1"
 	sDescription="rst"
 	nUndefined=0
-	rX=-86.251
-	rY=389.72
+	rX=-86.35
+	rY=389.921
 	rZ=-141.016
-	rU=189.577
+	rU=189.576
 	rV=0
 	rW=0
 	rR=0
@@ -426,10 +426,10 @@ Point17 {
 	sLabel="APickFeedR2"
 	sDescription=""
 	nUndefined=0
-	rX=-16.668
-	rY=389.622
+	rX=-16.868
+	rY=390.022
 	rZ=-139.416
-	rU=189.565
+	rU=189.564
 	rV=0
 	rW=0
 	rR=0
@@ -453,9 +453,9 @@ Point18 {
 	sDescription=""
 	nUndefined=0
 	rX=52.828
-	rY=389.521
-	rZ=-138.278
-	rU=189.554
+	rY=389.721
+	rZ=-139.778
+	rU=189.553
 	rV=0
 	rW=0
 	rR=0
@@ -478,10 +478,10 @@ Point19 {
 	sLabel="APickFeedR4"
 	sDescription="set"
 	nUndefined=0
-	rX=-86.653
-	rY=389.62
+	rX=-86.851
+	rY=390.12
 	rZ=-141.016
-	rU=189.577
+	rU=189.576
 	rV=0
 	rW=0
 	rR=0
@@ -504,10 +504,10 @@ Point20 {
 	sLabel="APickFeedR5"
 	sDescription=""
 	nUndefined=0
-	rX=-16.968
-	rY=390.122
+	rX=-17.368
+	rY=390.422
 	rZ=-139.416
-	rU=189.565
+	rU=189.564
 	rV=0
 	rW=0
 	rR=0
@@ -530,10 +530,10 @@ Point21 {
 	sLabel="APickFeedR6"
 	sDescription=""
 	nUndefined=0
-	rX=52.728
-	rY=390.221
+	rX=52.428
+	rY=390.421
 	rZ=-138.278
-	rU=189.552
+	rU=189.551
 	rV=0
 	rW=0
 	rR=0
@@ -610,8 +610,8 @@ Point24 {
 	nUndefined=0
 	rX=307.563
 	rY=-93.955
-	rZ=-138.747
-	rU=189.107
+	rZ=-140.247
+	rU=189.106
 	rV=0
 	rW=0
 	rR=0
@@ -738,10 +738,10 @@ Point29 {
 	sLabel="B_4"
 	sDescription=""
 	nUndefined=0
-	rX=271.161
+	rX=269.461
 	rY=-155.73
-	rZ=-138.492
-	rU=189.421
+	rZ=-139.492
+	rU=189.42
 	rV=0
 	rW=0
 	rR=0
