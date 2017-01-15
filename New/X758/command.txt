@@ -3206,4 +3206,44 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > outw SpositionY,50000
 > pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go a_4
 > pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> go apickfeedr1
+> outw SpositionY,50000
+> go here /l
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go here /l
+> outw SpositionY,10000
+> outw SpositionY,27000
+> go ChangeHandL /l
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go b_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> go ChangeHandL /r
+> outw SpositionY,37000
+> pass NCuip1;pass NCuip2;pass NCuip3;go NCui_1
+> pass NCuip3;pass NCuip2;pass NCuip1;go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go a_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go b_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go a_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go b_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go b_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
 > 

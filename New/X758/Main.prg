@@ -203,6 +203,7 @@ Function main2
 	Call InitAction
 	Wait 0.2
 	IsLoopTestMode = False
+	Off Discharing
 	Print "请按继续，开始复位"
 	MsgSend$ = "请按继续，开始复位"
 	Pause
@@ -239,6 +240,7 @@ main_label1:
 
 		If Discharge <> 0 And fillNum = 0 Then
 			Discharge = 0
+			Off Discharing, Forced
 			TargetPosition_Num = 1
 			If Hand = 1 Then
 				FinalPosition = ChangeHandL /R :Z(-61)
@@ -283,7 +285,8 @@ Function InitAction
 	Pallet 3, PCui3_1, PCui3_1, PCui3_2, 1, 2
 	Pallet 4, PCui4_1, PCui4_1, PCui4_2, 1, 2
 	'NG Cui 阵列
-	Pallet 5, NCui1, NCui2, NCui3, 2, 8
+'	Pallet 5, NCui1, NCui2, NCui3, 2, 8
+	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 4
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -423,6 +426,10 @@ Function AllMonitor
 				NgTraySigleDown = 1
 				Off NgTrayFull, Forced
 			EndIf
+		EndIf
+		
+		If NgTrayPalletNum > 9 Then
+			NgTrayPalletNum = 1
 		EndIf
 		
 '		If Sw(FeedReady) = 0 Then
@@ -767,6 +774,7 @@ Fend
 '判断上料盘是否取空
 Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 '	Integer i, j
+    LimZ -61
 	If FeedPanelNum > 5 Then
 		'料盘空了
 		If CurPosition_Num = 1 Then
@@ -1457,7 +1465,7 @@ Fend
 'A抓手处理测试机程序
 Function TesterOperate1
 	Integer i, i_index, j
-	Integer rearnum
+	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
 	If PickHave(0) = True Then
@@ -1512,22 +1520,22 @@ Function TesterOperate1
 				realbox = 0
 				i_index = 0
 				For i = 0 To 3
-					If ReTest_ Then
-						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
-							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
-								realbox = TesterTimeElapse(i)
-								i_index = i
-							EndIf
-							
-						EndIf
-					Else
+'					If ReTest_ Then
+'						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
+'							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
+'								realbox = TesterTimeElapse(i)
+'								i_index = i
+'							EndIf
+'							
+'						EndIf
+'					Else
 						If Tester_Select(i) = True And Tester_Fill(i) = True Then
 							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
 								realbox = TesterTimeElapse(i)
 								i_index = i
 							EndIf
 						EndIf
-					EndIf
+'					EndIf
 				Next
 				Select i_index
 					Case 0
@@ -1574,6 +1582,8 @@ TesterOperate1_lable2:
 '复测				
 				If PickHave(1) = True And Pick_P_Msg(1) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 					Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
+					Print "A，正常，复测，" + Str$(i + 1)
+					MsgSend$ = "A，正常，复测，" + Str$(i + 1)
 					'继续放，复测
 					GoSub TesterOperate1ReleaseSub_1
 				Else
@@ -1659,6 +1669,8 @@ TesterOperate1_lable5:
 					
 					If PickHave(1) = True And Pick_P_Msg(1) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 						Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
+						Print "A，排料，复测，" + Str$(i + 1)
+						MsgSend$ = "A，排料，复测，" + Str$(i + 1)
 						'继续放，复测
 						GoSub TesterOperate1ReleaseSub_1
 					Else
@@ -1952,26 +1964,42 @@ TesterOperate1ReleaseSub:
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
+			voccumValue1 = 10
+			voccumValue2 = 11
 		Case 1
 '			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
+			voccumValue1 = 12
+			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
+			voccumValue1 = 20
+			voccumValue2 = 21
 		Case 3
 '			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
+			voccumValue1 = 22
+			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+		Print "测试工位" + Str$(i + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		Pause
+	EndIf
+	
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
+'	voccumValue1
+	
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -2074,24 +2102,37 @@ TesterOperate1ReleaseSub_1:
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
+			voccumValue1 = 10
+			voccumValue2 = 11
 		Case 1
 '			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
+			voccumValue1 = 12
+			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
+			voccumValue1 = 20
+			voccumValue2 = 21
 		Case 3
 '			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
+			voccumValue1 = 22
+			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+		Print "测试工位" + Str$(i + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		Pause
+	EndIf
 	Tester_Testing(i) = True
 	PickAorC$(i) = "B"
 'Pick_P_Msg
@@ -2121,7 +2162,7 @@ Fend
 'B抓手处理测试机程序
 Function TesterOperate2
 	Integer i, i_index, j
-	Integer rearnum
+	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
 	If PickHave(1) = True Then
@@ -2176,22 +2217,22 @@ Function TesterOperate2
 				realbox = 0
 				i_index = 0
 				For i = 0 To 3
-					If ReTest_ Then
-						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
-							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
-								realbox = TesterTimeElapse(i)
-								i_index = i
-							EndIf
-							
-						EndIf
-					Else
+'					If ReTest_ Then
+'						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i Then
+'							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
+'								realbox = TesterTimeElapse(i)
+'								i_index = i
+'							EndIf
+'							
+'						EndIf
+'					Else
 						If Tester_Select(i) = True And Tester_Fill(i) = True Then
 							If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
 								realbox = TesterTimeElapse(i)
 								i_index = i
 							EndIf
 						EndIf
-					EndIf
+'					EndIf
 				Next
 				Select i_index
 					Case 0
@@ -2238,6 +2279,8 @@ TesterOperate1_lable2:
 '复测				
 				If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 					Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
+					Print "B，正常，复测，" + Str$(i + 1)
+					MsgSend$ = "B，正常，复测，" + Str$(i + 1)
 					'继续放，复测
 					GoSub TesterOperate1ReleaseSub_1
 				Else
@@ -2323,6 +2366,8 @@ TesterOperate1_lable5:
 					
 					If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 						Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
+						Print "B，排料，复测，" + Str$(i + 1)
+						MsgSend$ = "B，排料，复测，" + Str$(i + 1)
 						'继续放，复测
 						GoSub TesterOperate1ReleaseSub_1
 					Else
@@ -2615,24 +2660,37 @@ TesterOperate1ReleaseSub:
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
+			voccumValue1 = 10
+			voccumValue2 = 11
 		Case 1
 '			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
+			voccumValue1 = 12
+			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
+			voccumValue1 = 20
+			voccumValue2 = 21
 		Case 3
 '			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
+			voccumValue1 = 22
+			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+		Print "测试工位" + Str$(i + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		Pause
+	EndIf
 	Tester_Testing(i) = True
 	PickAorC$(i) = "B"
 'Pick_P_Msg
@@ -2737,24 +2795,37 @@ TesterOperate1ReleaseSub_1:
 			'A_1，依据TesterOperate1更改
 			FinalPosition1 = A1PASS1
 			rearnum = 4
+			voccumValue1 = 10
+			voccumValue2 = 11
 		Case 1
 '			TargetPosition_Num = 3
 			FinalPosition1 = A2PASS1
 			rearnum = 5
+			voccumValue1 = 12
+			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
 			FinalPosition1 = A3PASS3
 			rearnum = 14
+			voccumValue1 = 20
+			voccumValue2 = 21
 		Case 3
 '			TargetPosition_Num = 5
 			FinalPosition1 = A4PASS3
 			rearnum = 15
+			voccumValue1 = 22
+			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+		Print "测试工位" + Str$(i + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		Pause
+	EndIf
 	Tester_Testing(i) = True
 	PickAorC$(i) = "A"
 'Pick_P_Msg
@@ -3558,7 +3629,7 @@ UnloadOperate_Ng:
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 15 Then
+	If NgTrayPalletNum > 8 Then
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
@@ -4194,14 +4265,15 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			vacuumnum = 3
 	Send
 
-	On blownum; Off sucknum
+	
 
 
 	
- 	Wait 0.5
+    Wait 0.5
  	On valvenum
-
- 	Wait 0.5
+ 	Wait 0.3
+	On blownum; Off sucknum
+ 	Wait 0.2
 	Select Flexnum
 		Case 1
 			On AL_Suck
@@ -4213,6 +4285,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			On BR_Suck
 	Send
 
+	
  	If Flexnum <> -1 Then
  		Wait 1
  	EndIf
@@ -4389,6 +4462,7 @@ Function TcpIpCmdRev
 						Next
 				Case "Discharge"
 					Discharge = 1
+					On Discharing, Forced
 				Case "XQTAction"
 					If isXqtting = False Then
 						Select CmdRevStr$(1)
@@ -4766,6 +4840,7 @@ Function TrapInterruptAbort
 	Off FeedEmpty, Forced
 	Off PassTrayFull, Forced
 	Off NgTrayFull, Forced
+	Off Discharing, Forced
 Fend
 
 
