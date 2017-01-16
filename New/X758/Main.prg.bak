@@ -215,16 +215,20 @@ Function main2
     Call TrapInterruptAbort
 	
 	Call HomeReturnAction
-	Print "等待上料、下料结束"
-	MsgSend$ = "等待上料、下料结束"
-'	Wait Sw(FeedReady) = 0 And Sw(PassTrayRdy) = 0
-	Wait Sw(FeedReady) = 1 And Sw(PassTrayRdy) = 1 And Sw(NgTrayRdy) = 1
-	If Sw(FeedReady) = 1 Then
-		FeedReadySigleDown = 1
-	EndIf
+	Print "等待上料结束"
+	MsgSend$ = "等待上料结束"
+	FeedReadySigleDown = 0
+	Wait Sw(FeedReady) = 1 And Sw(PassTrayRdy) = 1 And FeedReadySigleDown = 1
+	
+'	Print "等待下料结束"
+'	MsgSend$ = "等待下料结束"
+'	PassTraySigleDown = 0
+'	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
+
 	If Sw(PassTrayRdy) = 1 Then
 		PassTraySigleDown = 1
 	EndIf
+
 	If Sw(NgTrayRdy) = 1 Then
 		NgTraySigleDown = 1
 	EndIf
@@ -238,7 +242,7 @@ main_label1:
 		selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
 		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
 
-		If Discharge <> 0 And fillNum = 0 Then
+		If Discharge <> 0 And fillNum = 0 And PickHave(0) = False And PickHave(1) = False Then
 			Discharge = 0
 			Off Discharing, Forced
 			TargetPosition_Num = 1
@@ -284,9 +288,16 @@ Function InitAction
 	Pallet 2, PCui2_1, PCui2_2, PCui2_3, 2, 2
 	Pallet 3, PCui3_1, PCui3_1, PCui3_2, 1, 2
 	Pallet 4, PCui4_1, PCui4_1, PCui4_2, 1, 2
+	
+	Pallet 6, PCui1_1_A, PCui1_2_A, PCui1_3_A, 2, 2
+	Pallet 7, PCui2_1_A, PCui2_2_A, PCui2_3_A, 2, 2
+	Pallet 8, PCui3_1_A, PCui3_1_A, PCui3_2_A, 1, 2
+	Pallet 9, PCui4_1_A, PCui4_1_A, PCui4_2_A, 1, 2
+	
 	'NG Cui 阵列
 '	Pallet 5, NCui1, NCui2, NCui3, 2, 8
 	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 4
+	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 4
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -296,7 +307,9 @@ Function InitAction
 		NeedAnotherMove(i) = False
 		isInWaitPosition(i) = False
 	Next
-	
+	FeedPanelNum = 0
+	PassTrayPalletNum = 1
+	NgTrayPalletNum = 1
 '	Position2NeedNeedAnotherMove = False
 Fend
 Function ClearAction
@@ -1468,6 +1481,7 @@ Function TesterOperate1
 	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
+	Boolean isA_NeedReJuge
 	If PickHave(0) = True Then
 		'判断是否全为选测试机
 		Do
@@ -1950,10 +1964,21 @@ TesterOperate1ReleaseSub:
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
+	If PickHave(1) Then
+		isA_NeedReJuge = True
+	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If isA_NeedReJuge Then
+		If Sw(VacuumValueB) = 0 Then
+			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			Pause
+		EndIf
+	EndIf
+	isA_NeedReJuge = False
 	Call ReleaseAction(0, i + 1)
 	PickHave(0) = False
 	Tester_Fill(i) = True;
@@ -2185,7 +2210,7 @@ Function TesterOperate2
 		For i = 0 To 3
 			If ReTest_ Then
 			'Pick_P_Msg，依据TesterOperate1更改
-				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(0) - 2) <> i Then
+				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(1) - 2) <> i Then
 					Exit For
 				EndIf
 			Else
@@ -2201,7 +2226,7 @@ Function TesterOperate2
 '			testingNum = 8 * Tester_Testing(3) + 4 * Tester_Testing(2) + 2 * Tester_Testing(1) + Tester_Testing(0)
 			For i = 0 To 3
 				If ReTest_ Then
-					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(1) - 2) <> i And Tester_Testing(i) = False Then
 						Exit For
 					EndIf
 				Else
@@ -2258,7 +2283,7 @@ Function TesterOperate2
 TesterOperate1_lable1:
 				For i = 0 To 3
 					If ReTest_ Then
-						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
+						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(1) - 2) <> i And Tester_Testing(i) = False Then
 							Exit For
 						EndIf
 					Else
@@ -2453,10 +2478,24 @@ TesterOperate1SuckSub:
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
+	If PickHave(1) Then
+		isA_NeedReJuge = True
+	EndIf
+
+
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	
+	If isA_NeedReJuge Then
+		If Sw(VacuumValueB) = 0 Then
+			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			Pause
+		EndIf
+	EndIf
+	isA_NeedReJuge = False
 	
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -3586,16 +3625,36 @@ UnloadOperate_Pass:
 	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 	If PassTrayPalletNum <= 4 Then
 		TargetPosition_Num = 6
-		FinalPosition = Pallet(1, PassTrayPalletNum)
+		If num = 1 Then
+			FinalPosition = Pallet(1, PassTrayPalletNum)
+		Else
+			FinalPosition = Pallet(6, PassTrayPalletNum)
+		EndIf
+		
 	ElseIf PassTrayPalletNum <= 8 Then
 		TargetPosition_Num = 7
-		FinalPosition = Pallet(2, PassTrayPalletNum - 4)
+		
+		If num = 1 Then
+			FinalPosition = Pallet(2, PassTrayPalletNum - 4)
+		Else
+			FinalPosition = Pallet(7, PassTrayPalletNum - 4)
+		EndIf
 	ElseIf PassTrayPalletNum <= 10 Then
 		TargetPosition_Num = 8
-		FinalPosition = Pallet(3, PassTrayPalletNum - 8)
+		If num = 1 Then
+			FinalPosition = Pallet(3, PassTrayPalletNum - 8)
+		Else
+			FinalPosition = Pallet(8, PassTrayPalletNum - 8)
+		EndIf
+
 	Else
 		TargetPosition_Num = 9
-		FinalPosition = Pallet(4, PassTrayPalletNum - 10)
+		If num = 1 Then
+			FinalPosition = Pallet(4, PassTrayPalletNum - 10)
+		Else
+			FinalPosition = Pallet(9, PassTrayPalletNum - 10)
+		EndIf
+		
 	EndIf
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -3623,8 +3682,12 @@ UnloadOperate_Ng:
 	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
 	TargetPosition_Num = 10
 
-	FinalPosition = Pallet(5, NgTrayPalletNum)
-
+	
+	If num = 1 Then
+		FinalPosition = Pallet(5, NgTrayPalletNum)
+	Else
+		FinalPosition = Pallet(10, NgTrayPalletNum)
+	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
@@ -3802,8 +3865,8 @@ Function HomeReturnAction
 	
 	
 	Power High
-	Speed 40
-	Accel 50, 50
+	Speed 60
+	Accel 70, 70
 '	Speed 100, 100, 90
 '	SpeedS 100
 '	Accel 100, 90, 100, 100, 100, 90
@@ -4265,14 +4328,15 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			vacuumnum = 3
 	Send
 
-	On blownum; Off sucknum
+	
 
 
 	
- 	Wait 0.5
+    Wait 0.5
  	On valvenum
-
- 	Wait 0.5
+ 	Wait 0.3
+	On blownum; Off sucknum
+ 	Wait 0.2
 	Select Flexnum
 		Case 1
 			On AL_Suck
@@ -4284,6 +4348,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			On BR_Suck
 	Send
 
+	
  	If Flexnum <> -1 Then
  		Wait 1
  	EndIf
@@ -4291,6 +4356,13 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 	
  	Off valvenum; Off blownum
 	Wait 0.2
+	
+ 	If Flexnum <> -1 Then
+ 		On valvenum
+ 		Wait 0.5
+ 		Off valvenum
+ 		Wait 0.3
+ 	EndIf
 
 Fend
 '吸取失败，吹动作

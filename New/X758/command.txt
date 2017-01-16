@@ -3246,4 +3246,79 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > outw SpositionY,27000
 > pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go b_3
 > pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> go ChangeHandL /r
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> go APickFeed1
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> go b_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,10000
+> go APickFeed1
+> go ChangeHandL /l
+> outw SpositionY,27000
+>  pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> go b_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go b_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> outw SpositionY,10000
+> go APickFeed2
+> go APickFeed1
+> go ChangeHandL /l
+> outw SpositionY,50000
+> pass a4pass1;pass a4pass2;pass a4pass3;pass a4pass4;pass b_4;go a_4
+> pass b_4;pass a4pass4;pass a4pass3;pass a4pass2;pass a4pass1;go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> go ChangeHandL /r
+> go ChangeHandL /r
+> outw SpositionY,27000
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> outw SpositionY,60000
+> go apickfeedr1
+> go ChangeHandL /r
+> outw SpositionY,60000
+> pass pcui1p1;pass pcui1p2;pass pcui1p3;pass pcui1p4;go pcui1_1
+> outw SpositionY,50000
+> pass pcui2p4;pass pcui2p3;pass pcui2p2;pass pcui2p1;go ChangeHandL /r
+> go ChangeHandL /l
+> pass PCui4P1;pass PCui4P2;pass PCui4P3;go PCui4_1
+> outw SpositionY,60000
+> pass PCui3P3;pass PCui3P2;pass PCui3P1;go ChangeHandL /L
+> pass PCui3P1;pass PCui3P2;pass PCui3P3;go PCui3P3
+> go ChangeHandL /l
+> pass PCui3P1;pass PCui3P2;pass PCui3P3;go PCui3_1_A
+> pass PCui3P3;pass PCui3P2;pass PCui3P1;go ChangeHandL /L
+> go ChangeHandL /r
+> outw SpositionY,37000
+> pass ncuip1;pass ncuip2;pass ncuip3;go ncui_1
+> pass ncuip3;pass ncuip2;pass ncuip1;go ChangeHandL /r
+!!错误: 2309, 安全装置开启时无法执行运动命令。
+> pass ncuip2;pass ncuip1;go ChangeHandL /r
+> go apickfeedr1
+> go ChangeHandL /r
+> outw SpositionY,27000
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> go ChangeHandL /l
+> pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
+> pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
 > 
