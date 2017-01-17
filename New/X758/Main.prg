@@ -1606,6 +1606,17 @@ TesterOperate1_lable2:
 					If NeedChancel(i) = False Then
 					'取放
 						GoSub TesterOperate1ReleaseSub
+						If PickHave(1) Then
+							If Sw(VacuumValueB) = 0 Then
+								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								Pause
+								PickHave(1) = False
+							EndIf
+						EndIf
+'						If PickHave(1) Then
+'							isA_NeedReJuge = True
+'						EndIf
 					Else
 						Tester_Select(i) = False
 						NeedChancel(i) = False
@@ -1620,6 +1631,14 @@ TesterOperate1_lable2:
 		Else
 '单放
 			GoSub TesterOperate1ReleaseSub
+			If PickHave(1) Then
+				If Sw(VacuumValueB) = 0 Then
+					Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+					MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+					Pause
+					PickHave(1) = False
+				EndIf
+			EndIf
 		EndIf
 	Else
 		If Discharge <> 0 Then
@@ -1964,21 +1983,21 @@ TesterOperate1ReleaseSub:
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
-	If PickHave(1) Then
-		isA_NeedReJuge = True
-	EndIf
+'	If PickHave(1) Then
+'		isA_NeedReJuge = True
+'	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
-	If isA_NeedReJuge Then
-		If Sw(VacuumValueB) = 0 Then
-			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			Pause
-		EndIf
-	EndIf
-	isA_NeedReJuge = False
+'	If isA_NeedReJuge Then
+'		If Sw(VacuumValueB) = 0 Then
+'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			Pause
+'		EndIf
+'	EndIf
+'	isA_NeedReJuge = False
 	Call ReleaseAction(0, i + 1)
 	PickHave(0) = False
 	Tester_Fill(i) = True;
@@ -2302,6 +2321,14 @@ TesterOperate1_lable1:
 			Else
 TesterOperate1_lable2:
                 GoSub TesterOperate1SuckSub
+				If PickHave(1) Then
+					If Sw(VacuumValueB) = 0 Then
+						Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+						MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+						Pause
+						PickHave(1) = False
+					EndIf
+				EndIf
 '复测				
 				If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 					Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
@@ -2309,12 +2336,23 @@ TesterOperate1_lable2:
 					MsgSend$ = "B，正常，复测，" + Str$(i + 1)
 					'继续放，复测
 					GoSub TesterOperate1ReleaseSub_1
+					If PickHave(1) Then
+						If Sw(VacuumValueB) = 0 Then
+							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							Pause
+							PickHave(1) = False
+						EndIf
+					EndIf
 				Else
 					'放
 					'若被测试机被选择屏蔽，需要先取走产品。
 					If NeedChancel(i) = False Then
 					'取放
-						GoSub TesterOperate1ReleaseSub
+						If PickHave(1) Then
+							GoSub TesterOperate1ReleaseSub
+						EndIf
+						
 					Else
 						Tester_Select(i) = False
 						NeedChancel(i) = False
@@ -2389,13 +2427,28 @@ TesterOperate1_lable4:
 				Else
 TesterOperate1_lable5:
 	                GoSub TesterOperate1SuckSub
-					
+					If PickHave(1) Then
+						If Sw(VacuumValueB) = 0 Then
+							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							Pause
+							PickHave(1) = False
+						EndIf
+					EndIf
 					If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 						Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
 						Print "B，排料，复测，" + Str$(i + 1)
 						MsgSend$ = "B，排料，复测，" + Str$(i + 1)
 						'继续放，复测
 						GoSub TesterOperate1ReleaseSub_1
+						If PickHave(1) Then
+							If Sw(VacuumValueB) = 0 Then
+								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								Pause
+								PickHave(1) = False
+							EndIf
+						EndIf
 					Else
 						If NeedChancel(i) = True Then
 							Tester_Select(i) = False
@@ -2479,9 +2532,9 @@ TesterOperate1SuckSub:
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
-	If PickHave(1) Then
-		isA_NeedReJuge = True
-	EndIf
+'	If PickHave(1) Then
+'		isA_NeedReJuge = True
+'	EndIf
 
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -2489,14 +2542,14 @@ TesterOperate1SuckSub:
 		isInWaitPosition(j) = False
 	Next
 	
-	If isA_NeedReJuge Then
-		If Sw(VacuumValueB) = 0 Then
-			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			Pause
-		EndIf
-	EndIf
-	isA_NeedReJuge = False
+'	If isA_NeedReJuge Then
+'		If Sw(VacuumValueB) = 0 Then
+'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			Pause
+'		EndIf
+'	EndIf
+'	isA_NeedReJuge = False
 	
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"

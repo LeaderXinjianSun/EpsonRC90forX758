@@ -3321,4 +3321,9 @@ PULSE:  1:    37946 pls 2:   312066 pls 3:   -81812 pls 4:    28666 pls
 > go ChangeHandL /l
 > pass a3pass1;pass a3pass2;pass a3pass3;pass a3pass4;pass b_3;go a_3
 > pass b_3;pass a3pass4;pass a3pass3;pass a3pass2;pass a3pass1;go ChangeHandL /l
+> go ChangeHandL /r
+> outw SpositionY,60000
+> go ChangeHandL /l
+> pass PCui3P1;pass PCui3P2;pass PCui3P3;go PCui3_1_A
+> pass PCui3P3;pass PCui3P2;pass PCui3P1;go ChangeHandL /L
 > 

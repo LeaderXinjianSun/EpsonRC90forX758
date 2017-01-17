@@ -1,5 +1,6 @@
-ENVT0100,LM:2017/01/16 03:26:34:623,DS:0000038165,CS:43254,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/16 06:12:58:268,DS:0000038181,CS:47606,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
+nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
@@ -609,7 +610,7 @@ Point24 {
 	sDescription="ึฮพ฿ัจ"
 	nUndefined=0
 	rX=307.563
-	rY=-93.855
+	rY=-93.755
 	rZ=-140.247
 	rU=189.106
 	rV=0
@@ -713,7 +714,7 @@ Point28 {
 	sDescription=""
 	nUndefined=0
 	rX=269.5
-	rY=-110.122
+	rY=-110.022
 	rZ=-138.747
 	rU=189.099
 	rV=0

@@ -1,6 +1,5 @@
-ENVT0100,LM:2017/01/16 06:12:58:268,DS:0000038181,CS:47606,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/17 06:00:53:624,DS:0000038165,CS:41463,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
-nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
@@ -507,7 +506,7 @@ Point20 {
 	nUndefined=0
 	rX=-17.368
 	rY=390.422
-	rZ=-139.416
+	rZ=-139.916
 	rU=189.564
 	rV=0
 	rW=0
@@ -2845,10 +2844,10 @@ Point110 {
 	sLabel="PCui3_1_A"
 	sDescription=""
 	nUndefined=0
-	rX=126.866
+	rX=128.565
 	rY=-387.979
-	rZ=-124.553
-	rU=99.549
+	rZ=-126.104
+	rU=99.546
 	rV=0
 	rW=0
 	rR=0

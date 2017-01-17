@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/16 13:04:14:770,DS:0000002067,CS:47578,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/17 06:39:41:099,DS:0000002066,CS:34782,MA:00-15-17-CD-76-F0,EI:           
 sActiveChild="运行远程控制台"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=762
-		nTop=164
+		nLeft=674
+		nTop=96
 		nWidth=478
 		nHeight=418
 	}
