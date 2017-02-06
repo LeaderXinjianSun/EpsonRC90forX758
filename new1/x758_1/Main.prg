@@ -296,8 +296,8 @@ Function InitAction
 	
 	'NG Cui 阵列
 '	Pallet 5, NCui1, NCui2, NCui3, 2, 8
-	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 4
-	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 4
+	Pallet 5, NCui1, NCui2, NCui3, 2, 8
+	Pallet 10, NCui1_A, NCui2_A, NCui3_A, 2, 8
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -308,8 +308,8 @@ Function InitAction
 		isInWaitPosition(i) = False
 	Next
 	FeedPanelNum = 0
-	PassTrayPalletNum = 1
-	NgTrayPalletNum = 1
+'	PassTrayPalletNum = 1
+'	NgTrayPalletNum = 1
 '	Position2NeedNeedAnotherMove = False
 Fend
 Function ClearAction
@@ -399,7 +399,7 @@ Function AllMonitor
 				Off FeedEmpty, Forced
 				FeedPanelNum = 0
 			Else
-				FeedReadySigleDown = 1
+'				FeedReadySigleDown = 1
 				Off FeedEmpty, Forced
 			EndIf
 		EndIf
@@ -441,8 +441,12 @@ Function AllMonitor
 			EndIf
 		EndIf
 		
-		If NgTrayPalletNum > 9 Then
+		If NgTrayPalletNum > 16 Then
 			NgTrayPalletNum = 1
+		EndIf
+		
+		If PassTrayPalletNum > 13 Then
+			PassTrayPalletNum = 1
 		EndIf
 		
 '		If Sw(FeedReady) = 0 Then
@@ -3746,7 +3750,7 @@ UnloadOperate_Ng:
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 8 Then
+	If NgTrayPalletNum > 15 Then
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
@@ -3872,16 +3876,19 @@ Function HomeReturnAction
 		Else
 			HomeSuccessFlage = False
 			Print "X方向偏差超限"
+			MsgSend$ = "X方向偏差超限"
 		EndIf
 		If CY(Here) > 150 And CY(Here) < 350 Then
 		
 		Else
 			HomeSuccessFlage = False
 			Print "Y方向偏差超限"
+			MsgSend$ = "Y方向偏差超限"
 		EndIf
 		
 		If HomeSuccessFlage Then
 			Print "初始位置符合要求"
+			MsgSend$ = "初始位置符合要求"
 			Exit Do
 		Else
 
@@ -3916,7 +3923,7 @@ Function HomeReturnAction
 '	Wait InW(SPositionX) = S_Position
 
 	Print "Home Return Compelet"
-	
+	MsgSend$ = "Home Return Compelet"
 	
 	Power High
 	Speed 90
@@ -3951,9 +3958,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					RoutePassP3 = A1PASS2
 					PassStepNum = PassStepNum + 1
 					Pass A1PASS2
-					RoutePassP4 = B_1
+					RoutePassP4 = B_1 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_1
+					Pass B_1 +Z(10)
 					
 				EndIf
 			Case 3
@@ -3962,9 +3969,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2
+					RoutePassP4 = B_2 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_2
+					Pass B_2 +Z(10)
 				EndIf
 			Case 4
 				If isInWaitPosition(2) Then
@@ -3972,9 +3979,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A3PASS4
 					
-					RoutePassP6 = B_3
+					RoutePassP6 = B_3 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_3
+					Pass B_3 +Z(10)
 				EndIf
 			Case 5
 				If isInWaitPosition(3) Then
@@ -3982,9 +3989,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4
+					RoutePassP6 = B_4 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_4
+					Pass B_4 +Z(10)
 					
 				EndIf
 		Send
@@ -4033,9 +4040,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					RoutePassP3 = A1PASS2
 					PassStepNum = PassStepNum + 1
 					Pass A1PASS2
-					RoutePassP4 = B_1
+					RoutePassP4 = B_1 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_1
+					Pass B_1 +Z(10)
 					NeedAnotherMove(0) = False
 				EndIf
 				Go FinalPosition
@@ -4058,9 +4065,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2
+					RoutePassP4 = B_2 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_2
+					Pass B_2 +Z(10)
 					NeedAnotherMove(1) = False
 				EndIf
 				Go FinalPosition
@@ -4090,9 +4097,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A3PASS4
 					
-					RoutePassP6 = B_3
+					RoutePassP6 = B_3 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_3
+					Pass B_3 +Z(10)
 					NeedAnotherMove(2) = False
 				EndIf
 				
@@ -4123,9 +4130,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4
+					RoutePassP6 = B_4 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_4
+					Pass B_4 +Z(10)
 					NeedAnotherMove(3) = False
 				EndIf
 				
@@ -4966,5 +4973,6 @@ Function TrapInterruptAbort
 	Off NgTrayFull, Forced
 	Off Discharing, Forced
 Fend
+
 
 

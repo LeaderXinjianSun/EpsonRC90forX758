@@ -1,14 +1,14 @@
-ENVT0100,LM:2017/01/20 02:54:13:899,DS:0000002071,CS:32844,MA:00-15-17-CD-76-F0,EI:           
-sActiveChild="机器人管理芢x"
-bMdiMaximized=False
+ENVT0100,LM:2017/02/06 08:08:07:915,DS:0000002039,CS:37890,MA:00-0E-C6-CD-30-88,EI:           
+sActiveChild="命羂x"
+bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=37
-		nTop=140
+		nLeft=0
+		nTop=0
 		nWidth=663
 		nHeight=437
 	}
@@ -17,88 +17,88 @@ nIncludeFileCount=0
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=912
-		nHeight=505
+		nWidth=847
+		nHeight=406
 	}
 }
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=74
-		nTop=56
-		nWidth=516
-		nHeight=366
+		nLeft=0
+		nTop=0
+		nWidth=785
+		nHeight=454
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=False
 	Window {
-		nLeft=206
-		nTop=168
-		nWidth=682
-		nHeight=383
+		nLeft=0
+		nTop=0
+		nWidth=677
+		nHeight=382
 	}
 	nWinState=0
 }
 IOLabelEditor {
 	bOpened=False
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=849
-		nHeight=485
+		nLeft=15
+		nTop=94
+		nWidth=785
+		nHeight=454
 	}
 	nWinState=0
 }
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=679
-		nTop=183
+		nLeft=614
+		nTop=209
 		nWidth=478
-		nHeight=442
+		nHeight=346
 	}
 }
 Simulator {
 	bOpened=False
 	Window {
-		nLeft=38
-		nTop=47
-		nWidth=775
-		nHeight=479
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
 	}
 }
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=617
-		nTop=221
-		nWidth=478
-		nHeight=262
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
 	}
 }
 Macros {
 	bOpened=False
 	Window {
-		nLeft=475
-		nTop=175
-		nWidth=478
-		nHeight=418
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=154
+		nTop=117
 		nWidth=698
 		nHeight=477
 	}
@@ -137,12 +137,12 @@ ProjectExplorer {
 	bProgramsOpened=True
 	bIncludesOpened=False
 	bLabelsOpened=True
-	bMacrosOpened=True
+	bMacrosOpened=False
 	bFunctionsOpened=True
-	bVisionOpened=True
+	bVisionOpened=False
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False
-	bGUIBOpened=True
+	bGUIBOpened=False
 	bGUIBFormsOpened=False
 	bRobotPointsOpened=True
 	bCommonPointsOpened=False

@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/01/20 02:42:10:540,DS:0000038183,CS:36559,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/02/04 01:20:21:442,DS:0000039381,CS:43491,MA:00-0E-C6-CD-30-88,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
 nNumberOfJoints=4
-nNumberOfPoints=126
+nNumberOfPoints=130
 Point1 {
 	nNumber=0
 	sLabel=""
@@ -558,7 +558,7 @@ Point22 {
 	sDescription="治具穴"
 	nUndefined=0
 	rX=314.267
-	rY=378.524
+	rY=378.424
 	rZ=-135.813
 	rU=190.148
 	rV=0
@@ -584,7 +584,7 @@ Point23 {
 	sDescription="治具穴"
 	nUndefined=0
 	rX=313.733
-	rY=376.618
+	rY=376.418
 	rZ=-135.008
 	rU=189.522
 	rV=0
@@ -610,7 +610,7 @@ Point24 {
 	sDescription="治具穴"
 	nUndefined=0
 	rX=307.563
-	rY=-93.755
+	rY=-93.855
 	rZ=-140.247
 	rU=189.106
 	rV=0
@@ -636,7 +636,7 @@ Point25 {
 	sDescription="治具穴"
 	nUndefined=0
 	rX=308.05
-	rY=-138.857
+	rY=-138.657
 	rZ=-139.092
 	rU=189.418
 	rV=0
@@ -714,7 +714,7 @@ Point28 {
 	sDescription=""
 	nUndefined=0
 	rX=269.5
-	rY=-110.022
+	rY=-110.122
 	rZ=-138.747
 	rU=189.099
 	rV=0
@@ -761,6 +761,32 @@ Point29 {
 	bSimVisible=False
 }
 Point30 {
+	nNumber=60
+	sLabel=""
+	sDescription=""
+	nUndefined=448
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=2
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point31 {
 	nNumber=61
 	sLabel="C_1"
 	sDescription=""
@@ -786,7 +812,7 @@ Point30 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point31 {
+Point32 {
 	nNumber=62
 	sLabel="C_2"
 	sDescription=""
@@ -812,7 +838,7 @@ Point31 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point32 {
+Point33 {
 	nNumber=63
 	sLabel="C_3"
 	sDescription=""
@@ -838,7 +864,7 @@ Point32 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point33 {
+Point34 {
 	nNumber=64
 	sLabel="C_4"
 	sDescription=""
@@ -864,7 +890,7 @@ Point33 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point34 {
+Point35 {
 	nNumber=71
 	sLabel="D_1"
 	sDescription=""
@@ -890,7 +916,7 @@ Point34 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point35 {
+Point36 {
 	nNumber=72
 	sLabel="D_2"
 	sDescription=""
@@ -916,7 +942,7 @@ Point35 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point36 {
+Point37 {
 	nNumber=73
 	sLabel="D_3"
 	sDescription=""
@@ -942,7 +968,7 @@ Point36 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point37 {
+Point38 {
 	nNumber=74
 	sLabel="D_4"
 	sDescription=""
@@ -968,7 +994,7 @@ Point37 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point38 {
+Point39 {
 	nNumber=80
 	sLabel="ChangeHandL"
 	sDescription="换臂祒"
@@ -994,41 +1020,15 @@ Point38 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point39 {
+Point40 {
 	nNumber=100
 	sLabel="NCui1"
 	sDescription="NG盘祒"
 	nUndefined=0
 	rX=-262.421
 	rY=-238.673
-	rZ=-147.14
-	rU=98.602
-	rV=0
-	rW=0
-	rR=0
-	rS=0
-	rT=0
-	nLocal=0
-	nHand=1
-	nElbow=1
-	nWrist=1
-	nJ1Flag=0
-	nJ2Flag=0
-	nJ4Flag=0
-	nJ6Flag=0
-	rJ1Angle=0
-	rJ4Angle=0
-	bSimVisible=False
-}
-Point40 {
-	nNumber=101
-	sLabel="NCui2"
-	sDescription=""
-	nUndefined=0
-	rX=-380.215
-	rY=-229.291
-	rZ=-147.14
-	rU=98.562
+	rZ=-132.049
+	rU=98.599
 	rV=0
 	rW=0
 	rR=0
@@ -1047,14 +1047,14 @@ Point40 {
 	bSimVisible=False
 }
 Point41 {
-	nNumber=102
-	sLabel="NCui3"
+	nNumber=101
+	sLabel="NCui2"
 	sDescription=""
 	nUndefined=0
-	rX=-265.075
-	rY=117.801
-	rZ=-147.14
-	rU=99.636
+	rX=-380.215
+	rY=-229.291
+	rZ=-132.049
+	rU=98.562
 	rV=0
 	rW=0
 	rR=0
@@ -1073,14 +1073,14 @@ Point41 {
 	bSimVisible=False
 }
 Point42 {
-	nNumber=103
-	sLabel="NCui4"
+	nNumber=102
+	sLabel="NCui3"
 	sDescription=""
 	nUndefined=0
-	rX=-382.078
-	rY=124.39
-	rZ=-147.14
-	rU=99.632
+	rX=-265.075
+	rY=117.801
+	rZ=-132.049
+	rU=99.636
 	rV=0
 	rW=0
 	rR=0
@@ -1099,6 +1099,32 @@ Point42 {
 	bSimVisible=False
 }
 Point43 {
+	nNumber=103
+	sLabel="NCui4"
+	sDescription=""
+	nUndefined=0
+	rX=-382.078
+	rY=124.39
+	rZ=-132.049
+	rU=99.632
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point44 {
 	nNumber=104
 	sLabel="NCui_1"
 	sDescription=""
@@ -1124,7 +1150,7 @@ Point43 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point44 {
+Point45 {
 	nNumber=105
 	sLabel="NCui_2"
 	sDescription=""
@@ -1150,7 +1176,7 @@ Point44 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point45 {
+Point46 {
 	nNumber=106
 	sLabel="NCui_3"
 	sDescription=""
@@ -1176,7 +1202,7 @@ Point45 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point46 {
+Point47 {
 	nNumber=110
 	sLabel="ShikeP1"
 	sDescription="石刻工位祒"
@@ -1202,7 +1228,7 @@ Point46 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point47 {
+Point48 {
 	nNumber=111
 	sLabel="ShikeP2"
 	sDescription=""
@@ -1228,7 +1254,7 @@ Point47 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point48 {
+Point49 {
 	nNumber=112
 	sLabel="ShikeP3"
 	sDescription=""
@@ -1254,7 +1280,7 @@ Point48 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point49 {
+Point50 {
 	nNumber=113
 	sLabel="ShikeP4"
 	sDescription=""
@@ -1280,7 +1306,7 @@ Point49 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point50 {
+Point51 {
 	nNumber=120
 	sLabel="SampleP1"
 	sDescription="样本工位祒"
@@ -1306,7 +1332,7 @@ Point50 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point51 {
+Point52 {
 	nNumber=121
 	sLabel="SampleP2"
 	sDescription=""
@@ -1332,7 +1358,7 @@ Point51 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point52 {
+Point53 {
 	nNumber=180
 	sLabel="PCui4_1"
 	sDescription="PASS盘区觴"
@@ -1358,7 +1384,7 @@ Point52 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point53 {
+Point54 {
 	nNumber=181
 	sLabel="PCui4_2"
 	sDescription=""
@@ -1384,7 +1410,7 @@ Point53 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point54 {
+Point55 {
 	nNumber=190
 	sLabel="PCui3_1"
 	sDescription="PASS盘区觴"
@@ -1410,7 +1436,7 @@ Point54 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point55 {
+Point56 {
 	nNumber=191
 	sLabel="PCui3_2"
 	sDescription=""
@@ -1436,7 +1462,7 @@ Point55 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point56 {
+Point57 {
 	nNumber=200
 	sLabel="PCui1_1"
 	sDescription="PASS盘区觴"
@@ -1462,7 +1488,7 @@ Point56 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point57 {
+Point58 {
 	nNumber=201
 	sLabel="PCui1_2"
 	sDescription=""
@@ -1488,7 +1514,7 @@ Point57 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point58 {
+Point59 {
 	nNumber=202
 	sLabel="PCui1_3"
 	sDescription=""
@@ -1514,7 +1540,7 @@ Point58 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point59 {
+Point60 {
 	nNumber=204
 	sLabel="PCui2_1"
 	sDescription="PASS盘区觴"
@@ -1540,7 +1566,7 @@ Point59 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point60 {
+Point61 {
 	nNumber=205
 	sLabel="PCui2_2"
 	sDescription=""
@@ -1566,7 +1592,7 @@ Point60 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point61 {
+Point62 {
 	nNumber=206
 	sLabel="PCui2_3"
 	sDescription=""
@@ -1592,7 +1618,7 @@ Point61 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point62 {
+Point63 {
 	nNumber=210
 	sLabel="PassTui_RP3"
 	sDescription=""
@@ -1618,7 +1644,7 @@ Point62 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point63 {
+Point64 {
 	nNumber=220
 	sLabel="A1PASS1"
 	sDescription="A1工位箈"
@@ -1644,7 +1670,7 @@ Point63 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point64 {
+Point65 {
 	nNumber=221
 	sLabel="A1PASS2"
 	sDescription=""
@@ -1670,7 +1696,7 @@ Point64 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point65 {
+Point66 {
 	nNumber=230
 	sLabel="A2PASS1"
 	sDescription="A2工位箈"
@@ -1696,7 +1722,7 @@ Point65 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point66 {
+Point67 {
 	nNumber=231
 	sLabel="A2PASS2"
 	sDescription=""
@@ -1722,7 +1748,7 @@ Point66 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point67 {
+Point68 {
 	nNumber=240
 	sLabel="A3PASS1"
 	sDescription="A3工位箈"
@@ -1748,7 +1774,7 @@ Point67 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point68 {
+Point69 {
 	nNumber=241
 	sLabel="A3PASS2"
 	sDescription=""
@@ -1774,7 +1800,7 @@ Point68 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point69 {
+Point70 {
 	nNumber=242
 	sLabel="A3PASS3"
 	sDescription=""
@@ -1800,7 +1826,7 @@ Point69 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point70 {
+Point71 {
 	nNumber=243
 	sLabel="A3PASS4"
 	sDescription=""
@@ -1826,7 +1852,7 @@ Point70 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point71 {
+Point72 {
 	nNumber=250
 	sLabel="A4PASS1"
 	sDescription="A4工位箈"
@@ -1852,7 +1878,7 @@ Point71 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point72 {
+Point73 {
 	nNumber=251
 	sLabel="A4PASS2"
 	sDescription=""
@@ -1878,7 +1904,7 @@ Point72 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point73 {
+Point74 {
 	nNumber=252
 	sLabel="A4PASS3"
 	sDescription=""
@@ -1904,7 +1930,7 @@ Point73 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point74 {
+Point75 {
 	nNumber=253
 	sLabel="A4PASS4"
 	sDescription=""
@@ -1930,7 +1956,7 @@ Point74 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point75 {
+Point76 {
 	nNumber=260
 	sLabel="PCui3P1"
 	sDescription="PASS盘区觴"
@@ -1956,7 +1982,7 @@ Point75 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point76 {
+Point77 {
 	nNumber=261
 	sLabel="PCui3P2"
 	sDescription=""
@@ -1982,7 +2008,7 @@ Point76 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point77 {
+Point78 {
 	nNumber=262
 	sLabel="PCui3P3"
 	sDescription=""
@@ -2008,7 +2034,7 @@ Point77 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point78 {
+Point79 {
 	nNumber=270
 	sLabel="PCui4P1"
 	sDescription="PASS盘区觴"
@@ -2034,7 +2060,7 @@ Point78 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point79 {
+Point80 {
 	nNumber=271
 	sLabel="PCui4P2"
 	sDescription=""
@@ -2060,7 +2086,7 @@ Point79 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point80 {
+Point81 {
 	nNumber=272
 	sLabel="PCui4P3"
 	sDescription=""
@@ -2086,7 +2112,7 @@ Point80 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point81 {
+Point82 {
 	nNumber=280
 	sLabel="PCui1P1"
 	sDescription="PASS盘区觴"
@@ -2112,7 +2138,7 @@ Point81 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point82 {
+Point83 {
 	nNumber=281
 	sLabel="PCui1P2"
 	sDescription=""
@@ -2138,7 +2164,7 @@ Point82 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point83 {
+Point84 {
 	nNumber=282
 	sLabel="PCui1P3"
 	sDescription=""
@@ -2164,7 +2190,7 @@ Point83 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point84 {
+Point85 {
 	nNumber=283
 	sLabel="PCui1P4"
 	sDescription=""
@@ -2190,7 +2216,7 @@ Point84 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point85 {
+Point86 {
 	nNumber=290
 	sLabel="NCuip1"
 	sDescription="NG盘区觴"
@@ -2216,7 +2242,7 @@ Point85 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point86 {
+Point87 {
 	nNumber=291
 	sLabel="NCuiP2"
 	sDescription=""
@@ -2242,7 +2268,7 @@ Point86 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point87 {
+Point88 {
 	nNumber=292
 	sLabel="NCuiP3"
 	sDescription=""
@@ -2268,7 +2294,7 @@ Point87 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point88 {
+Point89 {
 	nNumber=300
 	sLabel="ShikePassP1"
 	sDescription="石刻不良,箈"
@@ -2294,7 +2320,7 @@ Point88 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point89 {
+Point90 {
 	nNumber=301
 	sLabel="ShikePassP2"
 	sDescription=""
@@ -2320,7 +2346,7 @@ Point89 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point90 {
+Point91 {
 	nNumber=310
 	sLabel="PCui2P1"
 	sDescription="PASS盘区觴"
@@ -2346,7 +2372,7 @@ Point90 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point91 {
+Point92 {
 	nNumber=311
 	sLabel="PCui2P2"
 	sDescription=""
@@ -2372,7 +2398,7 @@ Point91 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point92 {
+Point93 {
 	nNumber=312
 	sLabel="PCui2P3"
 	sDescription=""
@@ -2398,7 +2424,7 @@ Point92 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point93 {
+Point94 {
 	nNumber=313
 	sLabel="PCui2P4"
 	sDescription=""
@@ -2424,7 +2450,7 @@ Point93 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point94 {
+Point95 {
 	nNumber=350
 	sLabel="RoutePassP1"
 	sDescription=""
@@ -2450,7 +2476,7 @@ Point94 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point95 {
+Point96 {
 	nNumber=351
 	sLabel="RoutePassP2"
 	sDescription=""
@@ -2476,7 +2502,7 @@ Point95 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point96 {
+Point97 {
 	nNumber=352
 	sLabel="RoutePassP3"
 	sDescription=""
@@ -2502,7 +2528,7 @@ Point96 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point97 {
+Point98 {
 	nNumber=353
 	sLabel="RoutePassP4"
 	sDescription=""
@@ -2528,7 +2554,7 @@ Point97 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point98 {
+Point99 {
 	nNumber=354
 	sLabel="RoutePassP5"
 	sDescription=""
@@ -2554,7 +2580,7 @@ Point98 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point99 {
+Point100 {
 	nNumber=355
 	sLabel="RoutePassP6"
 	sDescription=""
@@ -2580,7 +2606,7 @@ Point99 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point100 {
+Point101 {
 	nNumber=356
 	sLabel="RoutePassP7"
 	sDescription=""
@@ -2606,7 +2632,7 @@ Point100 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point101 {
+Point102 {
 	nNumber=357
 	sLabel="RoutePassP8"
 	sDescription=""
@@ -2632,7 +2658,7 @@ Point101 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point102 {
+Point103 {
 	nNumber=358
 	sLabel="RoutePassP9"
 	sDescription=""
@@ -2658,7 +2684,7 @@ Point102 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point103 {
+Point104 {
 	nNumber=359
 	sLabel="RoutePassP10"
 	sDescription=""
@@ -2684,7 +2710,7 @@ Point103 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point104 {
+Point105 {
 	nNumber=400
 	sLabel="PCui1_2_A"
 	sDescription=""
@@ -2710,7 +2736,7 @@ Point104 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point105 {
+Point106 {
 	nNumber=401
 	sLabel="PCui1_1_A"
 	sDescription=""
@@ -2736,7 +2762,7 @@ Point105 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point106 {
+Point107 {
 	nNumber=402
 	sLabel="PCui1_3_A"
 	sDescription=""
@@ -2762,7 +2788,7 @@ Point106 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point107 {
+Point108 {
 	nNumber=410
 	sLabel="PCui2_1_A"
 	sDescription=""
@@ -2788,7 +2814,7 @@ Point107 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point108 {
+Point109 {
 	nNumber=411
 	sLabel="PCui2_2_A"
 	sDescription=""
@@ -2814,7 +2840,7 @@ Point108 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point109 {
+Point110 {
 	nNumber=412
 	sLabel="PCui2_3_A"
 	sDescription=""
@@ -2840,7 +2866,7 @@ Point109 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point110 {
+Point111 {
 	nNumber=420
 	sLabel="PCui3_1_A"
 	sDescription=""
@@ -2866,7 +2892,7 @@ Point110 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point111 {
+Point112 {
 	nNumber=421
 	sLabel="PCui3_2_A"
 	sDescription=""
@@ -2892,7 +2918,7 @@ Point111 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point112 {
+Point113 {
 	nNumber=430
 	sLabel="PCui4_1_A"
 	sDescription=""
@@ -2918,7 +2944,7 @@ Point112 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point113 {
+Point114 {
 	nNumber=431
 	sLabel="PCui4_2_A"
 	sDescription=""
@@ -2944,7 +2970,7 @@ Point113 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point114 {
+Point115 {
 	nNumber=440
 	sLabel="NCui_1_A"
 	sDescription=""
@@ -2970,7 +2996,7 @@ Point114 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point115 {
+Point116 {
 	nNumber=441
 	sLabel="NCui_2_A"
 	sDescription=""
@@ -2996,7 +3022,7 @@ Point115 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point116 {
+Point117 {
 	nNumber=442
 	sLabel="NCui_3_A"
 	sDescription=""
@@ -3022,7 +3048,85 @@ Point116 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point117 {
+Point118 {
+	nNumber=450
+	sLabel="NCui1_A"
+	sDescription=""
+	nUndefined=0
+	rX=-247.061
+	rY=-274.821
+	rZ=-132.049
+	rU=99.627
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point119 {
+	nNumber=451
+	sLabel="NCui2_A"
+	sDescription=""
+	nUndefined=0
+	rX=-368.315
+	rY=-268.223
+	rZ=-132.049
+	rU=99.619
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point120 {
+	nNumber=452
+	sLabel="NCui3_A"
+	sDescription=""
+	nUndefined=0
+	rX=-247.058
+	rY=79.656
+	rZ=-132.049
+	rU=99.632
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point121 {
 	nNumber=500
 	sLabel=""
 	sDescription=""
@@ -3048,7 +3152,7 @@ Point117 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point118 {
+Point122 {
 	nNumber=501
 	sLabel=""
 	sDescription=""
@@ -3074,7 +3178,7 @@ Point118 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point119 {
+Point123 {
 	nNumber=502
 	sLabel=""
 	sDescription=""
@@ -3100,7 +3204,7 @@ Point119 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point120 {
+Point124 {
 	nNumber=503
 	sLabel=""
 	sDescription=""
@@ -3126,7 +3230,7 @@ Point120 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point121 {
+Point125 {
 	nNumber=504
 	sLabel=""
 	sDescription=""
@@ -3152,7 +3256,7 @@ Point121 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point122 {
+Point126 {
 	nNumber=505
 	sLabel=""
 	sDescription=""
@@ -3178,7 +3282,7 @@ Point122 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point123 {
+Point127 {
 	nNumber=506
 	sLabel=""
 	sDescription=""
@@ -3204,7 +3308,7 @@ Point123 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point124 {
+Point128 {
 	nNumber=507
 	sLabel=""
 	sDescription=""
@@ -3230,7 +3334,7 @@ Point124 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point125 {
+Point129 {
 	nNumber=998
 	sLabel="FinalPosition1"
 	sDescription=""
@@ -3256,7 +3360,7 @@ Point125 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point126 {
+Point130 {
 	nNumber=999
 	sLabel="FinalPosition"
 	sDescription=""

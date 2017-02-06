@@ -1,0 +1,19 @@
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass A3PASS1;pass A3PASS2;pass A3PASS3;pass A3PASS4;pass B_3;go B_3
+> pass B_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass A4PASS1;pass A4PASS2;pass A4PASS3;pass A4PASS4;pass B_4;go A_4
+> pass B_4;pass A4PASS4;pass A4PASS3;pass A4PASS2;pass A4PASS1;go ChangeHandL /l
+> GO ChangeHandL /R
+> outw SpositionY,37000
+> pass NCuip1;pass NCuip2;pass NCuip3;go NCui1
+> GO NCuip3;pass NCuip3;pass NCuip2;pass NCuip1;GO ChangeHandL /R
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass A1PASS2
+> go b_1 +z(10)
+> go b_1
+> pass b_1+z(10);pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> 

@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/01/16 06:12:58:268,DS:0000038181,CS:47606,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/01/20 02:30:00:681,DS:0000038183,CS:35272,MA:00-15-17-CD-76-F0,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
@@ -193,10 +193,10 @@ Point8 {
 	sLabel="ScanPositionP3L"
 	sDescription=""
 	nUndefined=0
-	rX=-40.58
-	rY=203.67
-	rZ=-71.353
-	rU=225.448
+	rX=19.88
+	rY=198.799
+	rZ=-122.257
+	rU=225.445
 	rV=0
 	rW=0
 	rR=0
@@ -219,10 +219,10 @@ Point9 {
 	sLabel="ScanPositionP3R"
 	sDescription=""
 	nUndefined=0
-	rX=-44.606
-	rY=216.619
-	rZ=-71.353
-	rU=225.453
+	rX=19.626
+	rY=208.427
+	rZ=-124.596
+	rU=225.447
 	rV=0
 	rW=0
 	rR=0
@@ -507,7 +507,7 @@ Point20 {
 	nUndefined=0
 	rX=-17.368
 	rY=390.422
-	rZ=-139.416
+	rZ=-139.916
 	rU=189.564
 	rV=0
 	rW=0
@@ -557,10 +557,10 @@ Point22 {
 	sLabel="A_1"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=314.37
-	rY=377.032
-	rZ=-138.993
-	rU=190.159
+	rX=314.267
+	rY=378.524
+	rZ=-135.813
+	rU=190.148
 	rV=0
 	rW=0
 	rR=0
@@ -583,10 +583,10 @@ Point23 {
 	sLabel="A_2"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=314.423
-	rY=374.274
-	rZ=-140.849
-	rU=189.532
+	rX=313.733
+	rY=376.618
+	rZ=-135.008
+	rU=189.522
 	rV=0
 	rW=0
 	rR=0
@@ -636,7 +636,7 @@ Point25 {
 	sDescription="治具穴"
 	nUndefined=0
 	rX=308.05
-	rY=-139.057
+	rY=-138.857
 	rZ=-139.092
 	rU=189.418
 	rV=0
@@ -662,9 +662,9 @@ Point26 {
 	sDescription=""
 	nUndefined=0
 	rX=277.662
-	rY=359.573
-	rZ=-141.201
-	rU=190.407
+	rY=361.861
+	rZ=-137.711
+	rU=190.299
 	rV=0
 	rW=0
 	rR=0
@@ -687,10 +687,10 @@ Point27 {
 	sLabel="B_2"
 	sDescription=""
 	nUndefined=0
-	rX=277.973
-	rY=357.703
-	rZ=-140.849
-	rU=189.737
+	rX=276.976
+	rY=360.086
+	rZ=-137.278
+	rU=189.614
 	rV=0
 	rW=0
 	rR=0
@@ -740,7 +740,7 @@ Point29 {
 	sDescription=""
 	nUndefined=0
 	rX=269.661
-	rY=-155.43
+	rY=-155.23
 	rZ=-139.992
 	rU=189.419
 	rV=0
@@ -1677,7 +1677,7 @@ Point65 {
 	nUndefined=0
 	rX=100.555
 	rY=376.022
-	rZ=-126.097
+	rZ=-111.807
 	rU=178.925
 	rV=0
 	rW=0
@@ -2845,10 +2845,10 @@ Point110 {
 	sLabel="PCui3_1_A"
 	sDescription=""
 	nUndefined=0
-	rX=126.866
+	rX=128.565
 	rY=-387.979
-	rZ=-124.553
-	rU=99.549
+	rZ=-126.104
+	rU=99.546
 	rV=0
 	rW=0
 	rR=0

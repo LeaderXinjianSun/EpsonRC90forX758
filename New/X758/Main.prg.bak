@@ -1641,7 +1641,7 @@ TesterOperate1_lable2:
 			EndIf
 		EndIf
 	Else
-		If Discharge <> 0 Then
+		If Discharge <> 0 And PickHave(1) = False Then
 			For i = 0 To 3
 				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
 					Exit For
@@ -2369,7 +2369,7 @@ TesterOperate1_lable2:
 			GoSub TesterOperate1ReleaseSub
 		EndIf
 	Else
-		If Discharge <> 0 Then
+		If Discharge <> 0 And PickHave(0) = False Then
 			For i = 0 To 3
 				If Tester_Fill(i) = True And Tester_Testing(i) = False Then
 					Exit For
@@ -2427,13 +2427,28 @@ TesterOperate1_lable4:
 				Else
 TesterOperate1_lable5:
 	                GoSub TesterOperate1SuckSub
-					
+					If PickHave(1) Then
+						If Sw(VacuumValueB) = 0 Then
+							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+							Pause
+							PickHave(1) = False
+						EndIf
+					EndIf
 					If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 						Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
 						Print "B，排料，复测，" + Str$(i + 1)
 						MsgSend$ = "B，排料，复测，" + Str$(i + 1)
 						'继续放，复测
 						GoSub TesterOperate1ReleaseSub_1
+						If PickHave(1) Then
+							If Sw(VacuumValueB) = 0 Then
+								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+								Pause
+								PickHave(1) = False
+							EndIf
+						EndIf
 					Else
 						If NeedChancel(i) = True Then
 							Tester_Select(i) = False
