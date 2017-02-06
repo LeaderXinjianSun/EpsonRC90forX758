@@ -779,7 +779,7 @@ PickFeedOperatelabel1:
 					Case 4
 						Print "蚀刻不良"
 						MsgSend$ = "蚀刻不良"
-						Pause
+'						Pause
 						TargetPosition_Num = 11
 						FinalPosition = P(Int(Rnd(40) / 10) + 110)
 						Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -788,7 +788,7 @@ PickFeedOperatelabel1:
 					Default
 						Print "扫码不良"
 						MsgSend$ = "扫码不良"
-						Pause
+'						Pause
 						Pick_P_Msg(0) = 1
 						
 				Send
@@ -1719,6 +1719,7 @@ TesterOperate1_lable2:
 								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 								Pause
+								Off SuckB
 								PickHave(1) = False
 							EndIf
 						EndIf
@@ -1744,6 +1745,7 @@ TesterOperate1_lable2:
 					Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 					MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 					Pause
+					Off SuckB
 					PickHave(1) = False
 				EndIf
 			EndIf
@@ -2434,6 +2436,7 @@ TesterOperate1_lable2:
 						Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 						MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 						Pause
+						Off SuckB
 						PickHave(1) = False
 					EndIf
 				EndIf
@@ -2449,6 +2452,7 @@ TesterOperate1_lable2:
 							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 							Pause
+							Off SuckB
 							PickHave(1) = False
 						EndIf
 					EndIf
@@ -2540,6 +2544,7 @@ TesterOperate1_lable5:
 							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 							Pause
+							Off SuckB
 							PickHave(1) = False
 						EndIf
 					EndIf
@@ -2554,6 +2559,7 @@ TesterOperate1_lable5:
 								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
 								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
 								Pause
+								Off SuckB
 								PickHave(1) = False
 							EndIf
 						EndIf
@@ -4138,6 +4144,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait(Sw(FeedReady) = 1 And FeedReadySigleDown = 1) Or Discharge <> 0
 				EndIf
 				
+				If Sw(X110) = 1 Or Sw(X111) = 0 Then
+					Print "上料盘，气缸传感器异常"
+					MsgSend$ = "上料盘，气缸传感器异常"
+					Pause
+				EndIf
+				Wait Sw(X110) = 0 And Sw(X111) = 1
 				
 				Pass A1PASS1
 				If NeedAnotherMove(0) Then

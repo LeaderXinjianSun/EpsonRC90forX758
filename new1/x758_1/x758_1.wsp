@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/02/06 12:28:45:746,DS:0000002046,CS:39266,MA:00-0E-C6-CD-30-88,EI:           
-sActiveChild="机器人管理芢x"
+ENVT0100,LM:2017/02/06 16:40:53:398,DS:0000002042,CS:24190,MA:00-0E-C6-CD-30-88,EI:           
+sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -29,14 +29,14 @@ PointFile1 {
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
 		nWidth=785
 		nHeight=454
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=True
@@ -49,7 +49,7 @@ RunWindow {
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=15
 		nTop=94
@@ -61,10 +61,10 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=729
-		nTop=355
+		nLeft=788
+		nTop=534
 		nWidth=478
-		nHeight=346
+		nHeight=327
 	}
 }
 Simulator {
@@ -95,10 +95,10 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=154
-		nTop=117
+		nLeft=219
+		nTop=292
 		nWidth=698
 		nHeight=477
 	}
