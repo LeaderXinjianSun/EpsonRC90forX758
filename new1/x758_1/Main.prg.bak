@@ -58,6 +58,10 @@ Global Boolean isXqtting
 
 Global Preserve Integer BarcodeMode
 
+Global Boolean NeedCleanAction
+Global Boolean CleanActionFlag
+Global Boolean CleanActionFinishFlag
+
 Function main
 	Integer i
 	Integer fillNum, selectNum
@@ -200,7 +204,7 @@ Function main2
 	Wait 0.2
 	Xqt TesterStart4, NoEmgAbort
 	Xqt AllMonitor, NoEmgAbort
-	Call InitAction
+'	Call InitAction
 	Wait 0.2
 	IsLoopTestMode = False
 	Off Discharing
@@ -235,16 +239,35 @@ Function main2
 	
 main_label1:
 	Wait 0.2
-	Print "请按继续，开始运行"
-	MsgSend$ = "请按继续，开始运行"
-	Pause
+	If CleanActionFlag Then
+		Print "清洁操作，开始"
+		MsgSend$ = "清洁操作，开始"
+		Call CleanActionProcess
+		Print "清洁操作，结束"
+		MsgSend$ = "清洁操作，结束"
+		CleanActionFlag = False
+		CleanActionFinishFlag = True
+		Discharge = 0
+		Off Discharing, Forced
+	EndIf
+	
+	If Not CleanActionFinishFlag Then
+		Print "请按继续，开始运行"
+		MsgSend$ = "请按继续，开始运行"
+		Pause
+	Else
+		CleanActionFinishFlag = False
+	EndIf
+
 	Do
+		
+
 		selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
 		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
 
 		If Discharge <> 0 And fillNum = 0 And PickHave(0) = False And PickHave(1) = False Then
-			Discharge = 0
-			Off Discharing, Forced
+			
+			
 			TargetPosition_Num = 1
 			If Hand = 1 Then
 				FinalPosition = ChangeHandL /R :Z(-61)
@@ -255,7 +278,13 @@ main_label1:
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 			Print "排料完成"
 			MsgSend$ = "排料完成"
-			
+			If NeedCleanAction Then
+				NeedCleanAction = False
+				CleanActionFlag = True
+			Else
+				Discharge = 0
+				Off Discharing, Forced
+			EndIf
 			Exit Do
 		EndIf
 			If PickHave(0) = False And PickHave(1) = False Then
@@ -277,6 +306,77 @@ main_label1:
 
 	Loop
 	GoTo main_label1
+Fend
+Function CleanActionProcess
+	Integer i, rearnum
+	For i = 0 To 3
+		If Tester_Select(i) Then
+			GoSub CleanBlowSub
+			Print "测试机" + Str$(i + 1) + "，清洁完成"
+			MsgSend$ = "测试机" + Str$(i + 1) + "，清洁完成"
+		EndIf
+	Next
+	TargetPosition_Num = 1
+	If Hand = 1 Then
+		FinalPosition = ChangeHandL /R :Z(-61)
+	Else
+		FinalPosition = ChangeHandL /L :Z(-61)
+	EndIf
+	
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Exit Function
+CleanBlowSub:
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS3
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+
+		FinalPosition = FinalPosition1
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	Wait Sw(rearnum) = 1
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = B_1 +Z(8)
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = B_2 +Z(8)
+			rearnum = 5
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = B_3 +Z(8)
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = B_4 +Z(8)
+			rearnum = 15
+	Send
+	FinalPosition = FinalPosition1
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Call CleanBlowAction(1, i + 1)
+Return
 Fend
 Function InitAction
 	
@@ -311,6 +411,9 @@ Function InitAction
 '	PassTrayPalletNum = 1
 '	NgTrayPalletNum = 1
 '	Position2NeedNeedAnotherMove = False
+    NeedCleanAction = False;
+    CleanActionFlag = False;
+    CleanActionFinishFlag = False;
 Fend
 Function ClearAction
 	Integer i
@@ -3960,7 +4063,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Pass A1PASS2
 					RoutePassP4 = B_1 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_1
+					Pass B_1 +Z(10)
 					
 				EndIf
 			Case 3
@@ -3969,9 +4072,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2
+					RoutePassP4 = B_2 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_2
+					Pass B_2 +Z(10)
 				EndIf
 			Case 4
 				If isInWaitPosition(2) Then
@@ -3979,9 +4082,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A3PASS4
 					
-					RoutePassP6 = B_3
+					RoutePassP6 = B_3 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_3
+					Pass B_3 +Z(10)
 				EndIf
 			Case 5
 				If isInWaitPosition(3) Then
@@ -3989,9 +4092,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4
+					RoutePassP6 = B_4 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_4
+					Pass B_4 +Z(10)
 					
 				EndIf
 		Send
@@ -4040,9 +4143,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					RoutePassP3 = A1PASS2
 					PassStepNum = PassStepNum + 1
 					Pass A1PASS2
-					RoutePassP4 = B_1
+					RoutePassP4 = B_1 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_1
+					Pass B_1 +Z(10)
 					NeedAnotherMove(0) = False
 				EndIf
 				Go FinalPosition
@@ -4065,9 +4168,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2
+					RoutePassP4 = B_2 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_2
+					Pass B_2 +Z(10)
 					NeedAnotherMove(1) = False
 				EndIf
 				Go FinalPosition
@@ -4097,9 +4200,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A3PASS4
 					
-					RoutePassP6 = B_3
+					RoutePassP6 = B_3 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_3
+					Pass B_3 +Z(10)
 					NeedAnotherMove(2) = False
 				EndIf
 				
@@ -4130,9 +4233,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4
+					RoutePassP6 = B_4 +Z(10)
 					PassStepNum = PassStepNum + 1
-					Pass B_4
+					Pass B_4 +Z(10)
 					NeedAnotherMove(3) = False
 				EndIf
 				
@@ -4356,6 +4459,45 @@ Function PickAction(num As Integer) As Boolean
 	Else
 		PickAction = True
 	EndIf
+Fend
+Function CleanBlowAction(num As Integer, Flexnum As Integer)
+'0 : A
+'1 : B
+'2 : C
+'3 : D
+	Integer sucknum, blownum, valvenum, vacuumnum, i
+	Select num
+		Case 0
+			valvenum = 12
+			sucknum = 0
+			blownum = 1
+			vacuumnum = 0
+		Case 1
+			valvenum = 13
+			sucknum = 2
+			blownum = 3
+			vacuumnum = 1
+		Case 2
+			valvenum = 14
+			sucknum = 4
+			blownum = 5
+			vacuumnum = 2
+		Case 3
+			valvenum = 15
+			sucknum = 6
+			blownum = 7
+			vacuumnum = 3
+	Send
+	
+ 	On valvenum
+	For i = 0 To 2
+		On blownum; Off sucknum
+	 	Wait 0.8
+	 	Off blownum
+	 	Wait 0.4
+	Next
+	Off valvenum
+	Wait 0.5
 Fend
 '释放动作
 'num:吸嘴索引
@@ -4594,6 +4736,12 @@ Function TcpIpCmdRev
 				Case "Discharge"
 					Discharge = 1
 					On Discharing, Forced
+				Case "TestersCleanAction"
+					If Not CleanActionFlag Then
+						Discharge = 1
+						On Discharing, Forced
+						NeedCleanAction = True
+					EndIf
 				Case "XQTAction"
 					If isXqtting = False Then
 						Select CmdRevStr$(1)
@@ -4973,6 +5121,8 @@ Function TrapInterruptAbort
 	Off NgTrayFull, Forced
 	Off Discharing, Forced
 Fend
+
+
 
 
 

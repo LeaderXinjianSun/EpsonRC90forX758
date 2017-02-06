@@ -16,4 +16,5 @@
 > go b_1 +z(10)
 > go b_1
 > pass b_1+z(10);pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> go APickFeed1 +z(20)
 > 
