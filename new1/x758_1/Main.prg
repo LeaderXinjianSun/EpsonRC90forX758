@@ -1714,15 +1714,15 @@ TesterOperate1_lable2:
 					If NeedChancel(i) = False Then
 					'取放
 						GoSub TesterOperate1ReleaseSub
-						If PickHave(1) Then
-							If Sw(VacuumValueB) = 0 Then
-								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-								Pause
-								Off SuckB
-								PickHave(1) = False
-							EndIf
-						EndIf
+'						If PickHave(1) Then
+'							If Sw(VacuumValueB) = 0 Then
+'								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'								Pause
+'								Off SuckB
+'								PickHave(1) = False
+'							EndIf
+'						EndIf
 '						If PickHave(1) Then
 '							isA_NeedReJuge = True
 '						EndIf
@@ -1740,15 +1740,15 @@ TesterOperate1_lable2:
 		Else
 '单放
 			GoSub TesterOperate1ReleaseSub
-			If PickHave(1) Then
-				If Sw(VacuumValueB) = 0 Then
-					Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-					MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-					Pause
-					Off SuckB
-					PickHave(1) = False
-				EndIf
-			EndIf
+'			If PickHave(1) Then
+'				If Sw(VacuumValueB) = 0 Then
+'					Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'					MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'					Pause
+'					Off SuckB
+'					PickHave(1) = False
+'				EndIf
+'			EndIf
 		EndIf
 	Else
 		If Discharge <> 0 And PickHave(1) = False Then
@@ -2100,14 +2100,7 @@ TesterOperate1ReleaseSub:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
-'	If isA_NeedReJuge Then
-'		If Sw(VacuumValueB) = 0 Then
-'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			Pause
-'		EndIf
-'	EndIf
-'	isA_NeedReJuge = False
+
 	Call ReleaseAction(0, i + 1)
 	PickHave(0) = False
 	Tester_Fill(i) = True;
@@ -2144,6 +2137,18 @@ TesterOperate1ReleaseSub:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	
+	If PickHave(1) Then
+		If Sw(VacuumValueB) = 0 Then
+			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			Pause
+			Off SuckB
+			PickHave(1) = False
+		EndIf
+	EndIf
+	
+	
 	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
@@ -2431,15 +2436,15 @@ TesterOperate1_lable1:
 			Else
 TesterOperate1_lable2:
                 GoSub TesterOperate1SuckSub
-				If PickHave(1) Then
-					If Sw(VacuumValueB) = 0 Then
-						Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-						MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-						Pause
-						Off SuckB
-						PickHave(1) = False
-					EndIf
-				EndIf
+'				If PickHave(1) Then
+'					If Sw(VacuumValueB) = 0 Then
+'						Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'						MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'						Pause
+'						Off SuckB
+'						PickHave(1) = False
+'					EndIf
+'				EndIf
 '复测				
 				If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 					Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
@@ -2447,15 +2452,15 @@ TesterOperate1_lable2:
 					MsgSend$ = "B，正常，复测，" + Str$(i + 1)
 					'继续放，复测
 					GoSub TesterOperate1ReleaseSub_1
-					If PickHave(1) Then
-						If Sw(VacuumValueB) = 0 Then
-							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-							Pause
-							Off SuckB
-							PickHave(1) = False
-						EndIf
-					EndIf
+'					If PickHave(1) Then
+'						If Sw(VacuumValueB) = 0 Then
+'							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'							Pause
+'							Off SuckB
+'							PickHave(1) = False
+'						EndIf
+'					EndIf
 				Else
 					'放
 					'若被测试机被选择屏蔽，需要先取走产品。
@@ -2539,30 +2544,30 @@ TesterOperate1_lable4:
 				Else
 TesterOperate1_lable5:
 	                GoSub TesterOperate1SuckSub
-					If PickHave(1) Then
-						If Sw(VacuumValueB) = 0 Then
-							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-							Pause
-							Off SuckB
-							PickHave(1) = False
-						EndIf
-					EndIf
+'					If PickHave(1) Then
+'						If Sw(VacuumValueB) = 0 Then
+'							Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'							MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'							Pause
+'							Off SuckB
+'							PickHave(1) = False
+'						EndIf
+'					EndIf
 					If PickHave(0) = True And Pick_P_Msg(0) = 1 And ReTest_ And Tester_ReTestFalg(i) < 1 Then
 						Tester_ReTestFalg(i) = Tester_ReTestFalg(i) + 1
 						Print "B，排料，复测，" + Str$(i + 1)
 						MsgSend$ = "B，排料，复测，" + Str$(i + 1)
 						'继续放，复测
 						GoSub TesterOperate1ReleaseSub_1
-						If PickHave(1) Then
-							If Sw(VacuumValueB) = 0 Then
-								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-								Pause
-								Off SuckB
-								PickHave(1) = False
-							EndIf
-						EndIf
+'						If PickHave(1) Then
+'							If Sw(VacuumValueB) = 0 Then
+'								Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'								MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'								Pause
+'								Off SuckB
+'								PickHave(1) = False
+'							EndIf
+'						EndIf
 					Else
 						If NeedChancel(i) = True Then
 							Tester_Select(i) = False
@@ -2656,14 +2661,6 @@ TesterOperate1SuckSub:
 		isInWaitPosition(j) = False
 	Next
 	
-'	If isA_NeedReJuge Then
-'		If Sw(VacuumValueB) = 0 Then
-'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			Pause
-'		EndIf
-'	EndIf
-'	isA_NeedReJuge = False
 	
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -2785,6 +2782,15 @@ TesterOperate1SuckSub:
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
 		Off SuckA
+	EndIf
+	If PickHave(1) Then
+		If Sw(VacuumValueB) = 0 Then
+			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			Pause
+			Off SuckB
+			PickHave(1) = False
+		EndIf
 	EndIf
 Return
 
@@ -3028,6 +3034,15 @@ TesterOperate1ReleaseSub_1:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+	If PickHave(1) Then
+		If Sw(VacuumValueB) = 0 Then
+			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+			Pause
+			Off SuckB
+			PickHave(1) = False
+		EndIf
+	EndIf
 	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
