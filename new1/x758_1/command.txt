@@ -79,4 +79,7 @@
 > go a_4
 > pass B_4;pass A4PASS4;pass A4PASS3;pass A4PASS2;pass A4PASS1;go ChangeHandL /l
 > outw SpositionY,10000
+> go here -z(10) -x(10)
+!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
+> go here -z(10) -x(10)
 > 

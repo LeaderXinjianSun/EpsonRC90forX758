@@ -62,7 +62,11 @@ Global Boolean NeedCleanAction
 Global Boolean CleanActionFlag
 Global Boolean CleanActionFinishFlag
 
+Global Boolean CheckFlexVoccum(4)
+
 Function main
+	
+
 	Integer i
 	Integer fillNum, selectNum
 	Trap Emergency Xqt TrapInterruptAbort
@@ -358,19 +362,19 @@ CleanBlowSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(8)
+			FinalPosition1 = B_1 +Z(8) -X(5)
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(8)
+			FinalPosition1 = B_2 +Z(8) -X(5)
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(8)
+			FinalPosition1 = B_3 +Z(8) -X(5)
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(8)
+			FinalPosition1 = B_4 +Z(8) -X(5)
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
@@ -2138,18 +2142,18 @@ TesterOperate1ReleaseSub:
 		isInWaitPosition(j) = False
 	Next
 	
-	If PickHave(1) Then
-		If Sw(VacuumValueB) = 0 Then
-			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			Pause
-			Off SuckB
-			PickHave(1) = False
-		EndIf
-	EndIf
+'	If PickHave(1) Then
+'		If Sw(VacuumValueB) = 0 Then
+'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			Pause
+'			Off SuckB
+'			PickHave(1) = False
+'		EndIf
+'	EndIf
 	
 	
-	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
@@ -2287,7 +2291,7 @@ TesterOperate1ReleaseSub_1:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
-	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
@@ -2783,15 +2787,15 @@ TesterOperate1SuckSub:
 		Pause
 		Off SuckA
 	EndIf
-	If PickHave(1) Then
-		If Sw(VacuumValueB) = 0 Then
-			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			Pause
-			Off SuckB
-			PickHave(1) = False
-		EndIf
-	EndIf
+'	If PickHave(1) Then
+'		If Sw(VacuumValueB) = 0 Then
+'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			Pause
+'			Off SuckB
+'			PickHave(1) = False
+'		EndIf
+'	EndIf
 Return
 
 TesterOperate1ReleaseSub:
@@ -2899,7 +2903,7 @@ TesterOperate1ReleaseSub:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
-	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
@@ -3034,16 +3038,16 @@ TesterOperate1ReleaseSub_1:
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
-	If PickHave(1) Then
-		If Sw(VacuumValueB) = 0 Then
-			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-			Pause
-			Off SuckB
-			PickHave(1) = False
-		EndIf
-	EndIf
-	If Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0 Then
+'	If PickHave(1) Then
+'		If Sw(VacuumValueB) = 0 Then
+'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
+'			Pause
+'			Off SuckB
+'			PickHave(1) = False
+'		EndIf
+'	EndIf
+	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
@@ -3886,6 +3890,9 @@ Return
 
 Fend
 Function ScanBarcodeOpetateP3(picksting$ As String)
+	
+    Boolean re_scan
+    re_scan = False
 	TargetPosition_Num = 1
 	ScanResult = 0
 '	If CmdSend$ <> "" Then
@@ -3902,6 +3909,9 @@ Function ScanBarcodeOpetateP3(picksting$ As String)
 	EndIf
 	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	
+ScanBarcodeOpetateP3label:
+	
 	Wait 0.2
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -3915,6 +3925,19 @@ Function ScanBarcodeOpetateP3(picksting$ As String)
 		Wait 0.2
 		Print "等待扫码结果 " + Str$(Tmr(7))
 	Loop
+	
+	If ScanResult <> 1 And re_scan = False Then
+		re_scan = True
+		Go Here +X(5)
+		Go Here +Y(5)
+		ScanResult = 0
+		Wait 0.5
+		GoTo ScanBarcodeOpetateP3label
+		
+	EndIf
+	
+	
+	
 	If Hand = 1 Then
 		Go ChangeHandL /R
 	Else
@@ -4486,7 +4509,66 @@ Function PickAction(num As Integer) As Boolean
 		PickAction = False
 	Else
 		PickAction = True
+		Select num
+			Case 0
+				Xqt PickhaveMoniterA
+			Case 1
+				Xqt PickhaveMoniterB
+		Send
+		
 	EndIf
+Fend
+Function PickhaveMoniterA
+	Boolean StartCount
+	StartCount = False
+	Do
+		Wait 0.2
+		If PickHave(0) Then
+			If Sw(VacuumValueA) = 0 Then
+				If StartCount = False Then
+					TmReset 8
+					StartCount = True
+				EndIf
+				If Tmr(8) > 0.5 Then
+					Print "A爪手掉料"
+					MsgSend$ = "A爪手掉料"
+					Pause
+					Off SuckA
+					PickHave(0) = False
+				EndIf
+			Else
+				StartCount = False
+			EndIf
+		Else
+			Exit Do
+		EndIf
+	Loop
+Fend
+Function PickhaveMoniterB
+	Boolean StartCount
+	StartCount = False
+	Do
+		Wait 0.2
+		If PickHave(1) Then
+			If Sw(VacuumValueB) = 0 Then
+				If StartCount = False Then
+					TmReset 9
+					StartCount = True
+				EndIf
+				If Tmr(9) > 0.5 Then
+					Print "B爪手掉料"
+					MsgSend$ = "B爪手掉料"
+					Pause
+					Off SuckB
+					PickHave(1) = False
+				EndIf
+			Else
+				StartCount = False
+			EndIf
+		Else
+			Exit Do
+		EndIf
+	Loop
 Fend
 Function CleanBlowAction(num As Integer, Flexnum As Integer)
 '0 : A
@@ -4536,6 +4618,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 '2 : C
 '3 : D
 	Integer sucknum, blownum, valvenum, vacuumnum
+	Integer FlexVoccum1, FlexVoccum2
 	Select num
 		Case 0
 			valvenum = 12
@@ -4558,9 +4641,12 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 			blownum = 7
 			vacuumnum = 3
 	Send
-
 	
 
+	
+	If Flexnum <> -1 Then
+		Go Here +Z(2.5)
+	EndIf
 
 	
     Wait 0.5
@@ -4570,13 +4656,13 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
  	Wait 0.2
 	Select Flexnum
 		Case 1
-			On AL_Suck
+			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
 		Case 2
-			On AR_Suck
+			On AR_Suck; FlexVoccum1 = 12; FlexVoccum2 = 13
 		Case 3
-			On BL_Suck
+			On BL_Suck; FlexVoccum1 = 20; FlexVoccum2 = 21
 		Case 4
-			On BR_Suck
+			On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
 	Send
 
 	
@@ -4589,8 +4675,14 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 	Wait 0.2
 	
  	If Flexnum <> -1 Then
+ 	    Go Here -Z(2.5)
  		On valvenum
  		Wait 0.5
+ 		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
+ 			CheckFlexVoccum(Flexnum - 1) = True
+ 		Else
+ 			CheckFlexVoccum(Flexnum - 1) = False
+ 		EndIf
  		Off valvenum
  		Wait 0.3
  	EndIf
@@ -4950,7 +5042,7 @@ Function TesterStart1
 				
 				
 				On AL_Suck, Forced
-				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
+				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1, 1
 				Off AL_Suck, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
@@ -5007,7 +5099,7 @@ Function TesterStart2
 				Loop
 
 				On AR_Suck, Forced
-				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
+				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1, 1
 				Off AR_Suck, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
@@ -5064,7 +5156,7 @@ Function TesterStart3
 				Loop
 
 				On BL_Suck, Forced
-				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
+				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1, 1
 				Off BL_Suck, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
@@ -5122,7 +5214,7 @@ Function TesterStart4
 				
 				
 				On BR_Suck, Forced
-				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
+				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1, 1
 				Off BR_Suck, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False
@@ -5149,6 +5241,7 @@ Function TrapInterruptAbort
 	Off NgTrayFull, Forced
 	Off Discharing, Forced
 Fend
+
 
 
 
