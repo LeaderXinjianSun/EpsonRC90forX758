@@ -78,8 +78,85 @@
 > go here -x(1.5)
 > go a_4
 > pass B_4;pass A4PASS4;pass A4PASS3;pass A4PASS2;pass A4PASS1;go ChangeHandL /l
+> go APickFeedR5
+> go ScanPositionP3R
+> outw SpositionY,50000
 > outw SpositionY,10000
-> go here -z(10) -x(10)
-!!错误: 4031, 电机处于关闭状态时无法执行运动命令。
-> go here -z(10) -x(10)
+> go APickFeed1
+> go ChangeHandL /l
+> outw SpositionY,50000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass A1PASS1;pass A1PASS2;pass B_1;go A_1
+> pass B_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+>  pass B_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+>  outw SpositionY,50000
+> pass A4PASS1;pass A4PASS2;pass A4PASS3;pass A4PASS4;pass B_4;go A_4
+> pass B_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+> outw SpositionY,8950
+> outw SpositionY,50000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass a1pass2;pass B_1;go A_1
+> pass B_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> go APickFeedR1
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass a1pass2;pass B_1;go A_1
+> go B_1
+> go A_1
+> pass B_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> go APickFeedr1 +z(10)
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass a1pass2;pass B_1;go A_1
+> pass B_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> go APickFeedr1
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go ChangeHandL /l
+> outw SpositionY,50000
+> go ChangeHandL /r
+> outw SpositionY,36000
+> pass A2PASS1;pass A2PASS2;pass B_2;go A_2
+> pass b_2;pass A2PASS2;pass A2PASS1;go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,27000
+> pass A3PASS1;pass A3PASS2;pass A3PASS3;pass A3PASS4;pass B_3;go a_3
+> pass B_3;pass A3PASS4;pass A3PASS3;pass A3PASS2;pass A3PASS1;go ChangeHandL /l
+> outw SpositionY,50000
+> pass A4PASS1;pass A4PASS2;pass A4PASS3;pass A4PASS4;pass B_4;go A_4
+> pass B_4;pass A4PASS4;pass A4PASS3;pass A4PASS2;pass A4PASS1;go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,8950
+> pass a1pass1;pass a1pass2;pass B_1;go A_1
+> pass B_1;pass A1PASS2;pass A1PASS1;go ChangeHandL /r
+> outw SpositionY,10000
+> go ChangeHandL /r
+> outw SpositionY,50000
+> go ChangeHandL /l
+> outw SpositionY,10000
+> go ChangeHandL /l
+> outw SpositionY,9900
+> outw SpositionY,9850
+> outw SpositionY,35850
+> pass A2PASS1;pass A2PASS2;pass B_2;go A_2
+> pass b_2;pass A2PASS2;pass A2PASS1;go ChangeHandL /r
+> outw SpositionY,49850
+> pass PCui2P1;pass PCui2P2;pass PCui2P3;pass PCui2P4;
+> go PCui2_3_A
+> go pallet(7,4)
+> go PCui2_2_A
+> pass PCui2P4;pass PCui2P3;pass PCui2P2;pass PCui2P1;go ChangeHandL /r
 > 

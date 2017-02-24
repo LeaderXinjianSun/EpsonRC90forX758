@@ -4504,7 +4504,7 @@ Function PickAction(num As Integer) As Boolean
 	Wait 0.8
 	Wait Sw(vacuumnum), 0.2
 	Off valvenum
-	Wait 0.5
+	Wait 1.5
 	If Sw(vacuumnum) = 0 Then
 		PickAction = False
 	Else
@@ -4529,7 +4529,7 @@ Function PickhaveMoniterA
 					TmReset 8
 					StartCount = True
 				EndIf
-				If Tmr(8) > 1 Then
+				If Tmr(8) > 0.25 Then
 					Print "A爪手掉料"
 					MsgSend$ = "A爪手掉料"
 					Pause
@@ -4555,7 +4555,7 @@ Function PickhaveMoniterB
 					TmReset 9
 					StartCount = True
 				EndIf
-				If Tmr(9) > 1 Then
+				If Tmr(9) > 0.25 Then
 					Print "B爪手掉料"
 					MsgSend$ = "B爪手掉料"
 					Pause
@@ -4653,6 +4653,11 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
  	On valvenum
  	Wait 0.3
 	On blownum; Off sucknum
+
+	PickHave(num) = False
+	
+	
+	
  	Wait 0.2
 	Select Flexnum
 		Case 1
@@ -5241,6 +5246,7 @@ Function TrapInterruptAbort
 	Off NgTrayFull, Forced
 	Off Discharing, Forced
 Fend
+
 
 
 
