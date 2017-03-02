@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/02/24 10:52:00:670,DS:0000002043,CS:34067,MA:00-0E-C6-CD-30-88,EI:           
-sActiveChild="ÃüÁ\x"
+ENVT0100,LM:2017/03/02 12:07:52:479,DS:0000002048,CS:20064,MA:C6-8E-8F-74-5D-89,EI:           
+sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -29,7 +29,7 @@ PointFile1 {
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -95,7 +95,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=30
 		nTop=12

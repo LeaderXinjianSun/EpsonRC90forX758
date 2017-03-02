@@ -1615,7 +1615,14 @@ Function TesterOperate1
 			If ReTest_ Then
 			'Pick_P_Msg，依据TesterOperate1更改
 				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(0) - 2) <> i Then
-					Exit For
+					If (Pick_P_Msg(0) - 2 = 0 Or Pick_P_Msg(0) - 2 = 1) And i <= 1 Then
+						Exit For
+					ElseIf (Pick_P_Msg(0) - 2 = 2 Or Pick_P_Msg(0) - 2 = 3) And i >= 2 Then
+						Exit For
+					ElseIf Pick_P_Msg(0) - 2 < 0 Then
+						Exit For
+					EndIf
+					
 				EndIf
 			Else
 				If Tester_Select(i) = True And Tester_Fill(i) = False Then
@@ -1631,7 +1638,13 @@ Function TesterOperate1
 			For i = 0 To 3
 				If ReTest_ Then
 					If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
-						Exit For
+						If (Pick_P_Msg(0) - 2 = 0 Or Pick_P_Msg(0) - 2 = 1) And i <= 1 Then
+							Exit For
+						ElseIf (Pick_P_Msg(0) - 2 = 2 Or Pick_P_Msg(0) - 2 = 3) And i >= 2 Then
+							Exit For
+						ElseIf Pick_P_Msg(0) - 2 < 0 Then
+							Exit For
+						EndIf
 					EndIf
 				Else
 					If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
@@ -1688,7 +1701,13 @@ TesterOperate1_lable1:
 				For i = 0 To 3
 					If ReTest_ Then
 						If Tester_Select(i) = True And Tester_Fill(i) = True And (Pick_P_Msg(0) - 2) <> i And Tester_Testing(i) = False Then
-							Exit For
+							If (Pick_P_Msg(0) - 2 = 0 Or Pick_P_Msg(0) - 2 = 1) And i <= 1 Then
+								Exit For
+							ElseIf (Pick_P_Msg(0) - 2 = 2 Or Pick_P_Msg(0) - 2 = 3) And i >= 2 Then
+								Exit For
+							ElseIf Pick_P_Msg(0) - 2 < 0 Then
+								Exit For
+							EndIf
 						EndIf
 					Else
 						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
@@ -2350,7 +2369,13 @@ Function TesterOperate2
 			If ReTest_ Then
 			'Pick_P_Msg，依据TesterOperate1更改
 				If Tester_Select(i) = True And Tester_Fill(i) = False And (Pick_P_Msg(1) - 2) <> i Then
-					Exit For
+					If (Pick_P_Msg(1) - 2 = 0 Or Pick_P_Msg(1) - 2 = 1) And i <= 1 Then
+						Exit For
+					ElseIf (Pick_P_Msg(1) - 2 = 2 Or Pick_P_Msg(1) - 2 = 3) And i >= 2 Then
+						Exit For
+					ElseIf Pick_P_Msg(1) - 2 < 0 Then
+						Exit For
+					EndIf
 				EndIf
 			Else
 				If Tester_Select(i) = True And Tester_Fill(i) = False Then
@@ -4504,7 +4529,7 @@ Function PickAction(num As Integer) As Boolean
 	Wait 0.8
 	Wait Sw(vacuumnum), 0.2
 	Off valvenum
-	Wait 1.5
+	Wait 1
 	If Sw(vacuumnum) = 0 Then
 		PickAction = False
 	Else
