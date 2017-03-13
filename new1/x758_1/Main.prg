@@ -64,135 +64,18 @@ Global Boolean CleanActionFinishFlag
 
 Global Boolean CheckFlexVoccum(4)
 
+Global Integer FMoveComplete
+Global Integer ResetCMDComplete
+
+Global Integer TMoveComplete
 Function main
 	
-
-	Integer i
-	Integer fillNum, selectNum
-	Trap Emergency Xqt TrapInterruptAbort
-	Trap Abort Xqt TrapInterruptAbort
-	Trap Error Xqt TrapInterruptAbort
-	Wait 0.2
-	Xqt TesterStart1, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart2, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart3, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart4, NoEmgAbort
-	Xqt AllMonitor, NoEmgAbort
-	Call InitAction
-	Wait 0.2
-	IsLoopTestMode = False
-	Print "请按复位按钮，开始复位"
-	MsgSend$ = "请按复位按钮，开始复位"
-	Wait Sw(ResetButton) = 1
-	If FeedPanelNum < 3 Then
-		Off RollValve
-	Else
-		On RollValve
-	EndIf
-	
-	
-	Call HomeReturnAction
-	Print "等待上料、下料结束"
-	MsgSend$ = "等待上料、下料结束"
-'	Wait Sw(FeedReady) = 0 And Sw(PassTrayRdy) = 0
-	Wait Sw(FeedReady) = 1 And Sw(PassTrayRdy) = 1 And Sw(NgTrayRdy) = 1
-	If Sw(PassTrayRdy) = 1 Then
-		PassTraySigleDown = 1
-	EndIf
-	If Sw(NgTrayRdy) = 1 Then
-		NgTraySigleDown = 1
-	EndIf
-	
-main_label1:
-	Wait 0.2
-	Print "请按开始按钮，开始运行"
-	MsgSend$ = "请按开始按钮，开始运行"
-	Wait Sw(StartButton) = 1
 	Do
-		selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
-		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
-		If (fillNum = selectNum And fillNum <> 0) Or Discharge <> 0 Then
-		'如果全满，则取料
-		'如果排料，则取料
-			If Discharge <> 0 And fillNum = 0 Then
-				Discharge = 0
-				TargetPosition_Num = 1
-				If Hand = 1 Then
-					FinalPosition = ChangeHandL /R :Z(-61)
-				Else
-					FinalPosition = ChangeHandL /L :Z(-61)
-				EndIf
-				
-				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-						Print "排料完成"
-				MsgSend$ = "排料完成"
-				
-				Exit Do
-			EndIf
-			Call TesterOperate01
-			Call UnloadOperate(0)
-		Else
-			Call PickFeedOperate0
-			Call TesterOperate02
-		EndIf
-
-
+		Wait 1
 	Loop
-	GoTo main_label1
+
 Fend
-'单穴反复测试模式
-Function main1
-	
-    Integer i, j
-	Trap Emergency Xqt TrapInterruptAbort
-	Trap Abort Xqt TrapInterruptAbort
-	Trap Error Xqt TrapInterruptAbort
-	Wait 0.2
-	Xqt TesterStart1, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart2, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart3, NoEmgAbort
-	Wait 0.2
-	Xqt TesterStart4, NoEmgAbort
-	Xqt AllMonitor, NoEmgAbort
-	Call InitAction
-	Wait 0.2
-	Print "单穴反复测试模式"
-	MsgSend$ = "单穴反复测试模式"
-	IsLoopTestMode = True
-	Wait 0.2
-'	Print "请按复位按钮，开始复位"
-'	MsgSend$ = "请按复位按钮，开始复位"
-'	Wait Sw(ResetButton) = 1
-	Call HomeReturnAction
-	Wait 0.2
-'	Print "请按开始按钮，开始运行"
-'	MsgSend$ = "请按开始按钮，开始运行"
-'	Wait Sw(StartButton) = 1
-	PickHave(0) = False
-		
-	If LoopTestFlexIndex > 0 And LoopTestFlexIndex < 4 Then
-		i = LoopTestFlexIndex
-	Else
-		i = 0
-	EndIf
-	
-	Tester_Fill(i) = False
-	Tester_Testing(i) = False
-	Print "单穴测试模式，开始"
-	MsgSend$ = "单穴测试模式，开始"
-	Pause
-	Do
-		'取
-		Call TesterOperate001(i)
-		'放
-		Call TesterOperate002(i)
-	Loop
-Fend
+
 Function main2
 	Integer i
 	Integer fillNum, selectNum
@@ -223,23 +106,9 @@ Function main2
     Call TrapInterruptAbort
 	
 	Call HomeReturnAction
-	Print "等待上料结束"
-	MsgSend$ = "等待上料结束"
-	FeedReadySigleDown = 0
-	Wait Sw(FeedReady) = 1 And Sw(PassTrayRdy) = 1 And FeedReadySigleDown = 1
-	
-'	Print "等待下料结束"
-'	MsgSend$ = "等待下料结束"
-'	PassTraySigleDown = 0
-'	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
 
-	If Sw(PassTrayRdy) = 1 Then
-		PassTraySigleDown = 1
-	EndIf
-
-	If Sw(NgTrayRdy) = 1 Then
-		NgTraySigleDown = 1
-	EndIf
+	Wait Sw(FeedReady) = 1
+	FeedReadySigleDown = 1
 	
 main_label1:
 	Wait 0.2
@@ -272,13 +141,10 @@ main_label1:
 		If Discharge <> 0 And fillNum = 0 And PickHave(0) = False And PickHave(1) = False Then
 			
 			
-			TargetPosition_Num = 1
-			If Hand = 1 Then
-				FinalPosition = ChangeHandL /R :Z(-61)
-			Else
-				FinalPosition = ChangeHandL /L :Z(-61)
-			EndIf
+			TargetPosition_Num = 5
 			
+			FinalPosition = ChangeHandL
+						
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 			Print "排料完成"
 			MsgSend$ = "排料完成"
@@ -292,13 +158,7 @@ main_label1:
 			Exit Do
 		EndIf
 			If PickHave(0) = False And PickHave(1) = False Then
-				Select BarcodeMode
-					Case 0
-						Call PickFeedOperate0
-					Case 1
-						Call PickFeedOperate1
-				Send
-				
+				Call PickFeedOperate1
 			EndIf
 			Call UnloadOperate(0)
 			'处理A爪头
@@ -462,21 +322,21 @@ Function XQTAction(num As Integer)
 			Off FeedEmpty, Forced
 			FeedPanelNum = 0
 		Case 2
-			Off PassTrayFull, Forced
-			Wait 0.5
-			On PassTrayFull, Forced
-			PassTraySigleDown = 0
-			PassTrayPalletNum = 1
-			Wait 0.5
-			Off PassTrayFull, Forced
+'			Off PassTrayFull, Forced
+'			Wait 0.5
+'			On PassTrayFull, Forced
+'			PassTraySigleDown = 0
+'			PassTrayPalletNum = 1
+'			Wait 0.5
+'			Off PassTrayFull, Forced
 		Case 3
-			Off SHome, Forced
-			Wait 0.5
-			On SHome, Forced
-			INP_HomeSigleDown = 0
-
-			Wait 0.5
-			Off SHome, Forced
+'			Off SHome, Forced
+'			Wait 0.5
+'			On SHome, Forced
+'			INP_HomeSigleDown = 0
+'
+'			Wait 0.5
+'			Off SHome, Forced
 			
 	Send
 	isXqtting = False
@@ -485,9 +345,7 @@ Function AllMonitor
 	
 	Integer FeedReady_, PassTrayRdy_, INP_Home_, i, NgTrayRdy_
 	FeedReady_ = Sw(FeedReady)
-	PassTrayRdy_ = Sw(PassTrayRdy)
-	INP_Home_ = Sw(INP_Home)
-	NgTrayRdy_ = Sw(NgTrayRdy)
+
 	Do
 		Wait 0.1
 		If FeedReady_ <> Sw(FeedReady) Then
@@ -512,71 +370,9 @@ Function AllMonitor
 			EndIf
 		EndIf
 		
-		If PassTrayRdy_ <> Sw(PassTrayRdy) Then
-			PassTrayRdy_ = Sw(PassTrayRdy)
-			If Sw(PassTrayRdy) = 1 Then
-				PassTrayPalletNum = 1
-				PassTraySigleDown = 1
-				Off PassTrayFull, Forced
-			Else
-				PassTrayPalletNum = 1
-				PassTraySigleDown = 1
-				Off PassTrayFull, Forced
-			EndIf
-		EndIf
+
 		
-		If INP_Home_ <> Sw(INP_Home) Then
-			INP_Home_ = Sw(INP_Home)
-			If Sw(INP_Home_) = 1 Then
-				INP_HomeSigleDown = 1
-				Off SHome, Forced
-			Else
-				INP_HomeSigleDown = 1
-				Off SHome, Forced
-			EndIf
-		EndIf
-		
-		If NgTrayRdy_ <> Sw(NgTrayRdy) Then
-			NgTrayRdy_ = Sw(NgTrayRdy)
-			If Sw(NgTrayRdy) = 1 Then
-				NgTrayPalletNum = 1
-				NgTraySigleDown = 1
-				Off NgTrayFull, Forced
-			Else
-				NgTrayPalletNum = 1
-				NgTraySigleDown = 1
-				Off NgTrayFull, Forced
-			EndIf
-		EndIf
-		
-		If NgTrayPalletNum > 16 Then
-			NgTrayPalletNum = 1
-		EndIf
-		
-		If PassTrayPalletNum > 13 Then
-			PassTrayPalletNum = 1
-		EndIf
-		
-'		If Sw(FeedReady) = 0 Then
-'			FeedReadySigleDown = 1
-'			Off FeedEmpty, Forced
-'		EndIf
-		
-'		If Sw(PassTrayRdy) = 0 Then
-'			PassTrayPalletNum = 1
-'			PassTraySigleDown = 1
-'			Off PassTrayFull, Forced
-'		EndIf
-		
-'		If Sw(NgTrayRdy) = 0 And NgTraySigleDown = 0 Then
-'			NgTrayPalletNum = 1
-'			NgTraySigleDown = 1
-'		EndIf
-		
-'		If Sw(INP_Home) = 0 Then
-'			INP_HomeSigleDown = 1
-'			Off SHome, Forced
-'		EndIf		
+	
 	Loop
 Fend
 Function test1
@@ -585,7 +381,7 @@ Function test1
 '	Print CX(P500)
 '	PLabel 500, "XtestP1"
 '	SavePoints "robot1.pts"
-	OutW SpositionY, 65534
+'	OutW SpositionY, 65534
 Fend
 Function test2
 
@@ -724,12 +520,7 @@ PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
 		'上料等
 		TargetPosition_Num = 1
-		If Hand = 1 Then
-			FinalPosition = ChangeHandL /R :Z(-61)
-		Else
-			FinalPosition = ChangeHandL /L :Z(-61)
-		EndIf
-		
+		FinalPosition = ChangeHandL
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "上料盘，未准备好"
 		MsgSend$ = "上料盘，未准备好"
@@ -748,11 +539,9 @@ PickFeedOperatelabel1:
 	If Discharge = 0 Then
 		If FeedFill(FeedPanelNum) = True Then
 			TargetPosition_Num = 1
-			If Hand = 1 Then
-				FinalPosition = P(20 + FeedPanelNum)
-			Else
-				FinalPosition = P(11 + FeedPanelNum)
-			EndIf
+
+			FinalPosition = P(11 + FeedPanelNum)
+			
 			
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 			pickfeedflag = PickAction(0)
@@ -764,13 +553,6 @@ PickFeedOperatelabel1:
 			FeedFill(FeedPanelNum) = False
 			PickHave(0) = pickfeedflag
 			If pickfeedflag Then
-'					MemOn 99
-'					Sense MemSw(99)
-'					If Hand = 1 Then
-'						Jump ChangeHandL /R Sense
-'					Else
-'						Jump ChangeHandL /L Sense
-'					EndIf
 				
 				FeedPanelNum = FeedPanelNum + 1
 				
@@ -780,15 +562,7 @@ PickFeedOperatelabel1:
 					Case 1
 						Print "扫码成功"
 						Pick_P_Msg(0) = -1
-					Case 4
-						Print "蚀刻不良"
-						MsgSend$ = "蚀刻不良"
-'						Pause
-						TargetPosition_Num = 11
-						FinalPosition = P(Int(Rnd(40) / 10) + 110)
-						Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-						ReleaseAction(0, -1)
-						PickHave(0) = False
+
 					Default
 						Print "扫码不良"
 						MsgSend$ = "扫码不良"
@@ -796,18 +570,7 @@ PickFeedOperatelabel1:
 						Pick_P_Msg(0) = 1
 						
 				Send
-'				If scanflag Then
-'					Print "扫码成功"
-'				Else
-'					Print "蚀刻不良"
-'					MsgSend$ = "蚀刻不良"
-'					Pause
-'					TargetPosition_Num = 11
-'					FinalPosition = P(Int(Rnd(40) / 10) + 110)
-'					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-'					ReleaseAction(0, -1)
-'					PickHave(0) = False
-'				EndIf
+
 				
 
 			Else
@@ -1955,6 +1718,20 @@ TesterOperate1SuckSub:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
+			If TMoveComplete <> 1 Then
+				Print "下料轴，未准备好"
+				MsgSend$ = "下料轴，未准备好"
+			EndIf
+			Wait TMoveComplete = 1
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TMove," + Str$(i + 1)
+			TMoveComplete = 0
 		Else
 			
 
@@ -2731,6 +2508,20 @@ TesterOperate1SuckSub:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(0) = 0
 			NgContinue(i) = 0
+			If TMoveComplete <> 1 Then
+				Print "下料轴，未准备好"
+				MsgSend$ = "下料轴，未准备好"
+			EndIf
+			Wait TMoveComplete = 1
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TMove," + Str$(i + 1)
+			TMoveComplete = 0
 		Else
 			
 
@@ -3828,83 +3619,37 @@ Function UnloadOperate(num As Integer)
 	Exit Function
 	
 UnloadOperate_Pass:
-	If Sw(PassTrayRdy) = 0 Or PassTraySigleDown = 0 Then
-		If PassTrayPalletNum <= 6 Then
-			TargetPosition_Num = 6
-			FinalPosition = PCui1P4
-		ElseIf PassTrayPalletNum <= 8 Then
-			TargetPosition_Num = 7
-			FinalPosition = PCui2P4
-		ElseIf PassTrayPalletNum <= 11 Then
-			TargetPosition_Num = 8
-			FinalPosition = PCui3P3
-		Else
-			TargetPosition_Num = 9
-			FinalPosition = PCui4P3
-		EndIf
-		Print "Pass下料盘，未准备好"
-		MsgSend$ = "Pass下料盘，未准备好"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	TargetPosition_Num = -2
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	If TMoveComplete <> 1 Then
+		
+		Print "下料轴，未准备好"
+		MsgSend$ = "下料轴，未准备好"
+		
 	EndIf
-	Wait Sw(PassTrayRdy) = 1 And PassTraySigleDown = 1
-	If PassTrayPalletNum <= 4 Then
-		TargetPosition_Num = 6
-		If num = 1 Then
-			FinalPosition = Pallet(1, PassTrayPalletNum)
-		Else
-			FinalPosition = Pallet(6, PassTrayPalletNum)
-		EndIf
-		
-	ElseIf PassTrayPalletNum <= 8 Then
-		TargetPosition_Num = 7
-		
-		If num = 1 Then
-			FinalPosition = Pallet(2, PassTrayPalletNum - 4)
-		Else
-			FinalPosition = Pallet(7, PassTrayPalletNum - 4)
-		EndIf
-	ElseIf PassTrayPalletNum <= 10 Then
-		TargetPosition_Num = 8
-		If num = 1 Then
-			FinalPosition = Pallet(3, PassTrayPalletNum - 8)
-		Else
-			FinalPosition = Pallet(8, PassTrayPalletNum - 8)
-		EndIf
-
+	Wait TMoveComplete = 1
+	TargetPosition_Num = -2
+	If num = 1 Then
+		FinalPosition = P(34 + CurPosition_Num - 2)
 	Else
-		TargetPosition_Num = 9
-		If num = 1 Then
-			FinalPosition = Pallet(4, PassTrayPalletNum - 10)
-		Else
-			FinalPosition = Pallet(9, PassTrayPalletNum - 10)
-		EndIf
-		
+		FinalPosition = P(30 + CurPosition_Num - 2)
 	EndIf
-
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
-	PassTrayPalletNum = PassTrayPalletNum + 1
-	If PassTrayPalletNum > 12 Then
-		Go P(349 + PassStepNum)
-		Print "Pass下料盘，换料"
-		MsgSend$ = "Pass下料盘，换料"
-		On PassTrayFull
-		PassTrayPalletNum = 1
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
 	EndIf
-	
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "ULOAD"
+	TMoveComplete = 0
 Return
 
 UnloadOperate_Ng:
-	If Sw(NgTrayRdy) = 0 Or NgTraySigleDown = 0 Then
-		TargetPosition_Num = 10
-		FinalPosition = NCuiP3
-		Print "Ng下料盘，满"
-		MsgSend$ = "Ng下料盘，满"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	EndIf
-	Wait Sw(NgTrayRdy) = 1 And NgTraySigleDown = 1
-	TargetPosition_Num = 10
+	
+	TargetPosition_Num = 6
 
 	
 	If num = 1 Then
@@ -4084,28 +3829,20 @@ Function HomeReturnAction
 	SLock 1, 2, 3, 4
 	Go Here :Y(373)
 	Go Here :U(189.745)
-	CurPosition_Num = 1
-	If Hand = 1 Then
-		Go ChangeHandL /R
-	Else
-		Go ChangeHandL
-	EndIf
+	
+	Go ChangeHandL
+	
 	
 '	Pause
-	S_Position = CX(P501)
-	OutW SpositionY, S_Position
-	If Sw(INP_Home) = 0 Then
-		On SHome
-		INP_HomeSigleDown = 0
-		Wait Sw(INP_Home) = 1 And INP_HomeSigleDown = 1
+	ResetCMDComplete = 0
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
 	EndIf
-	Wait InW(SPositionX) = S_Position
-'	On FeedEmpty
-'	On PassTrayFull
-	
-	
-'	Wait Sw(INP_Home) = 1 And InW(SPositionX) = S_Position
-'	Wait InW(SPositionX) = S_Position
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "ResetCMD"
+	Wait ResetCMDComplete = 1
 
 	Print "Home Return Compelet"
 	MsgSend$ = "Home Return Compelet"
@@ -4113,11 +3850,8 @@ Function HomeReturnAction
 	Power High
 	Speed 90
 	Accel 90, 90
-'	Speed 100, 100, 90
-'	SpeedS 100
-'	Accel 100, 90, 100, 100, 100, 90
-'	AccelS 100, 90
-	CurPosition_Num = 1
+
+	CurPosition_Num = 5
 Fend
 '路径规划
 'firstPosition 目标位置
@@ -4198,33 +3932,34 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 			Case -2
 '				Go FinalPosition
 			Case 1
-				TargetHand = Hand
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P501)
-				Wait InW(SPositionX) = CX(P501) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,1"
+				Wait FMoveComplete = 1
 				Go FinalPosition
 			Case 2
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P506)
-				Wait InW(SPositionX) = CX(P506) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,2"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
 				
 				RoutePassP2 = A1PASS1
 				PassStepNum = PassStepNum + 1
-				'去A1，若上料未准备好，则等待
-				If IsLoopTestMode = False Then
-					Wait(Sw(FeedReady) = 1 And FeedReadySigleDown = 1) Or Discharge <> 0
-				EndIf
 				
-				If Sw(X110) = 1 Or Sw(X111) = 0 Then
-					Print "上料盘，气缸传感器异常"
-					MsgSend$ = "上料盘，气缸传感器异常"
-					Pause
-				EndIf
-				Wait Sw(X110) = 0 And Sw(X111) = 1
+				
 				
 				Pass A1PASS1
 				If NeedAnotherMove(0) Then
@@ -4239,10 +3974,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Go FinalPosition
 '				Position2NeedNeedAnotherMove = False
 			Case 3
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P507)
-				Wait InW(SPositionX) = CX(P507) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,3"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -4263,10 +4003,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				EndIf
 				Go FinalPosition
 			Case 4
-				TargetHand = 2
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P502)
-				Wait InW(SPositionX) = CX(P502) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,4"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -4296,10 +4041,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Go FinalPosition
 			Case 5
-				TargetHand = 2
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P504)
-				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,5"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -4329,10 +4079,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Go FinalPosition
 			Case 6
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P505)
-				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,6"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -4356,10 +4111,15 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Go FinalPosition
 				
 			Case 7
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P504)
-				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+				FMoveComplete = 0
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "FMove,7"
+				Wait FMoveComplete = 1
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -4383,94 +4143,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Go FinalPosition
 	
 		
-			Case 8
-				TargetHand = 2
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P505)
-				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-				
-				RoutePassP1 = Here
-				PassStepNum = PassStepNum + 1
-				
-				RoutePassP2 = PCui3P1
-				PassStepNum = PassStepNum + 1
-				Pass PCui3P1
-				
-				RoutePassP3 = PCui3P2
-				PassStepNum = PassStepNum + 1
-				Pass PCui3P2
-				
-				RoutePassP4 = PCui3P3
-				PassStepNum = PassStepNum + 1
-				Pass PCui3P3
-				
-				Go FinalPosition
-				
-			Case 9
-				TargetHand = 2
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P504)
-				Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
-				
-				RoutePassP1 = Here
-				PassStepNum = PassStepNum + 1
-				
-				RoutePassP2 = PCui4P1
-				PassStepNum = PassStepNum + 1
-				Pass PCui4P1
-				
-				RoutePassP3 = PCui4P2
-				PassStepNum = PassStepNum + 1
-				Pass PCui4P2
-				
-				RoutePassP4 = PCui4P3
-				PassStepNum = PassStepNum + 1
-				Pass PCui4P3
-				
-				Go FinalPosition
-				
-			Case 10
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P503)
-				Wait InW(SPositionX) = CX(P503) And Sw(INP) = 1
-				
-				RoutePassP1 = Here
-				PassStepNum = PassStepNum + 1
-				
-				RoutePassP2 = NCuip1
-				PassStepNum = PassStepNum + 1
-				Pass NCuip1
-				
-				RoutePassP3 = NCuip2
-				PassStepNum = PassStepNum + 1
-				Pass NCuip2
-				
-				RoutePassP4 = NCuip3
-				PassStepNum = PassStepNum + 1
-				Pass NCuip3
-				
-				Go FinalPosition
-				
-			Case 11
-				TargetHand = 1
-				GoSub ChangeHandAction
-				OutW SpositionY, CX(P505)
-				Wait InW(SPositionX) = CX(P505) And Sw(INP) = 1
-				
-				RoutePassP1 = Here
-				PassStepNum = PassStepNum + 1
-				
-				RoutePassP2 = ShikePassP1
-				PassStepNum = PassStepNum + 1
-				Pass ShikePassP1
-				
-				RoutePassP3 = ShikePassP2
-				PassStepNum = PassStepNum + 1
-				Pass ShikePassP2
-				
-				
-				Go FinalPosition
+			
 		Send
 
 	EndIf
@@ -4478,33 +4151,10 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	For i = 0 To 3
 		NeedAnotherMove(i) = False
 	Next
-'	Position2NeedNeedAnotherMove = False
-	Exit Function
+
 	
-ChangeHandAction:
-	If Hand(Here) = 1 Then
-		Jump ChangeHandL /R
-	Else
-		Jump ChangeHandL /L
-	EndIf
-	If TargetHand <> Hand(Here) Then
-		If InW(SPositionX) <> CX(P504) Then
-			SpBox = InW(SPositionX)
-			OutW SpositionY, CX(P504)
-			Wait InW(SPositionX) <> SpBox
-'			Wait 0.5
-		EndIf
-		If Hand(Here) = 1 Then
-			Jump ChangeHandL /L
-		Else
-			Jump ChangeHandL /R
-		EndIf
-		
-		Wait InW(SPositionX) = CX(P504) And Sw(INP) = 1
+	
 
-	EndIf
-
-Return
 
 Fend
 '吸取动作
@@ -4915,7 +4565,14 @@ Function TcpIpCmdRev
 								Xqt XQTAction(3), NoEmgAbort
 						Send
 					EndIf
-
+				Case "FMOVE"
+					FMoveComplete = 1
+				Case "TMOVE"
+					TMoveComplete = 1
+				Case "ULOAD"
+					TMoveComplete = 1
+				Case "ResetCMD"
+					ResetCMDComplete = 1
 			Send
 			CmdRev$ = ""
 		Else
@@ -5279,8 +4936,7 @@ Function TrapInterruptAbort
 	Next
 '	Discharge = 0
 	Off FeedEmpty, Forced
-	Off PassTrayFull, Forced
-	Off NgTrayFull, Forced
+
 	Off Discharing, Forced
 Fend
 

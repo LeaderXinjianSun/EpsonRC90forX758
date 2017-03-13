@@ -1,7 +1,7 @@
-ENVT0100,LM:2017/01/15 01:38:18:339,DS:0000004910,CS:25205,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/03/13 12:25:36:112,DS:0000003172,CS:10261,MA:C6-8E-8F-74-5D-89,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
-	nNumberOfLabels=42
+	nNumberOfLabels=27
 	Label1 {
 		nBit=0
 		sLabel="VacuumValueA"
@@ -14,12 +14,12 @@ InputBitLabels {
 	}
 	Label3 {
 		nBit=2
-		sLabel="VacuumValueC"
+		sLabel="RollSet"
 		sDescription=""
 	}
 	Label4 {
 		nBit=3
-		sLabel="VacuumValueD"
+		sLabel="RollReset"
 		sDescription=""
 	}
 	Label5 {
@@ -34,180 +34,105 @@ InputBitLabels {
 	}
 	Label7 {
 		nBit=6
-		sLabel="ALPass"
+		sLabel="ALUp"
 		sDescription=""
 	}
 	Label8 {
 		nBit=7
-		sLabel="ARPass"
+		sLabel="ARUp"
 		sDescription=""
 	}
 	Label9 {
-		nBit=8
-		sLabel="ALRun"
-		sDescription=""
-	}
-	Label10 {
-		nBit=9
-		sLabel="ARRun"
-		sDescription=""
-	}
-	Label11 {
 		nBit=10
 		sLabel="ALVacuumValue1"
 		sDescription=""
 	}
-	Label12 {
+	Label10 {
 		nBit=11
 		sLabel="ALVacuumValue2"
 		sDescription=""
 	}
-	Label13 {
+	Label11 {
 		nBit=12
 		sLabel="ARVacuumValue1"
 		sDescription=""
 	}
-	Label14 {
+	Label12 {
 		nBit=13
 		sLabel="ARVacuumValue2"
 		sDescription=""
 	}
-	Label15 {
+	Label13 {
 		nBit=14
 		sLabel="BLRear"
 		sDescription=""
 	}
-	Label16 {
+	Label14 {
 		nBit=15
 		sLabel="BRRear"
 		sDescription=""
 	}
-	Label17 {
+	Label15 {
 		nBit=16
-		sLabel="BLPass"
+		sLabel="BLUp"
 		sDescription=""
 	}
-	Label18 {
+	Label16 {
 		nBit=17
-		sLabel="BRPass"
+		sLabel="BRUp"
 		sDescription=""
 	}
-	Label19 {
-		nBit=18
-		sLabel="BLRun"
-		sDescription=""
-	}
-	Label20 {
-		nBit=19
-		sLabel="BRRun"
-		sDescription=""
-	}
-	Label21 {
+	Label17 {
 		nBit=20
 		sLabel="BLVacuumValue1"
 		sDescription=""
 	}
-	Label22 {
+	Label18 {
 		nBit=21
 		sLabel="BLVacuumValue2"
 		sDescription=""
 	}
-	Label23 {
+	Label19 {
 		nBit=22
 		sLabel="BRVacuumValue1"
 		sDescription=""
 	}
-	Label24 {
+	Label20 {
 		nBit=23
 		sLabel="BRVacuumValue2"
 		sDescription=""
 	}
-	Label25 {
-		nBit=512
-		sLabel="ALUp"
-		sDescription=""
-	}
-	Label26 {
-		nBit=513
-		sLabel="ARUp"
-		sDescription=""
-	}
-	Label27 {
-		nBit=514
-		sLabel="BLUp"
-		sDescription=""
-	}
-	Label28 {
-		nBit=515
-		sLabel="BRUp"
-		sDescription=""
-	}
-	Label29 {
+	Label21 {
 		nBit=524
 		sLabel="FeedReady"
 		sDescription=""
 	}
-	Label30 {
-		nBit=525
-		sLabel="PassTrayRdy"
-		sDescription=""
-	}
-	Label31 {
-		nBit=526
-		sLabel="NgTrayRdy"
-		sDescription=""
-	}
-	Label32 {
-		nBit=527
-		sLabel="INP"
-		sDescription=""
-	}
-	Label33 {
-		nBit=528
-		sLabel="INP_Home"
-		sDescription=""
-	}
-	Label34 {
-		nBit=531
-		sLabel="StartButton"
-		sDescription=""
-	}
-	Label35 {
-		nBit=532
-		sLabel="StopButton"
-		sDescription=""
-	}
-	Label36 {
-		nBit=533
-		sLabel="ResetButton"
-		sDescription=""
-	}
-	Label37 {
+	Label22 {
 		nBit=535
 		sLabel="PreFill1"
 		sDescription=""
 	}
-	Label38 {
+	Label23 {
 		nBit=536
 		sLabel="PreFill2"
 		sDescription=""
 	}
-	Label39 {
+	Label24 {
 		nBit=537
 		sLabel="PreFill3"
 		sDescription=""
 	}
-	Label40 {
+	Label25 {
 		nBit=538
 		sLabel="PreFill4"
 		sDescription=""
 	}
-	Label41 {
+	Label26 {
 		nBit=539
 		sLabel="PreFill5"
 		sDescription=""
 	}
-	Label42 {
+	Label27 {
 		nBit=540
 		sLabel="PreFill6"
 		sDescription=""
@@ -217,15 +142,10 @@ InputByteLabels {
 	nNumberOfLabels=0
 }
 InputWordLabels {
-	nNumberOfLabels=1
-	Label1 {
-		nWord=35
-		sLabel="SPositionX"
-		sDescription=""
-	}
+	nNumberOfLabels=0
 }
 OutputBitLabels {
-	nNumberOfLabels=22
+	nNumberOfLabels=13
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -248,90 +168,45 @@ OutputBitLabels {
 	}
 	Label5 {
 		nBit=4
-		sLabel="SuckC"
+		sLabel="RollValve"
 		sDescription=""
 	}
 	Label6 {
-		nBit=5
-		sLabel="BlowC"
-		sDescription=""
-	}
-	Label7 {
-		nBit=6
-		sLabel="SuckD"
-		sDescription=""
-	}
-	Label8 {
-		nBit=7
-		sLabel="BlowD"
-		sDescription=""
-	}
-	Label9 {
 		nBit=8
 		sLabel="AL_Suck"
 		sDescription=""
 	}
-	Label10 {
+	Label7 {
 		nBit=9
 		sLabel="AR_Suck"
 		sDescription=""
 	}
-	Label11 {
+	Label8 {
 		nBit=10
 		sLabel="BL_Suck"
 		sDescription=""
 	}
-	Label12 {
+	Label9 {
 		nBit=11
 		sLabel="BR_Suck"
 		sDescription=""
 	}
-	Label13 {
+	Label10 {
 		nBit=12
 		sLabel="ValveA"
 		sDescription=""
 	}
-	Label14 {
+	Label11 {
 		nBit=13
 		sLabel="ValveB"
 		sDescription=""
 	}
-	Label15 {
-		nBit=14
-		sLabel="ValveC"
-		sDescription=""
-	}
-	Label16 {
-		nBit=15
-		sLabel="ValveD"
-		sDescription=""
-	}
-	Label17 {
+	Label12 {
 		nBit=514
 		sLabel="FeedEmpty"
 		sDescription=""
 	}
-	Label18 {
-		nBit=515
-		sLabel="PassTrayFull"
-		sDescription=""
-	}
-	Label19 {
-		nBit=516
-		sLabel="NgTrayFull"
-		sDescription=""
-	}
-	Label20 {
-		nBit=518
-		sLabel="SHome"
-		sDescription=""
-	}
-	Label21 {
-		nBit=519
-		sLabel="RollValve"
-		sDescription=""
-	}
-	Label22 {
+	Label13 {
 		nBit=520
 		sLabel="Discharing"
 		sDescription=""
@@ -341,12 +216,7 @@ OutputByteLabels {
 	nNumberOfLabels=0
 }
 OutputWordLabels {
-	nNumberOfLabels=1
-	Label1 {
-		nWord=35
-		sLabel="SpositionY"
-		sDescription=""
-	}
+	nNumberOfLabels=0
 }
 MemoryBitLabels {
 	nNumberOfLabels=0
