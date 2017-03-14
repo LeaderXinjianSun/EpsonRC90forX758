@@ -159,4 +159,85 @@
 > go pallet(7,4)
 > go PCui2_2_A
 > pass PCui2P4;pass PCui2P3;pass PCui2P2;pass PCui2P1;go ChangeHandL /r
+> go home
+!!错误: 3205, 未指定点。
+> go HOME
+!!错误: 3205, 未指定点。
+> CmdSend$ = "FMove,1"
+> GO HERE :Z(-10)
+> GO HERE :Z(-24)
+!!错误: 2318, 发现错误后无法执行动作命令。
+> GO HERE :Z(-24)
+> go here :z(-27)
+> PASS B_1;PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> pass A2PASS1;pass A2PASS2;pass B_1;go A_1
+!!错误: 2318, 发现错误后无法执行动作命令。
+> pass A2PASS1;pass A2PASS2;pass B_1;go A_1
+> go ChangeHandL
+> pass A1PASS1;pass A1PASS2;pass B_1;go A_1
+> PASS B_1;PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;go ChangeHandL
+> pass A1PASS1;pass A1PASS2;pass B_1;go A_1
+> PASS B_1;PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> SLOCK 1,2,3,4
+> PASS B_2;PASS A2PASS2
+> PASS A2PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;go ChangeHandL
+> PASS B_2;PASS A2PASS2;GO ChangeHandL
+> SLOCK 1,2,3,4
+> GO ChangeHandL 
+> PASS NCUIP1;GO ChangeHandL
+> pass NCuip1;pass NCuip2;pass NCuip3
+> slock 1,2,3,4
+> speed 50
+> pass NCuip3;pass NCuip2;pass NCuip1;go ChangeHandL
+> GO ChangeHandL
+> PASS A2PASS1;PASS A2PASS2;PASS B_2;GO B_2
+> GO A_2
+> SFREE 1,2,3,4
+> slock 1,2,3,4
+> go ChangeHandL
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go ChangeHandL
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> go ChangeHandL
+> GO ChangeHandL
+> SPEED 50
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;PASS A4PASS4;
+> PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;
+!!错误: 2513, 指定的点标签未定义。
+> PASS A4PASS2;PASS A4PASS1;
+> GO ChangeHandL
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;PASS A4PASS4;
+> PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;
+> GO A4PASS2
+> GO A4PASS3
+> GO A4PASS4
+!!错误: 4032, 当一个或多个轴处于SFree状态时无法执行运动命令。, Robot 1, Joint 1
+> SLOCK 1,2,3,4
+> GO A4PASS4
+> PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;
+> GO ChangeHandL
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;PASS A4PASS4;
+> PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;
+> GO ChangeHandL
+> PASS ScanPositionP3L;GO APickFeed1
+!!错误: 1037, 无法在远程以太网以外的远程以太网启动中执行。
+> PASS ScanPositionP3L;GO APickFeed1
+> PASS ScanPositionP3L;GO ChangeHandL
+> PASS ScanPositionP3L;GO APickFeed1
+> PASS ScanPositionP3L;GO ChangeHandL
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;PASS A4PASS4;
+> PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;GO ChangeHandL
+> GO ChangeHandL
+> PASS ScanPositionP3L;GO APickFeed1
+> PASS ScanPositionP3L;GO ChangeHandL
+> PASS A3PASS1;PASS  A3PASS2
+> GO B_3
+> PASS A3PASS2;PASS A3PASS1;GO ChangeHandL
+> PASS ScanPositionP3L;GO APickFeed1
+> GO ScanPositionP3L
+> GO ChangeHandL
 > 

@@ -68,6 +68,7 @@ Global Integer FMoveComplete
 Global Integer ResetCMDComplete
 
 Global Integer TMoveComplete
+
 Function main
 	
 	Do
@@ -382,6 +383,7 @@ Function test1
 '	PLabel 500, "XtestP1"
 '	SavePoints "robot1.pts"
 '	OutW SpositionY, 65534
+
 Fend
 Function test2
 
@@ -4569,7 +4571,10 @@ Function TcpIpCmdRev
 					FMoveComplete = 1
 				Case "TMOVE"
 					TMoveComplete = 1
-					
+				Case "ULOAD"
+					TMoveComplete = 1
+				Case "ResetCMD"
+					ResetCMDComplete = 1
 			Send
 			CmdRev$ = ""
 		Else

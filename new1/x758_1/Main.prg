@@ -68,6 +68,7 @@ Global Integer FMoveComplete
 Global Integer ResetCMDComplete
 
 Global Integer TMoveComplete
+
 Function main
 	
 	Do
@@ -182,9 +183,9 @@ Function CleanActionProcess
 	Next
 	TargetPosition_Num = 1
 	If Hand = 1 Then
-		FinalPosition = ChangeHandL /R :Z(-61)
+		FinalPosition = ChangeHandL /R :Z(-10)
 	Else
-		FinalPosition = ChangeHandL /L :Z(-61)
+		FinalPosition = ChangeHandL /L :Z(-10)
 	EndIf
 	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -382,6 +383,7 @@ Function test1
 '	PLabel 500, "XtestP1"
 '	SavePoints "robot1.pts"
 '	OutW SpositionY, 65534
+
 Fend
 Function test2
 
@@ -395,9 +397,9 @@ PickFeedOperatelabel1:
 		'上料等
 		TargetPosition_Num = 1
 		If Hand = 1 Then
-			FinalPosition = ChangeHandL /R :Z(-61)
+			FinalPosition = ChangeHandL /R :Z(-10)
 		Else
-			FinalPosition = ChangeHandL /L :Z(-61)
+			FinalPosition = ChangeHandL /L :Z(-10)
 		EndIf
 		
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -662,7 +664,7 @@ Fend
 '判断上料盘是否取空
 Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 '	Integer i, j
-    LimZ -61
+    LimZ -10
 	If FeedPanelNum > 5 Then
 		'料盘空了
 		If CurPosition_Num = 1 Then
@@ -3776,7 +3778,7 @@ Function HomeReturnAction
 	Motor On
 	Power Low
 	Weight 1
-	LimZ -61
+	LimZ -10
 	Speed 50
 	Boolean HomeSuccessFlage
 
@@ -3789,7 +3791,7 @@ Function HomeReturnAction
 '	Pulse 378192, -313239, -77072, 93736
 '	SLock 1
 '	Pulse 378192, -313239, -77072, 93736
-	Go Here :Z(-61)
+	Go Here :Z(-10)
 	SFree 1, 2, 3, 4
 	Do
 		
@@ -3862,7 +3864,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 '2 L
 	Integer TargetHand, i, j
 	Int32 SpBox
-	LimZ -61
+	LimZ -10
 	If PassStepNum > 0 And firstPosition <> secendPosition Then
 		For i = 0 To PassStepNum - 1
 			Pass P(349 + PassStepNum - i)
