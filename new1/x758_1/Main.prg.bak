@@ -4547,7 +4547,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
  	
  	Off valvenum; Off blownum
 	Wait 0.2
-
+	Wait 0.2
 Fend
 'ÎüÈ¡Ê§°Ü£¬´µ¶¯×÷
 'num:Îü×ìË÷Òý
@@ -4620,6 +4620,25 @@ Function TcpIpCmdRev
 							EndIf
 
 							
+						EndIf
+						If CmdRevStr$(1) = "1" Then
+							Tester_Select(0) = True; Tester_Select(1) = True
+							NeedChancel(0) = False; NeedChancel(1) = False
+						Else
+							If Tester_Fill(0) = False Then
+								Tester_Select(0) = False
+							Else
+								If Tester_Select(0) Then
+									NeedChancel(0) = True
+								EndIf
+							EndIf
+							If Tester_Fill(1) = False Then
+								Tester_Select(1) = False
+							Else
+								If Tester_Select(1) Then
+									NeedChancel(1) = True
+								EndIf
+							EndIf
 						EndIf
 					Next
 				Case "NGContinueNum"

@@ -4607,19 +4607,57 @@ Function TcpIpCmdRev
 			Select CmdRevStr$(0)
 				Case "Select"
 					For i = 0 To 3
-						If CmdRevStr$(i + 1) = "1" Then
-							Tester_Select(i) = True
-							NeedChancel(i) = False
+'						If CmdRevStr$(i + 1) = "1" Then
+'							Tester_Select(i) = True
+'							NeedChancel(i) = False
+'						Else
+'							If Tester_Fill(i) = False Then
+'								Tester_Select(i) = False
+'							Else
+'								If Tester_Select(i) Then
+'									NeedChancel(i) = True
+'								EndIf
+'							EndIf
+'
+'							
+'						EndIf
+						If CmdRevStr$(1) = "1" Then
+							Tester_Select(0) = True; Tester_Select(1) = True
+							NeedChancel(0) = False; NeedChancel(1) = False
 						Else
-							If Tester_Fill(i) = False Then
-								Tester_Select(i) = False
+							If Tester_Fill(0) = False Then
+								Tester_Select(0) = False
 							Else
-								If Tester_Select(i) Then
-									NeedChancel(i) = True
+								If Tester_Select(0) Then
+									NeedChancel(0) = True
 								EndIf
 							EndIf
-
-							
+							If Tester_Fill(1) = False Then
+								Tester_Select(1) = False
+							Else
+								If Tester_Select(1) Then
+									NeedChancel(1) = True
+								EndIf
+							EndIf
+						EndIf
+						If CmdRevStr$(3) = "1" Then
+							Tester_Select(2) = True; Tester_Select(3) = True
+							NeedChancel(2) = False; NeedChancel(3) = False
+						Else
+							If Tester_Fill(2) = False Then
+								Tester_Select(2) = False
+							Else
+								If Tester_Select(2) Then
+									NeedChancel(2) = True
+								EndIf
+							EndIf
+							If Tester_Fill(3) = False Then
+								Tester_Select(3) = False
+							Else
+								If Tester_Select(3) Then
+									NeedChancel(3) = True
+								EndIf
+							EndIf
 						EndIf
 					Next
 				Case "NGContinueNum"
