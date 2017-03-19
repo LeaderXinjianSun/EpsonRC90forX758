@@ -1,10 +1,8 @@
-ENVT0100,LM:2017/03/14 13:05:08:623,DS:0000002049,CS:59330,MA:00-0E-C6-CE-B0-D0,EI:           
-sActiveChild="运行远程控制台"
-bMdiMaximized=True
+ENVT0100,LM:2017/03/18 22:50:38:737,DS:0000002004,CS:27931,MA:00-0E-C6-CE-B0-D0,EI:           
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -29,27 +27,27 @@ PointFile1 {
 nForceFileCount=0
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
 		nWidth=785
 		nHeight=454
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=1
 		nWidth=677
 		nHeight=381
 	}
-	nWinState=2
+	nWinState=0
 }
 IOLabelEditor {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -59,10 +57,10 @@ IOLabelEditor {
 	nWinState=0
 }
 IOMonitor {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=945
-		nTop=386
+		nLeft=364
+		nTop=541
 		nWidth=478
 		nHeight=327
 	}
@@ -79,8 +77,8 @@ Simulator {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=587
-		nTop=232
+		nLeft=629
+		nTop=302
 		nWidth=478
 		nHeight=258
 	}
@@ -95,7 +93,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=11
 		nTop=-5

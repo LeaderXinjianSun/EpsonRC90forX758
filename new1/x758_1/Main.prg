@@ -64,25 +64,39 @@ Global Boolean CleanActionFinishFlag
 
 Global Boolean CheckFlexVoccum(4)
 
-Global Integer FMoveComplete
+
 Global Integer ResetCMDComplete
 
-Global Integer TMoveComplete
+
+Global Integer NowFlexIndex
+
+Global Integer Ftarget
+Global Integer Ttarget
+Global Integer Fcurrent
+Global Integer Tcurrent
+
+'Global Integer TMoveComplete
+'Global Integer FMoveComplete
 
 Function main
 	
 	Do
 		Wait 1
+		
+		
 	Loop
 
 Fend
 
 Function main2
+	
+
 	Integer i
 	Integer fillNum, selectNum
 	Trap Emergency Xqt TrapInterruptAbort
 	Trap Abort Xqt TrapInterruptAbort
 	Trap Error Xqt TrapInterruptAbort
+	
 	Wait 0.2
 	Xqt TesterStart1, NoEmgAbort
 	Wait 0.2
@@ -94,20 +108,24 @@ Function main2
 	Xqt AllMonitor, NoEmgAbort
 '	Call InitAction
 	Wait 0.2
-	IsLoopTestMode = False
 	Off Discharing
 	Print "请按继续，开始复位"
 	MsgSend$ = "请按继续，开始复位"
 	Pause
+	Call TrapInterruptAbort
 	If FeedPanelNum < 3 Then
 		Off RollValve
 	Else
 		On RollValve
 	EndIf
-    Call TrapInterruptAbort
+    
 	
 	Call HomeReturnAction
 
+	If Sw(FeedReady) = 0 Then
+		Print "等待上料结束"
+		MsgSend$ = "等待上料结束"
+	EndIf
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
 	
@@ -142,7 +160,7 @@ main_label1:
 		If Discharge <> 0 And fillNum = 0 And PickHave(0) = False And PickHave(1) = False Then
 			
 			
-			TargetPosition_Num = 5
+			TargetPosition_Num = 1
 			
 			FinalPosition = ChangeHandL
 						
@@ -203,7 +221,7 @@ CleanBlowSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -261,8 +279,8 @@ Function InitAction
 	
 	'NG Cui 阵列
 '	Pallet 5, NCui1, NCui2, NCui3, 2, 8
-	Pallet 5, NCui1, NCui2, NCui3, 2, 8
-	Pallet 10, NCui1_A, NCui2_A, NCui3_A, 2, 8
+	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 7
+	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 7
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -353,15 +371,44 @@ Function AllMonitor
 			FeedReady_ = Sw(FeedReady)
 			If Sw(FeedReady) = 1 Then
 				
-				For i = 0 To 5
-					If Sw(535 + i) = 1 Then
-						FeedFill(i) = True
-					Else
-						FeedFill(i) = False
-					EndIf
-'					FeedFill(i) = PreFeedFill(i)
-				Next
-				
+'				For i = 0 To 5
+'					If Sw(535 + i) = 1 Then
+'						FeedFill(i) = True
+'					Else
+'						FeedFill(i) = False
+'					EndIf
+''					FeedFill(i) = PreFeedFill(i)
+'				Next
+				If Sw(PreFill2) = 1 Then
+					FeedFill(0) = True
+				Else
+					FeedFill(0) = False
+				EndIf
+				If Sw(PreFill4) = 1 Then
+					FeedFill(1) = True
+				Else
+					FeedFill(1) = False
+				EndIf
+				If Sw(PreFill6) = 1 Then
+					FeedFill(2) = True
+				Else
+					FeedFill(2) = False
+				EndIf
+				If Sw(PreFill5) = 1 Then
+					FeedFill(3) = True
+				Else
+					FeedFill(3) = False
+				EndIf
+				If Sw(PreFill3) = 1 Then
+					FeedFill(4) = True
+				Else
+					FeedFill(4) = False
+				EndIf
+				If Sw(PreFill1) = 1 Then
+					FeedFill(5) = True
+				Else
+					FeedFill(5) = False
+				EndIf
 				FeedReadySigleDown = 1
 				Off FeedEmpty, Forced
 				FeedPanelNum = 0
@@ -383,6 +430,9 @@ Function test1
 '	PLabel 500, "XtestP1"
 '	SavePoints "robot1.pts"
 '	OutW SpositionY, 65534
+
+
+
 
 Fend
 Function test2
@@ -516,19 +566,22 @@ PickFeedOperatelabel1:
 Fend
 '爪手A取操作
 Function PickFeedOperate1
-	Boolean pickfeedflag, fullflag
+	Boolean pickfeedflag, fullflag, InWaitPosition
 	Integer scanflag
+	InWaitPosition = False
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
-		'上料等
+	
 		TargetPosition_Num = 1
 		FinalPosition = ChangeHandL
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+
+		
 		Print "上料盘，未准备好"
 		MsgSend$ = "上料盘，未准备好"
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0
 			Wait 0.2
-			If Discharge <> 0 Then
+			If Discharge <> 0 And Sw(DangerIn) = 0 Then
                 Exit Do
 			EndIf
 		Loop
@@ -536,12 +589,38 @@ PickFeedOperatelabel1:
 			Print "上料盘，准备好"
 			MsgSend$ = "上料盘，准备好"
 		EndIf
+
+
 	EndIf
 	
 	If Discharge = 0 Then
+		If Sw(RollReset) = 0 And Sw(RollSet) = 0 Then
+			Print "等待 旋转盘到位"
+			MsgSend$ = "等待 旋转盘到位"
+			Wait Sw(RollReset) = 1 Or Sw(RollSet) = 1
+			Wait 1.5
+		EndIf
+		
+		
+		If Tcurrent = 1 Then
+			Print "下料轴，与取料位置可能存在干涉"
+			MsgSend$ = "下料轴，与取料位置可能存在干涉"
+			If Ttarget = 1 Then
+				Ttarget = 2
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "TMOVE,2"
+			EndIf
+		EndIf
+		Wait Tcurrent <> 1
+		
 		If FeedFill(FeedPanelNum) = True Then
 			TargetPosition_Num = 1
-
+			
 			FinalPosition = P(11 + FeedPanelNum)
 			
 			
@@ -555,7 +634,7 @@ PickFeedOperatelabel1:
 			FeedFill(FeedPanelNum) = False
 			PickHave(0) = pickfeedflag
 			If pickfeedflag Then
-				
+				Go Here +Z(10)
 				FeedPanelNum = FeedPanelNum + 1
 				
 				scanflag = ScanBarcodeOpetateP3("A")
@@ -578,7 +657,7 @@ PickFeedOperatelabel1:
 			Else
 				Print "上料盘，吸取失败"
 				MsgSend$ = "上料盘，吸取失败"
-				Go Here +Z(30)
+				Go Here +Z(10)
 				Pause
 				
 				BlowSuckFail(0)
@@ -664,23 +743,23 @@ Fend
 '判断上料盘是否取空
 Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 '	Integer i, j
-    LimZ -10
+    LimZ -24
 	If FeedPanelNum > 5 Then
 		'料盘空了
 		If CurPosition_Num = 1 Then
-			MemOn 99
-			Sense MemSw(99) = 1
-			If Hand = 1 Then
-				Jump ChangeHandL /R Sense
-			Else
-				Jump ChangeHandL /L Sense
+			If CU(Here) - CU(ChangeHandL) > 90 Or CU(Here) - CU(ChangeHandL) < -90 Then
+				Pass ScanPositionP3L;
 			EndIf
+			
+			Go ChangeHandL
+
 		EndIf
 
 		
 		Off RollValve
 		If needwait Then
-			Wait 3
+			Wait Sw(RollReset) = 1
+			Wait 1.5
 		EndIf
 		On FeedEmpty
 		FeedReadySigleDown = 0
@@ -691,7 +770,8 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 		If FeedPanelNum = 3 Then
 			On RollValve
 			If needwait Then
-				Wait 3
+				Wait Sw(RollSet) = 1
+				Wait 1.5
 			EndIf
 		EndIf
 		IsFeedPanelEmpty = False
@@ -762,7 +842,7 @@ Function TesterOperate001(i As Integer)
 						FinalPosition1 = A2PASS1
 					Case 2
 						TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 					Case 3
 						TargetPosition_Num = 5
 						FinalPosition1 = A4PASS3
@@ -803,7 +883,7 @@ TesterOperate001SuckSub:
 			Off AR_Suck
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 			Off BL_Suck
 		Case 3
@@ -858,7 +938,7 @@ TesterOperate001SuckSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -909,7 +989,7 @@ Function TesterOperate002(i As Integer)
 					FinalPosition1 = A2PASS1
 				Case 2
 					TargetPosition_Num = 4
-					FinalPosition1 = A3PASS3
+					FinalPosition1 = A3PASS1
 				Case 3
 					TargetPosition_Num = 5
 					FinalPosition1 = A4PASS3
@@ -943,7 +1023,7 @@ TesterOperate002ReleaseSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -996,7 +1076,7 @@ TesterOperate002ReleaseSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -1065,7 +1145,7 @@ Function TesterOperate01
 						FinalPosition1 = A2PASS1
 					Case 2
 						TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 					Case 3
 						TargetPosition_Num = 5
 						FinalPosition1 = A4PASS3
@@ -1116,7 +1196,7 @@ TesterOperate1SuckSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -1213,7 +1293,7 @@ TesterOperate1SuckSub:
 				rearnum = 5
 			Case 2
 				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS3
+				FinalPosition1 = A3PASS1
 				rearnum = 14
 			Case 3
 				TargetPosition_Num = 5
@@ -1286,7 +1366,7 @@ TesterOperate1ReleaseSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -1339,7 +1419,7 @@ TesterOperate1ReleaseSub:
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
@@ -1454,7 +1534,7 @@ Function TesterOperate1
 						
 					Case 2
 						TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 					Case 3
 						TargetPosition_Num = 5
 						FinalPosition1 = A4PASS3
@@ -1574,7 +1654,7 @@ TesterOperate1_lable2:
 							
 						Case 2
 							TargetPosition_Num = 4
-							FinalPosition1 = A3PASS3
+							FinalPosition1 = A3PASS1
 						Case 3
 							TargetPosition_Num = 5
 							FinalPosition1 = A4PASS3
@@ -1635,7 +1715,7 @@ TesterOperate1SuckSub:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -1687,10 +1767,41 @@ TesterOperate1SuckSub:
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
+
+	If Ttarget <> Tcurrent Then
+		Print "下料轴，未准备好"
+		MsgSend$ = "下料轴，未准备好"
+	EndIf
+	Do While Ttarget <> Tcurrent
+		Wait 0.02
+	Loop
+	
+	Ttarget = i + 1
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "TMOVE," + Str$(i + 1)
+
+
 
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -1720,20 +1831,23 @@ TesterOperate1SuckSub:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
-			If TMoveComplete <> 1 Then
-				Print "下料轴，未准备好"
-				MsgSend$ = "下料轴，未准备好"
-			EndIf
-			Wait TMoveComplete = 1
-			
-			If CmdSend$ <> "" Then
-				Print "有命令 " + CmdSend$ + " 待发送！"
-			EndIf
-			Do While CmdSend$ <> ""
-				Wait 0.1
-			Loop
-			CmdSend$ = "TMove," + Str$(i + 1)
-			TMoveComplete = 0
+'			If Ttarget <> Tcurrent Then
+'				Print "下料轴，未准备好"
+'				MsgSend$ = "下料轴，未准备好"
+'			EndIf
+'			Do While Ttarget <> Tcurrent
+'				Wait 0.02
+'			Loop
+'			
+'			Ttarget = i + 1
+'			If CmdSend$ <> "" Then
+'				Print "有命令 " + CmdSend$ + " 待发送！"
+'			EndIf
+'			Do While CmdSend$ <> ""
+'				Wait 0.1
+'			Loop
+'			CmdSend$ = "TMOVE," + Str$(i + 1)
+'			
 		Else
 			
 
@@ -1766,7 +1880,7 @@ TesterOperate1SuckSub:
 						rearnum = 5
 					Case 2
 		'				TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 						rearnum = 14
 					Case 3
 		'				TargetPosition_Num = 5
@@ -1810,7 +1924,7 @@ TesterOperate1SuckSub:
 				rearnum = 5
 			Case 2
 '				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS3
+				FinalPosition1 = A3PASS1
 				rearnum = 14
 			Case 3
 '				TargetPosition_Num = 5
@@ -1845,7 +1959,7 @@ TesterOperate1ReleaseSub:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -1923,7 +2037,7 @@ TesterOperate1ReleaseSub:
 			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 			voccumValue1 = 20
 			voccumValue2 = 21
@@ -1935,31 +2049,26 @@ TesterOperate1ReleaseSub:
 			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	
+	
+	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
+		
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Print "测试工位" + Str$(i + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		Pause
+		Tester_Testing(i) = True
+		PickAorC$(i) = "A"
+	Else
+		Tester_Testing(i) = True
+		PickAorC$(i) = "A"
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	EndIf
+	
 	For j = 0 To 3
 		isInWaitPosition(j) = False
 	Next
 	
-'	If PickHave(1) Then
-'		If Sw(VacuumValueB) = 0 Then
-'			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			MsgSend$ = "测试工位" + Str$(i + 1) + "，B爪手掉料"
-'			Pause
-'			Off SuckB
-'			PickHave(1) = False
-'		EndIf
-'	EndIf
-	
-	
-	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
-		Print "测试工位" + Str$(i + 1) + "，产品没放好"
-		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
-		Pause
-	EndIf
-	
-	Tester_Testing(i) = True
-	PickAorC$(i) = "A"
-'	voccumValue1
 	
 'Pick_P_Msg
 '-1:New
@@ -1999,7 +2108,7 @@ TesterOperate1ReleaseSub_1:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -2073,7 +2182,7 @@ TesterOperate1ReleaseSub_1:
 			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 			voccumValue1 = 20
 			voccumValue2 = 21
@@ -2085,17 +2194,28 @@ TesterOperate1ReleaseSub_1:
 			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+	
+	
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
+		Tester_Testing(i) = True
+		PickAorC$(i) = "B"
+	Else
+		Tester_Testing(i) = True
+		PickAorC$(i) = "B"
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
-	Tester_Testing(i) = True
-	PickAorC$(i) = "B"
+
+
+
+	
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -2221,7 +2341,7 @@ Function TesterOperate2
 						
 					Case 2
 						TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 					Case 3
 						TargetPosition_Num = 5
 						FinalPosition1 = A4PASS3
@@ -2341,7 +2461,7 @@ TesterOperate1_lable2:
 							
 						Case 2
 							TargetPosition_Num = 4
-							FinalPosition1 = A3PASS3
+							FinalPosition1 = A3PASS1
 						Case 3
 							TargetPosition_Num = 5
 							FinalPosition1 = A4PASS3
@@ -2419,7 +2539,7 @@ TesterOperate1SuckSub:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -2482,6 +2602,22 @@ TesterOperate1SuckSub:
 	Next
 	
 	
+	If Ttarget <> Tcurrent Then
+		Print "下料轴，未准备好"
+		MsgSend$ = "下料轴，未准备好"
+	EndIf
+	Do While Ttarget <> Tcurrent
+		Wait 0.02
+	Loop
+	Ttarget = i + 1
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "TMOVE," + Str$(i + 1)
+	
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
 	EndIf
@@ -2510,20 +2646,22 @@ TesterOperate1SuckSub:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(0) = 0
 			NgContinue(i) = 0
-			If TMoveComplete <> 1 Then
-				Print "下料轴，未准备好"
-				MsgSend$ = "下料轴，未准备好"
-			EndIf
-			Wait TMoveComplete = 1
+'			If Ttarget <> Tcurrent Then
+'				Print "下料轴，未准备好"
+'				MsgSend$ = "下料轴，未准备好"
+'			EndIf
+'			Do While Ttarget <> Tcurrent
+'				Wait 0.02
+'			Loop
+'			Ttarget = i + 1
+'			If CmdSend$ <> "" Then
+'				Print "有命令 " + CmdSend$ + " 待发送！"
+'			EndIf
+'			Do While CmdSend$ <> ""
+'				Wait 0.1
+'			Loop
+'			CmdSend$ = "TMOVE," + Str$(i + 1)
 			
-			If CmdSend$ <> "" Then
-				Print "有命令 " + CmdSend$ + " 待发送！"
-			EndIf
-			Do While CmdSend$ <> ""
-				Wait 0.1
-			Loop
-			CmdSend$ = "TMove," + Str$(i + 1)
-			TMoveComplete = 0
 		Else
 			
 
@@ -2556,7 +2694,7 @@ TesterOperate1SuckSub:
 						rearnum = 5
 					Case 2
 		'				TargetPosition_Num = 4
-						FinalPosition1 = A3PASS3
+						FinalPosition1 = A3PASS1
 						rearnum = 14
 					Case 3
 		'				TargetPosition_Num = 5
@@ -2599,7 +2737,7 @@ TesterOperate1SuckSub:
 				rearnum = 5
 			Case 2
 '				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS3
+				FinalPosition1 = A3PASS1
 				rearnum = 14
 			Case 3
 '				TargetPosition_Num = 5
@@ -2643,7 +2781,7 @@ TesterOperate1ReleaseSub:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -2700,6 +2838,7 @@ TesterOperate1ReleaseSub:
 	Call ReleaseAction(1, i + 1)
 	PickHave(1) = False
 	Tester_Fill(i) = True;
+
 	'退出来，发送启动命令
 	Select i
 		Case 0
@@ -2717,7 +2856,7 @@ TesterOperate1ReleaseSub:
 			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 			voccumValue1 = 20
 			voccumValue2 = 21
@@ -2729,17 +2868,22 @@ TesterOperate1ReleaseSub:
 			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+	
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
+		Tester_Testing(i) = True
+		PickAorC$(i) = "B"
+	Else
+		Tester_Testing(i) = True
+		PickAorC$(i) = "B"
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
-	Tester_Testing(i) = True
-	PickAorC$(i) = "B"
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -2778,7 +2922,7 @@ TesterOperate1ReleaseSub_1:
 			rearnum = 5
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 		Case 3
 '			TargetPosition_Num = 5
@@ -2836,6 +2980,7 @@ TesterOperate1ReleaseSub_1:
 	PickHave(0) = False
 	Tester_Fill(i) = True;
 	'退出来，发送启动命令
+
 	Select i
 		Case 0
 '			TargetPosition_Num = 2
@@ -2852,7 +2997,7 @@ TesterOperate1ReleaseSub_1:
 			voccumValue2 = 13
 		Case 2
 '			TargetPosition_Num = 4
-			FinalPosition1 = A3PASS3
+			FinalPosition1 = A3PASS1
 			rearnum = 14
 			voccumValue1 = 20
 			voccumValue2 = 21
@@ -2864,10 +3009,8 @@ TesterOperate1ReleaseSub_1:
 			voccumValue2 = 23
 	Send
 	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+	
+
 '	If PickHave(1) Then
 '		If Sw(VacuumValueB) = 0 Then
 '			Print "测试工位" + Str$(i + 1) + "，B爪手掉料"
@@ -2878,12 +3021,22 @@ TesterOperate1ReleaseSub_1:
 '		EndIf
 '	EndIf
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(i) Then
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
 		Pause
+		
+		Tester_Testing(i) = True
+		PickAorC$(i) = "A"
+	Else
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Tester_Testing(i) = True
+		PickAorC$(i) = "A"
 	EndIf
-	Tester_Testing(i) = True
-	PickAorC$(i) = "A"
+
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -3621,24 +3774,28 @@ Function UnloadOperate(num As Integer)
 	Exit Function
 	
 UnloadOperate_Pass:
-	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	If TMoveComplete <> 1 Then
+
+	If Tcurrent <> Ttarget Then
 		
 		Print "下料轴，未准备好"
 		MsgSend$ = "下料轴，未准备好"
 		
 	EndIf
-	Wait TMoveComplete = 1
+	Do While Ttarget <> Tcurrent
+		Wait 0.02
+	Loop
 	TargetPosition_Num = -2
 	If num = 1 Then
-		FinalPosition = P(34 + CurPosition_Num - 2)
+		FinalPosition = P(30 + NowFlexIndex - 1)
 	Else
-		FinalPosition = P(30 + CurPosition_Num - 2)
+		FinalPosition = P(34 + NowFlexIndex - 1)
 	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Go FinalPosition
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
+	Go ChangeHandL
+	Ttarget = 5
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
 	EndIf
@@ -3646,7 +3803,7 @@ UnloadOperate_Pass:
 		Wait 0.1
 	Loop
 	CmdSend$ = "ULOAD"
-	TMoveComplete = 0
+	
 Return
 
 UnloadOperate_Ng:
@@ -3663,7 +3820,7 @@ UnloadOperate_Ng:
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 15 Then
+	If NgTrayPalletNum > 14 Then
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
@@ -3679,20 +3836,11 @@ Function ScanBarcodeOpetateP3(picksting$ As String)
     re_scan = False
 	TargetPosition_Num = 1
 	ScanResult = 0
-'	If CmdSend$ <> "" Then
-'		Print "有命令 " + CmdSend$ + " 待发送！"
-'	EndIf
-'	Do While CmdSend$ <> ""
-'		Wait 0.1
-'	Loop
-'	CmdSend$ = "TakePhoto"
-	If Hand = 1 Then
-		FinalPosition = ScanPositionP3R
-	Else
-		FinalPosition = ScanPositionP3L
-	EndIf
+
+	Go ScanPositionP3L
+
 	
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	
 	
 ScanBarcodeOpetateP3label:
 	
@@ -3722,11 +3870,9 @@ ScanBarcodeOpetateP3label:
 	
 	
 	
-	If Hand = 1 Then
-		Go ChangeHandL /R
-	Else
-		Go ChangeHandL /L
-	EndIf
+
+	Go ChangeHandL
+
 
 	ScanBarcodeOpetateP3 = ScanResult
 Fend
@@ -3777,8 +3923,8 @@ Function HomeReturnAction
 	Motor Off
 	Motor On
 	Power Low
-	Weight 1
-	LimZ -10
+	Weight 1.5
+	LimZ -24
 	Speed 50
 	Boolean HomeSuccessFlage
 
@@ -3791,7 +3937,7 @@ Function HomeReturnAction
 '	Pulse 378192, -313239, -77072, 93736
 '	SLock 1
 '	Pulse 378192, -313239, -77072, 93736
-	Go Here :Z(-10)
+	Go Here :Z(-24)
 	SFree 1, 2, 3, 4
 	Do
 		
@@ -3803,7 +3949,7 @@ Function HomeReturnAction
 '			HomeSuccessFlage = False
 '			Print "请将机械手调整为左手姿势"
 '		EndIf
-		If CX(Here) > -100 And CX(Here) < 100 Then
+		If CX(Here) > -50 And CX(Here) < 0 Then
 		
 		Else
 			HomeSuccessFlage = False
@@ -3829,8 +3975,8 @@ Function HomeReturnAction
 
 	Loop
 	SLock 1, 2, 3, 4
-	Go Here :Y(373)
-	Go Here :U(189.745)
+	Go Here :Y(225)
+	Go Here :U(102)
 	
 	Go ChangeHandL
 	
@@ -3845,15 +3991,38 @@ Function HomeReturnAction
 	Loop
 	CmdSend$ = "ResetCMD"
 	Wait ResetCMDComplete = 1
+	Fcurrent = -1
+	Ftarget = 5
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "FMOVE,5"
+	Wait Fcurrent = 5
+	Tcurrent = -1
+	Ttarget = 2
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "TMOVE,2"
+	Wait Tcurrent = 2
+
 
 	Print "Home Return Compelet"
 	MsgSend$ = "Home Return Compelet"
+	Off DangerOut
 	
 	Power High
 	Speed 90
 	Accel 90, 90
 
 	CurPosition_Num = 5
+	NowFlexIndex = 4
 Fend
 '路径规划
 'firstPosition 目标位置
@@ -3862,9 +4031,10 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 'TargetHand	
 '1 R
 '2 L
-	Integer TargetHand, i, j
+	Integer TargetHand, i, j, deltaU
 	Int32 SpBox
-	LimZ -10
+	LimZ -24
+	
 	If PassStepNum > 0 And firstPosition <> secendPosition Then
 		For i = 0 To PassStepNum - 1
 			Pass P(349 + PassStepNum - i)
@@ -3874,14 +4044,19 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	
 	If firstPosition = secendPosition Then
 		Select secendPosition
+			Case 1
+				deltaU = CU(Here) - CU(FinalPosition)
+				If deltaU > 90 Or deltaU < -90 Then
+					Pass ScanPositionP3L
+				EndIf
 			Case 2
 				If isInWaitPosition(0) Then
 					RoutePassP3 = A1PASS2
 					PassStepNum = PassStepNum + 1
 					Pass A1PASS2
-					RoutePassP4 = B_1 +Z(10)
+					RoutePassP4 = B_1 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_1 +Z(10)
+					Pass B_1 +Z(5)
 					
 				EndIf
 			Case 3
@@ -3890,19 +4065,19 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2 +Z(10)
+					RoutePassP4 = B_2 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_2 +Z(10)
+					Pass B_2 +Z(5)
 				EndIf
 			Case 4
 				If isInWaitPosition(2) Then
-					RoutePassP5 = A3PASS4
+					RoutePassP3 = A3PASS2
 					PassStepNum = PassStepNum + 1
-					Pass A3PASS4
+					Pass A3PASS2
 					
-					RoutePassP6 = B_3 +Z(10)
+					RoutePassP4 = B_3 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_3 +Z(10)
+					Pass B_3 +Z(5)
 				EndIf
 			Case 5
 				If isInWaitPosition(3) Then
@@ -3910,9 +4085,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4 +Z(10)
+					RoutePassP6 = B_4 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_4 +Z(10)
+					Pass B_4 +Z(5)
 					
 				EndIf
 		Send
@@ -3933,27 +4108,37 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 		Select secendPosition
 			Case -2
 '				Go FinalPosition
+				
 			Case 1
-				FMoveComplete = 0
+				Ftarget = 1
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,1"
-				Wait FMoveComplete = 1
+				CmdSend$ = "FMOVE,1"
+				Wait Fcurrent = 1
+				Off DangerOut
+				deltaU = CU(Here) - CU(FinalPosition)
+				If deltaU > 90 Or deltaU < -90 Then
+					Pass ScanPositionP3L
+				EndIf
 				Go FinalPosition
 			Case 2
-				FMoveComplete = 0
+				Wait Sw(DangerIn) = 0
+				On DangerOut
+				Ftarget = 2
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,2"
-				Wait FMoveComplete = 1
+				CmdSend$ = "FMOVE,2"
+				Wait Fcurrent = 2
 				
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -3968,24 +4153,25 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					RoutePassP3 = A1PASS2
 					PassStepNum = PassStepNum + 1
 					Pass A1PASS2
-					RoutePassP4 = B_1 +Z(10)
+					RoutePassP4 = B_1 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_1 +Z(10)
+					Pass B_1 +Z(5)
 					NeedAnotherMove(0) = False
 				EndIf
 				Go FinalPosition
 '				Position2NeedNeedAnotherMove = False
 			Case 3
-				FMoveComplete = 0
+				Ftarget = 3
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,3"
-				Wait FMoveComplete = 1
-				
+				CmdSend$ = "FMOVE,3"
+				Wait Fcurrent = 3
+				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
 				
@@ -3998,23 +4184,24 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A2PASS2
 					
-					RoutePassP4 = B_2 +Z(10)
+					RoutePassP4 = B_2 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_2 +Z(10)
+					Pass B_2 +Z(5)
 					NeedAnotherMove(1) = False
 				EndIf
 				Go FinalPosition
 			Case 4
-				FMoveComplete = 0
+				Ftarget = 4
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,4"
-				Wait FMoveComplete = 1
-				
+				CmdSend$ = "FMOVE,4"
+				Wait Fcurrent = 4
+				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
 				
@@ -4022,37 +4209,33 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				PassStepNum = PassStepNum + 1
 				Pass A3PASS1
 				
-				RoutePassP3 = A3PASS2
-				PassStepNum = PassStepNum + 1
-				Pass A3PASS2
+
 				
-				RoutePassP4 = A3PASS3
-				PassStepNum = PassStepNum + 1
-				Pass A3PASS3
 				
 				If NeedAnotherMove(2) Then
-					RoutePassP5 = A3PASS4
+					RoutePassP3 = A3PASS2
 					PassStepNum = PassStepNum + 1
-					Pass A3PASS4
+					Pass A3PASS2
 					
-					RoutePassP6 = B_3 +Z(10)
+					RoutePassP4 = B_3 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_3 +Z(10)
+					Pass B_3 +Z(5)
 					NeedAnotherMove(2) = False
 				EndIf
 				
 				Go FinalPosition
 			Case 5
-				FMoveComplete = 0
+				Ftarget = 5
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,5"
-				Wait FMoveComplete = 1
-				
+				CmdSend$ = "FMOVE,5"
+				Wait Fcurrent = 5
+				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
 				
@@ -4073,76 +4256,56 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					PassStepNum = PassStepNum + 1
 					Pass A4PASS4
 					
-					RoutePassP6 = B_4 +Z(10)
+					RoutePassP6 = B_4 +Z(5)
 					PassStepNum = PassStepNum + 1
-					Pass B_4 +Z(10)
+					Pass B_4 +Z(5)
 					NeedAnotherMove(3) = False
 				EndIf
 				
 				Go FinalPosition
 			Case 6
-				FMoveComplete = 0
+				Ftarget = 6
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,6"
-				Wait FMoveComplete = 1
-				
+				CmdSend$ = "FMOVE,6"
+				Wait Fcurrent = 6
+				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
 				
-				RoutePassP2 = PCui1P1
+				RoutePassP2 = NCuip1
 				PassStepNum = PassStepNum + 1
-				Pass PCui1P1
+				Pass NCuip1
 				
-				RoutePassP3 = PCui1P2
+				RoutePassP3 = NCuip2
 				PassStepNum = PassStepNum + 1
-				Pass PCui1P2
+				Pass NCuip2
 				
-				RoutePassP4 = PCui1P3
+				RoutePassP4 = NCuip3
 				PassStepNum = PassStepNum + 1
-				Pass PCui1P3
+				Pass NCuip3
 				
-				RoutePassP5 = PCui1P4
-				PassStepNum = PassStepNum + 1
-				Pass PCui1P4
 				
 				Go FinalPosition
 				
 			Case 7
-				FMoveComplete = 0
+				Ftarget = 7
+				Fcurrent = -1
 				If CmdSend$ <> "" Then
 					Print "有命令 " + CmdSend$ + " 待发送！"
 				EndIf
 				Do While CmdSend$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "FMove,7"
-				Wait FMoveComplete = 1
-				
-				RoutePassP1 = Here
-				PassStepNum = PassStepNum + 1
-				
-				RoutePassP2 = PCui2P1
-				PassStepNum = PassStepNum + 1
-				Pass PCui2P1
-				
-				RoutePassP3 = PCui2P2
-				PassStepNum = PassStepNum + 1
-				Pass PCui2P2
-				
-				RoutePassP4 = PCui2P3
-				PassStepNum = PassStepNum + 1
-				Pass PCui2P3
-				
-				RoutePassP5 = PCui2P4
-				PassStepNum = PassStepNum + 1
-				Pass PCui2P4
-				
-				Go FinalPosition
+				CmdSend$ = "FMOVE,7"
+				Wait Fcurrent = 7
+				Off DangerOut
+
 	
 		
 			
@@ -4153,7 +4316,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	For i = 0 To 3
 		NeedAnotherMove(i) = False
 	Next
-
+	If CurPosition_Num > 1 And CurPosition_Num < 6 Then
+		NowFlexIndex = CurPosition_Num - 1
+	EndIf
 	
 	
 
@@ -4190,10 +4355,10 @@ Function PickAction(num As Integer) As Boolean
 			vacuumnum = 3
 	Send
 	Off blownum; On valvenum; On sucknum
-	Wait 0.8
-	Wait Sw(vacuumnum), 0.2
+	Wait 0.3
+	Wait Sw(vacuumnum), 0.3
 	Off valvenum
-	Wait 1
+	Wait 0.5
 	If Sw(vacuumnum) = 0 Then
 		PickAction = False
 	Else
@@ -4206,6 +4371,7 @@ Function PickAction(num As Integer) As Boolean
 		Send
 		
 	EndIf
+'	PickAction = True
 Fend
 Function PickhaveMoniterA
 	Boolean StartCount
@@ -4333,9 +4499,9 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 	
 
 	
-	If Flexnum <> -1 Then
-		Go Here +Z(2.5)
-	EndIf
+'	If Flexnum <> -1 Then
+'		Go Here +Z(2.5)
+'	EndIf
 
 	
     Wait 0.5
@@ -4361,26 +4527,27 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 
 	
  	If Flexnum <> -1 Then
- 		Wait 1
+' 		Wait 0.2
  	EndIf
 	
-	
- 	Off valvenum; Off blownum
-	Wait 0.2
+
+
 	
  	If Flexnum <> -1 Then
- 	    Go Here -Z(2.5)
- 		On valvenum
- 		Wait 0.5
+' 	    Go Here -Z(2.5)
+' 		On valvenum
+ 		Wait 0.3
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True
  		Else
  			CheckFlexVoccum(Flexnum - 1) = False
  		EndIf
- 		Off valvenum
- 		Wait 0.3
- 	EndIf
 
+ 	EndIf
+ 	
+ 	Off valvenum; Off blownum
+	Wait 0.2
+	Wait 0.2
 Fend
 '吸取失败，吹动作
 'num:吸嘴索引
@@ -4568,11 +4735,13 @@ Function TcpIpCmdRev
 						Send
 					EndIf
 				Case "FMOVE"
-					FMoveComplete = 1
+					
+					Fcurrent = Val(CmdRevStr$(1))
 				Case "TMOVE"
-					TMoveComplete = 1
+					
+					Tcurrent = Val(CmdRevStr$(1))
 				Case "ULOAD"
-					TMoveComplete = 1
+					Tcurrent = 5
 				Case "ResetCMD"
 					ResetCMDComplete = 1
 			Send
@@ -4712,6 +4881,11 @@ Function TesterStart1
 			Loop
 			If Tester_Testing(0) = True Then
 				voccumflag = True
+
+'				Off AL_Suck, Forced
+
+
+
 				Tester_Pass(0) = 0
 				Tester_Ng(0) = 0
 				Tester_Timeout(0) = 0
@@ -4772,6 +4946,10 @@ Function TesterStart2
 			Loop
 			If Tester_Testing(1) = True Then
 				voccumflag = True
+'				Off AR_Suck, Forced
+				
+				
+				
 				Tester_Pass(1) = 0
 				Tester_Ng(1) = 0
 				Tester_Timeout(1) = 0
@@ -4829,6 +5007,10 @@ Function TesterStart3
 			Loop
 			If Tester_Testing(2) = True Then
 				voccumflag = True
+
+'				Off BL_Suck, Forced
+
+
 				Tester_Pass(2) = 0
 				Tester_Ng(2) = 0
 				Tester_Timeout(2) = 0
@@ -4886,6 +5068,9 @@ Function TesterStart4
 			Loop
 			If Tester_Testing(3) = True Then
 				voccumflag = True
+
+'				Off BR_Suck, Forced
+
 				Tester_Pass(3) = 0
 				Tester_Ng(3) = 0
 				Tester_Timeout(3) = 0
@@ -4940,7 +5125,9 @@ Function TrapInterruptAbort
 	Off FeedEmpty, Forced
 
 	Off Discharing, Forced
+	Off DangerOut, Forced
 Fend
+
 
 
 
