@@ -84,6 +84,8 @@ Function main
 		Wait 1
 		
 		
+		
+		
 	Loop
 
 Fend
@@ -125,6 +127,7 @@ Function main2
 	If Sw(FeedReady) = 0 Then
 		Print "等待上料结束"
 		MsgSend$ = "等待上料结束"
+		On FeedEmpty
 	EndIf
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
@@ -1989,22 +1992,22 @@ TesterOperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1
+			FinalPosition1 = A_1 +Z(2.5)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2
+			FinalPosition1 = A_2 +Z(2.5)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3
+			FinalPosition1 = A_3 +Z(2.5)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4
+			FinalPosition1 = A_4 +Z(2.5)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -4019,7 +4022,7 @@ Function HomeReturnAction
 	
 	Power High
 	Speed 90
-	Accel 90, 90
+	Accel 50, 50
 
 	CurPosition_Num = 5
 	NowFlexIndex = 4
@@ -4527,15 +4530,16 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 
 	
  	If Flexnum <> -1 Then
-' 		Wait 0.2
+ 		Off valvenum
+ 		Wait 0.2
  	EndIf
 	
 
 
 	
  	If Flexnum <> -1 Then
-' 	    Go Here -Z(2.5)
-' 		On valvenum
+ 	    Go Here -Z(2.5)
+ 		On valvenum
  		Wait 0.3
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True
@@ -4546,8 +4550,11 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
  	EndIf
  	
  	Off valvenum; Off blownum
-	Wait 0.2
-	Wait 0.2
+	Wait 0.4
+	If Flexnum <> -1 Then
+		Wait 1
+	EndIf
+	
 Fend
 '吸取失败，吹动作
 'num:吸嘴索引
@@ -5165,6 +5172,7 @@ Function TrapInterruptAbort
 	Off Discharing, Forced
 	Off DangerOut, Forced
 Fend
+
 
 
 

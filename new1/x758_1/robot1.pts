@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/18 13:46:01:628,DS:0000037464,CS:40951,MA:00-0E-C6-CE-B0-D0,EI:           
+ENVT0100,LM:2017/03/19 14:37:57:537,DS:0000037464,CS:48349,MA:00-0E-C6-CE-B0-D0,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
@@ -63,7 +63,7 @@ Point3 {
 	sLabel="APickFeed1"
 	sDescription="rst"
 	nUndefined=0
-	rX=101.715
+	rX=101.515
 	rY=383.751
 	rZ=-56.714
 	rU=284.581
@@ -89,7 +89,7 @@ Point4 {
 	sLabel="APickFeed2"
 	sDescription=""
 	nUndefined=0
-	rX=27.931
+	rX=27.731
 	rY=381.351
 	rZ=-56.52
 	rU=284.371
@@ -115,10 +115,10 @@ Point5 {
 	sLabel="APickFeed3"
 	sDescription=""
 	nUndefined=0
-	rX=-46.009
-	rY=380.197
+	rX=-46.21
+	rY=380.497
 	rZ=-57.114
-	rU=284.563
+	rU=284.562
 	rV=0
 	rW=0
 	rR=0
@@ -141,10 +141,10 @@ Point6 {
 	sLabel="APickFeed4"
 	sDescription="set"
 	nUndefined=0
-	rX=102.015
-	rY=378.652
+	rX=103.115
+	rY=379.652
 	rZ=-56.814
-	rU=283.569
+	rU=283.568
 	rV=0
 	rW=0
 	rR=0
@@ -167,8 +167,8 @@ Point7 {
 	sLabel="APickFeed5"
 	sDescription=""
 	nUndefined=0
-	rX=28.066
-	rY=376.751
+	rX=28.965
+	rY=377.651
 	rZ=-57.125
 	rU=283.169
 	rV=0
@@ -193,10 +193,10 @@ Point8 {
 	sLabel="APickFeed6"
 	sDescription=""
 	nUndefined=0
-	rX=-45.903
-	rY=376.952
+	rX=-44.801
+	rY=377.752
 	rZ=-56.22
-	rU=283.367
+	rU=283.366
 	rV=0
 	rW=0
 	rR=0
@@ -427,10 +427,10 @@ Point17 {
 	sLabel="A_1"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=302.809
-	rY=254.341
+	rX=302.309
+	rY=254.042
 	rZ=-58.275
-	rU=103.604
+	rU=103.602
 	rV=0
 	rW=0
 	rR=0
@@ -453,7 +453,7 @@ Point18 {
 	sLabel="A_2"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=303.199
+	rX=303.399
 	rY=250.207
 	rZ=-59.505
 	rU=103.831
@@ -479,10 +479,10 @@ Point19 {
 	sLabel="A_3"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=277.334
-	rY=155.912
-	rZ=-61.946
-	rU=104.04
+	rX=277.434
+	rY=155.612
+	rZ=-62.546
+	rU=104.038
 	rV=0
 	rW=0
 	rR=0
@@ -505,8 +505,8 @@ Point20 {
 	sLabel="A_4"
 	sDescription="治具穴"
 	nUndefined=0
-	rX=280.536
-	rY=-129.837
+	rX=279.936
+	rY=-130.037
 	rZ=-59.447
 	rU=104.041
 	rV=0

@@ -405,4 +405,58 @@
 > GO TPosition1
 > GO ChangeHandL
 > SPEED 50
+> pass ScanPositionP3L;go APickFeed1
+> PASS ScanPositionP3L;GO ChangeHandL
+!!错误: 2318, 发现错误后无法执行动作命令。
+> PASS ScanPositionP3L;GO ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> SFREE 1,2,3,4
+> pass ScanPositionP3L;go APickFeed2
+> pass ScanPositionP3L;go ChangeHandL
+> PASS A3PASS1;PASS A3PASS2;PASS B_3 +z(5);GO A_3
+> speed 50;PASS B_3 +z(5);PASS A3PASS2;PASS A3PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> go APickFeed1
+> go here +z(10)
+> go APickFeed5
+> speed 50;pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;go ChangeHandL
+> PASS A3PASS1;PASS A3PASS2;PASS B_3 +z(5);GO A_3
+> speed 50;PASS B_3 +z(5);PASS A3PASS2;PASS A3PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed2 
+> pass ScanPositionP3L;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;GO ChangeHandL 
+> PASS A4PASS1;PASS A4PASS2;PASS A4PASS3;PASS A4PASS4;PASS B_4 + z(5);GO A_4
+> speed 50;pass b_4 +z(5);PASS A4PASS4;PASS A4PASS3;PASS A4PASS2;PASS A4PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;GO ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL 
+> pass ScanPositionP3L;go APickFeed2
+> go APickFeed5
+> pass ScanPositionP3L;GO ChangeHandL
+> c 
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1 
+> go here +z(2.5)
+> speed 50; PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2
+> go here +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> go here +z(10)
+> go APickFeed4
+> go here -x(0.2)
+> pass ScanPositionP3L;go ChangeHandL
+>go APickFeed1 
+!!错误: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> speed 50
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> go APickFeed2
+> pass ScanPositionP3L;go ChangeHandL
 > 
+ 
