@@ -458,5 +458,51 @@
 > pass ScanPositionP3L;go APickFeed1
 > go APickFeed2
 > pass ScanPositionP3L;go ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;go ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1 
+> speed 50; PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+!!错误: 2318, 发现错误后无法执行动作命令。
 > 
- 
+ PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL 
+> 
+ PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1 
+> pass ScanPositionP3L;GO ChangeHandL
+>  
+ PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL 
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L
+> go APickFeed4
+> pass ScanPositionP3L;GO ChangeHandL 
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL 
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL
+> pASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL
+> pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;GO ChangeHandL
+> pASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL
+> go TPosition1
+!!错误: 2318, 发现错误后无法执行动作命令。
+> go TPosition1
+> go ChangeHandL
+> speed 50;pass ScanPositionP3L;go APickFeed1
+> pass ScanPositionP3L;go ChangeHandL
+> PASS A3PASS1;PASS A3PASS2;PASS B_3 +z(5);GO A_3
+> PASS B_3 +z(5);PASS A3PASS2;PASS A3PASS1;GO ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL 
+> PASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5)
+> pASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5
+!!错误: 3203, 需要')'。
+>speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL  
+> 

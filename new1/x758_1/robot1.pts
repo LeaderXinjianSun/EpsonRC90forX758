@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/19 14:37:57:537,DS:0000037464,CS:48349,MA:00-0E-C6-CE-B0-D0,EI:           
+ENVT0100,LM:2017/03/20 13:53:04:281,DS:0000037463,CS:43261,MA:00-0E-C6-CE-B0-D0,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
@@ -63,10 +63,10 @@ Point3 {
 	sLabel="APickFeed1"
 	sDescription="rst"
 	nUndefined=0
-	rX=101.515
-	rY=383.751
+	rX=101.516
+	rY=382.251
 	rZ=-56.714
-	rU=284.581
+	rU=284.579
 	rV=0
 	rW=0
 	rR=0
@@ -89,10 +89,10 @@ Point4 {
 	sLabel="APickFeed2"
 	sDescription=""
 	nUndefined=0
-	rX=27.731
-	rY=381.351
+	rX=27.729
+	rY=380.351
 	rZ=-56.52
-	rU=284.371
+	rU=284.37
 	rV=0
 	rW=0
 	rR=0
@@ -115,10 +115,10 @@ Point5 {
 	sLabel="APickFeed3"
 	sDescription=""
 	nUndefined=0
-	rX=-46.21
-	rY=380.497
+	rX=-46.209
+	rY=379.597
 	rZ=-57.114
-	rU=284.562
+	rU=284.56
 	rV=0
 	rW=0
 	rR=0
@@ -141,8 +141,8 @@ Point6 {
 	sLabel="APickFeed4"
 	sDescription="set"
 	nUndefined=0
-	rX=103.115
-	rY=379.652
+	rX=103.114
+	rY=378.652
 	rZ=-56.814
 	rU=283.568
 	rV=0
@@ -168,9 +168,9 @@ Point7 {
 	sDescription=""
 	nUndefined=0
 	rX=28.965
-	rY=377.651
+	rY=376.651
 	rZ=-57.125
-	rU=283.169
+	rU=283.168
 	rV=0
 	rW=0
 	rR=0
@@ -193,10 +193,10 @@ Point8 {
 	sLabel="APickFeed6"
 	sDescription=""
 	nUndefined=0
-	rX=-44.801
-	rY=377.752
+	rX=-44.802
+	rY=377.152
 	rZ=-56.22
-	rU=283.366
+	rU=283.365
 	rV=0
 	rW=0
 	rR=0
@@ -221,7 +221,7 @@ Point9 {
 	nUndefined=0
 	rX=-73.811
 	rY=218.783
-	rZ=-41.835
+	rZ=-55.835
 	rU=103.147
 	rV=0
 	rW=0
@@ -247,7 +247,7 @@ Point10 {
 	nUndefined=0
 	rX=-74.235
 	rY=219.073
-	rZ=-41.902
+	rZ=-55.902
 	rU=102.529
 	rV=0
 	rW=0
@@ -273,7 +273,7 @@ Point11 {
 	nUndefined=0
 	rX=-74.035
 	rY=237.073
-	rZ=-42.902
+	rZ=-56.902
 	rU=102.529
 	rV=0
 	rW=0
@@ -299,7 +299,7 @@ Point12 {
 	nUndefined=0
 	rX=-74.035
 	rY=237.073
-	rZ=-42.902
+	rZ=-56.902
 	rU=102.527
 	rV=0
 	rW=0
@@ -325,7 +325,7 @@ Point13 {
 	nUndefined=0
 	rX=-30.897
 	rY=242.997
-	rZ=-41.197
+	rZ=-55.197
 	rU=101.746
 	rV=0
 	rW=0
@@ -351,7 +351,7 @@ Point14 {
 	nUndefined=0
 	rX=-33.53
 	rY=229.204
-	rZ=-40.388
+	rZ=-54.388
 	rU=102.49
 	rV=0
 	rW=0
@@ -377,7 +377,7 @@ Point15 {
 	nUndefined=0
 	rX=-33.697
 	rY=246.221
-	rZ=-45.241
+	rZ=-59.241
 	rU=104.156
 	rV=0
 	rW=0
@@ -403,7 +403,7 @@ Point16 {
 	nUndefined=0
 	rX=-33.697
 	rY=246.221
-	rZ=-45.241
+	rZ=-59.241
 	rU=104.156
 	rV=0
 	rW=0
@@ -479,10 +479,10 @@ Point19 {
 	sLabel="A_3"
 	sDescription="ÖÎ¾ßÑ¨"
 	nUndefined=0
-	rX=277.434
-	rY=155.612
-	rZ=-62.546
-	rU=104.038
+	rX=278.034
+	rY=155.653
+	rZ=-61.046
+	rU=104.036
 	rV=0
 	rW=0
 	rR=0

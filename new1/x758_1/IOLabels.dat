@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/15 02:41:28:255,DS:0000003498,CS:10364,MA:00-0E-C6-CE-B0-D0,EI:           
+ENVT0100,LM:2017/03/20 05:56:48:020,DS:0000003567,CS:01660,MA:00-0E-C6-CE-B0-D0,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
 	nNumberOfLabels=31
@@ -165,7 +165,7 @@ InputWordLabels {
 	nNumberOfLabels=0
 }
 OutputBitLabels {
-	nNumberOfLabels=14
+	nNumberOfLabels=15
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -192,46 +192,51 @@ OutputBitLabels {
 		sDescription=""
 	}
 	Label6 {
+		nBit=5
+		sLabel="AdjustValve"
+		sDescription=""
+	}
+	Label7 {
 		nBit=8
 		sLabel="AL_Suck"
 		sDescription=""
 	}
-	Label7 {
+	Label8 {
 		nBit=9
 		sLabel="AR_Suck"
 		sDescription=""
 	}
-	Label8 {
+	Label9 {
 		nBit=10
 		sLabel="BL_Suck"
 		sDescription=""
 	}
-	Label9 {
+	Label10 {
 		nBit=11
 		sLabel="BR_Suck"
 		sDescription=""
 	}
-	Label10 {
+	Label11 {
 		nBit=12
 		sLabel="ValveA"
 		sDescription=""
 	}
-	Label11 {
+	Label12 {
 		nBit=13
 		sLabel="ValveB"
 		sDescription=""
 	}
-	Label12 {
+	Label13 {
 		nBit=512
 		sLabel="DangerOut"
 		sDescription=""
 	}
-	Label13 {
+	Label14 {
 		nBit=514
 		sLabel="FeedEmpty"
 		sDescription=""
 	}
-	Label14 {
+	Label15 {
 		nBit=520
 		sLabel="Discharing"
 		sDescription=""

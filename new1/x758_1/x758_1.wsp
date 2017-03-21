@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/03/20 00:46:09:945,DS:0000002055,CS:50964,MA:00-0E-C6-CE-B0-D0,EI:           
-sActiveChild="机器人管理芢x"
-bMdiMaximized=False
+ENVT0100,LM:2017/03/21 02:09:28:121,DS:0000002048,CS:18479,MA:00-0E-C6-CE-B0-D0,EI:           
+sActiveChild="Main.prg"
+bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -39,7 +39,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=1
@@ -61,10 +61,10 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=620
-		nTop=195
+		nLeft=541
+		nTop=323
 		nWidth=478
-		nHeight=327
+		nHeight=398
 	}
 }
 Simulator {
@@ -95,7 +95,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=11
 		nTop=-5
@@ -136,10 +136,10 @@ GUIBuilder {
 ProjectExplorer {
 	bProgramsOpened=True
 	bIncludesOpened=False
-	bLabelsOpened=True
+	bLabelsOpened=False
 	bMacrosOpened=False
 	bFunctionsOpened=True
-	bVisionOpened=False
+	bVisionOpened=True
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False
 	bGUIBOpened=False
