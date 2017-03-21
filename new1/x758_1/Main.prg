@@ -4066,6 +4066,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 	If firstPosition = secendPosition Then
 		Select secendPosition
 			Case 1
+				Wait Sw(DangerIn) = 0
 				deltaU = CU(Here) - CU(FinalPosition)
 				If deltaU > 90 Or deltaU < -90 Then
 					Pass ScanPositionP3L
@@ -4143,7 +4144,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Loop
 				CmdSend$ = "FMOVE,1"
 				Wait Fcurrent = 1
-				
+				Wait Sw(DangerIn) = 0
 				deltaU = CU(Here) - CU(FinalPosition)
 				If deltaU > 90 Or deltaU < -90 Then
 					Pass ScanPositionP3L
