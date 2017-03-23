@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/21 07:27:38:556,DS:0000002049,CS:18500,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/03/23 04:00:39:614,DS:0000002049,CS:20291,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -61,8 +61,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=541
-		nTop=323
+		nLeft=495
+		nTop=173
 		nWidth=478
 		nHeight=398
 	}
@@ -100,7 +100,7 @@ RobotMgr {
 		nLeft=11
 		nTop=-5
 		nWidth=698
-		nHeight=477
+		nHeight=478
 	}
 }
 UserErrorEditor {

@@ -12,6 +12,8 @@ Global Preserve Integer Tester_Pass(4), Tester_Ng(4), Tester_Timeout(4)
 '1:复测1次,A
 '2:复测2次,AA
 '3:复测3次
+
+
 Global Preserve Integer Tester_ReTestFalg(4)
 Global String PickAorC$(4)
 
@@ -610,6 +612,7 @@ PickFeedOperatelabel1:
 	EndIf
 	
 	If Discharge = 0 Then
+		On DangerOut
 		If Sw(RollReset) = 0 And Sw(RollSet) = 0 Then
 			Print "等待 旋转盘到位"
 			MsgSend$ = "等待 旋转盘到位"
@@ -618,21 +621,21 @@ PickFeedOperatelabel1:
 		EndIf
 		
 		
-		If Tcurrent = 1 Then
-			Print "下料轴，与取料位置可能存在干涉"
-			MsgSend$ = "下料轴，与取料位置可能存在干涉"
-			If Ttarget = 1 Then
-				Ttarget = 2
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
-				EndIf
-				Do While CmdSend$ <> ""
-					Wait 0.1
-				Loop
-				CmdSend$ = "TMOVE,2"
-			EndIf
-		EndIf
-		Wait Tcurrent <> 1
+'		If Tcurrent = 1 Then
+'			Print "下料轴，与取料位置可能存在干涉"
+'			MsgSend$ = "下料轴，与取料位置可能存在干涉"
+'			If Ttarget = 1 Then
+'				Ttarget = 2
+'				If CmdSend$ <> "" Then
+'					Print "有命令 " + CmdSend$ + " 待发送！"
+'				EndIf
+'				Do While CmdSend$ <> ""
+'					Wait 0.1
+'				Loop
+'				CmdSend$ = "TMOVE,2"
+'			EndIf
+'		EndIf
+'		Wait Tcurrent <> 1
 		
 		If FeedFill(FeedPanelNum) = True Then
 			
@@ -640,7 +643,7 @@ PickFeedOperatelabel1:
 			
 			FinalPosition = P(11 + FeedPanelNum)
 			
-			On DangerOut
+			
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 			needreleaseadjust = True
 			pickfeedflag = PickAction(0)
@@ -2831,22 +2834,22 @@ TesterOperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1
+			FinalPosition1 = B_1 +Z(2.5)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2
+			FinalPosition1 = B_2 +Z(2.5)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3
+			FinalPosition1 = B_3 +Z(2.5)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4
+			FinalPosition1 = B_4 +Z(2.5)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -2972,22 +2975,22 @@ TesterOperate1ReleaseSub_1:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1
+			FinalPosition1 = A_1 +Z(2.5)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2
+			FinalPosition1 = A_2 +Z(2.5)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3
+			FinalPosition1 = A_3 +Z(2.5)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4
+			FinalPosition1 = A_4 +Z(2.5)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -3814,7 +3817,7 @@ UnloadOperate_Pass:
 	Go FinalPosition
 	Call ReleaseAction(num, -1)
 	PickHave(num) = False
-	Go ChangeHandL
+	
 	Ttarget = 5
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -3823,7 +3826,7 @@ UnloadOperate_Pass:
 		Wait 0.1
 	Loop
 	CmdSend$ = "ULOAD"
-	
+	Go ChangeHandL
 Return
 
 UnloadOperate_Ng:
@@ -3943,7 +3946,7 @@ Function HomeReturnAction
 	Motor Off
 	Motor On
 	Power Low
-	Weight 1.5
+	Weight 1
 	LimZ -24
 	Speed 50
 	Boolean HomeSuccessFlage
@@ -4038,8 +4041,8 @@ Function HomeReturnAction
 	Off DangerOut
 	
 	Power High
-	Speed 90
-	Accel 90, 90
+	Speed 95
+	Accel 100, 100
 
 	CurPosition_Num = 5
 	NowFlexIndex = 4
@@ -4120,7 +4123,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 '		EndIf
 		Accel 50, 50
 		Go FinalPosition
-		Accel 90, 90
+		Accel 100, 100
 		For j = 0 To 3
 			isInWaitPosition(j) = False
 		Next
@@ -4142,14 +4145,14 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Loop
 				CmdSend$ = "FMOVE,1"
 				Wait Fcurrent = 1
-				Off DangerOut
+				
 				deltaU = CU(Here) - CU(FinalPosition)
 				If deltaU > 90 Or deltaU < -90 Then
 					Pass ScanPositionP3L
 				EndIf
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 			Case 2
 				Wait Sw(DangerIn) = 0
 				On DangerOut
@@ -4184,7 +4187,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				EndIf
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 '				Position2NeedNeedAnotherMove = False
 			Case 3
 				Ftarget = 3
@@ -4217,7 +4220,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				EndIf
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 			Case 4
 				Ftarget = 4
 				Fcurrent = -1
@@ -4253,7 +4256,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 			Case 5
 				Ftarget = 5
 				Fcurrent = -1
@@ -4294,7 +4297,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 			Case 6
 				Ftarget = 6
 				Fcurrent = -1
@@ -4325,7 +4328,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				
 				Accel 50, 50
 				Go FinalPosition
-				Accel 90, 90
+				Accel 100, 100
 				
 			Case 7
 				Ftarget = 7
@@ -4390,10 +4393,11 @@ Function PickAction(num As Integer) As Boolean
 	Send
 	If needreleaseadjust Then
 		Off AdjustValve
+		Wait 0.05
 	EndIf
 	Off blownum; On valvenum; On sucknum
-	Wait 0.3
 	Wait Sw(vacuumnum), 0.3
+		
 '	If needreleaseadjust Then
 '		Off AdjustValve
 '		Wait 0.1
@@ -4513,7 +4517,7 @@ Fend
 '释放动作
 'num:吸嘴索引
 'Flexnum:治具索引
-Function ReleaseAction(num As Integer, Flexnum As Integer)
+Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 '0 : A
 '1 : B
 '2 : C
@@ -4592,10 +4596,13 @@ Function ReleaseAction(num As Integer, Flexnum As Integer)
 
  	EndIf
  	
- 	Off valvenum; Off blownum
+ 	Off valvenum; Off blownum '抬气缸，关吹气
 	Wait 0.3
 	If Flexnum <> -1 Then
-		Wait 0.4
+		If CheckFlexVoccum(Flexnum - 1) = True Then
+			Wait 0.45
+		EndIf
+		
 	EndIf
 	
 Fend
@@ -4897,6 +4904,7 @@ Function TcpIpCmdSend
 			EndIf
 		EndIf
 		EResume Next
+		
 Fend
 '发送消息到上位机
 Function TcpIpMsgSend

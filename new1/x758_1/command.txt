@@ -505,4 +505,14 @@
 > pASS  A2PASS1;PASS A2PASS2;PASS B_2 +z(5);GO A_2 +z(2.5
 !!´íÎó: 3203, ÐèÒª')'¡£
 >speed 50;PASS B_2;PASS A2PASS2;PASS A2PASS1;GO ChangeHandL  
+> go here u(0)
+!!´íÎó: 3100, Óï·¨´íÎó¡£
+> go here :u(0)
+!!´íÎó: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> go here :u(0)
+> go ChangeHandL
+> PASS  A1PASS1;PASS A1PASS2;PASS B_1 +z(5);GO A_1
+> PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
+> go ChangeHandL
+!!´íÎó: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
 > 
