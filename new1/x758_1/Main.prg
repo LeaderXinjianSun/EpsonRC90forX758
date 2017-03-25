@@ -4402,7 +4402,7 @@ Function PickAction(num As Integer) As Boolean
 '		Wait 0.1
 '	EndIf
 	Off valvenum
-	Wait 0.15
+	Wait 0.25
 
 	If Sw(vacuumnum) = 0 Then
 		If needreleaseadjust Then
@@ -5221,7 +5221,6 @@ Function TrapInterruptAbort
 	Off Discharing, Forced
 	Off DangerOut, Forced
 Fend
-
 
 
 

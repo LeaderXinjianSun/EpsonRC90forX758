@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/23 04:00:39:614,DS:0000002049,CS:20291,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/03/25 12:02:37:144,DS:0000002046,CS:19754,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -49,7 +49,7 @@ RunWindow {
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -136,8 +136,8 @@ GUIBuilder {
 ProjectExplorer {
 	bProgramsOpened=True
 	bIncludesOpened=False
-	bLabelsOpened=False
-	bMacrosOpened=False
+	bLabelsOpened=True
+	bMacrosOpened=True
 	bFunctionsOpened=True
 	bVisionOpened=True
 	bVisionSequencesOpened=False
