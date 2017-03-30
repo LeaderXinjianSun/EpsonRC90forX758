@@ -101,6 +101,7 @@ Function main
 	
 	Do
 		Wait 1
+		
 	Loop
 
 Fend

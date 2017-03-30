@@ -101,6 +101,7 @@ Function main
 	
 	Do
 		Wait 1
+		
 	Loop
 
 Fend
@@ -2353,7 +2354,7 @@ Function GRROperate1
 		Next
 	
 		If j > 3 Then
-		'都满穴 
+		'都满穴 或爪手无合适穴位
 		
 		Else
 		'有空穴	
@@ -3104,7 +3105,7 @@ Function PickAction(num As Integer) As Boolean
 		Send
 		
 	EndIf
-'	PickAction = True
+	PickAction = True
 Fend
 Function PickhaveMoniterA
 	Boolean StartCount
