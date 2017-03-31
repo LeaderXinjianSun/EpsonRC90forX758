@@ -472,6 +472,12 @@ Function AllMonitor
 
 	Do
 		Wait 0.1
+		If NgTrayPalletNum < 1 Then
+			NgTrayPalletNum = 1
+		EndIf
+		
+		
+		
 		If FeedReady_ <> Sw(FeedReady) Then
 			FeedReady_ = Sw(FeedReady)
 			If Sw(FeedReady) = 1 Then

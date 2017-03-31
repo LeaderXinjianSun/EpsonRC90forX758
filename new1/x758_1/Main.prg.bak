@@ -3105,7 +3105,7 @@ Function PickAction(num As Integer) As Boolean
 		Send
 		
 	EndIf
-	PickAction = True
+'	PickAction = True
 Fend
 Function PickhaveMoniterA
 	Boolean StartCount
