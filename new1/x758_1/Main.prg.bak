@@ -3454,7 +3454,8 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  	If Flexnum <> -1 And (Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0) Then
  		Off valvenum
  		Wait 0.2
- 	    Go Here -Z(2.5) ! D1; On valvenum !
+ 		NowPosition = Here
+ 	    Go NowPosition -Z(2.5) ! D1; On valvenum !
  		Wait 0.3  '等待气缸下压
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True

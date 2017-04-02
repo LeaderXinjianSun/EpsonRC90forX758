@@ -354,19 +354,19 @@ CleanBlowSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1£¬ÒÀ¾ÝTesterOperate1¸ü¸Ä
-			FinalPosition1 = B_1 +Z(8)
+			FinalPosition1 = B_1 +Z(10)
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(8)
+			FinalPosition1 = B_2 +Z(10)
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(8)
+			FinalPosition1 = B_3 +Z(10)
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(8)
+			FinalPosition1 = B_4 +Z(10)
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
@@ -4093,6 +4093,8 @@ Function TrapInterruptAbort
 	Off Discharing, Forced
 	Off DangerOut, Forced
 Fend
+
+
 
 
 

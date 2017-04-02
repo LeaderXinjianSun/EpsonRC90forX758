@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/04/02 10:06:47:413,DS:0000006250,CS:21846,MA:C4-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/04/02 12:07:33:060,DS:0000006250,CS:22866,MA:C4-8E-8F-74-5D-89,EI:           
 SystemProperties {
 	sRCVersion="7.1.3"
 	sRCRevision=""
 	sGUID="125ba4a3-86be-46e6-951c-8570368f4cc7"
 	sPath="D:\\EpsonRC70\\Projects\\EpsonRC90forX758\\new1\\x758_1\\"
 	sCreated="2017/1/20 10:54:13"
-	sLastModified="2017/4/2 18:06:46"
+	sLastModified="2017/4/2 20:07:22"
 	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
