@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/03/31 10:30:55:975,DS:0000002047,CS:15408,MA:C4-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/04/02 11:02:15:096,DS:0000002046,CS:19754,MA:C4-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -49,7 +49,7 @@ RunWindow {
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0

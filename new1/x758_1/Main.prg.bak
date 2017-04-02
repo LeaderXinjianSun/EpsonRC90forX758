@@ -354,19 +354,19 @@ CleanBlowSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(8) -X(5)
+			FinalPosition1 = B_1 +Z(8)
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(8) -X(5)
+			FinalPosition1 = B_2 +Z(8)
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(8) -X(5)
+			FinalPosition1 = B_3 +Z(8)
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(8) -X(5)
+			FinalPosition1 = B_4 +Z(8)
 			rearnum = 15
 	Send
 	FinalPosition = FinalPosition1
@@ -472,44 +472,43 @@ Function AllMonitor
 
 	Do
 		Wait 0.1
+		If NgTrayPalletNum < 1 Then
+			NgTrayPalletNum = 1
+		EndIf
+		
+		
+		
 		If FeedReady_ <> Sw(FeedReady) Then
 			FeedReady_ = Sw(FeedReady)
 			If Sw(FeedReady) = 1 Then
 				
-'				For i = 0 To 5
-'					If Sw(535 + i) = 1 Then
-'						FeedFill(i) = True
-'					Else
-'						FeedFill(i) = False
-'					EndIf
-''					FeedFill(i) = PreFeedFill(i)
-'				Next
-				If Sw(PreFill2) = 1 Then
+
+				If Sw(PreFill1) = 1 Then
 					FeedFill(0) = True
 				Else
 					FeedFill(0) = False
 				EndIf
-				If Sw(PreFill4) = 1 Then
+				If Sw(PreFill2) = 1 Then
 					FeedFill(1) = True
 				Else
 					FeedFill(1) = False
 				EndIf
-				If Sw(PreFill6) = 1 Then
+				If Sw(PreFill3) = 1 Then
 					FeedFill(2) = True
 				Else
 					FeedFill(2) = False
 				EndIf
-				If Sw(PreFill5) = 1 Then
+				If Sw(PreFill4) = 1 Then
 					FeedFill(3) = True
 				Else
 					FeedFill(3) = False
 				EndIf
-				If Sw(PreFill3) = 1 Then
+				If Sw(PreFill5) = 1 Then
 					FeedFill(4) = True
 				Else
 					FeedFill(4) = False
 				EndIf
-				If Sw(PreFill1) = 1 Then
+				If Sw(PreFill6) = 1 Then
 					FeedFill(5) = True
 				Else
 					FeedFill(5) = False
@@ -517,7 +516,7 @@ Function AllMonitor
 				
 				Off FeedEmpty, Forced
 				On AdjustValve, Forced
-				Wait 0.5
+				Wait 0.3
 				FeedReadySigleDown = 1
 				FeedPanelNum = 0
 			Else
@@ -559,36 +558,20 @@ PickFeedOperatelabel1:
 			Print "上料盘，准备好"
 			MsgSend$ = "上料盘，准备好"
 		EndIf
-		On AdjustValve
-		Wait 0.5
+'		On AdjustValve
+'		Wait 0.3
 		
 	EndIf
 	
 	If Discharge = 0 Then
 		On DangerOut
+		On BlowA
 		If Sw(RollReset) = 0 And Sw(RollSet) = 0 Then
 			Print "等待 旋转盘到位"
 			MsgSend$ = "等待 旋转盘到位"
 			Wait Sw(RollReset) = 1 Or Sw(RollSet) = 1
 			Wait 1.5
 		EndIf
-		
-		
-'		If Tcurrent = 1 Then
-'			Print "下料轴，与取料位置可能存在干涉"
-'			MsgSend$ = "下料轴，与取料位置可能存在干涉"
-'			If Ttarget = 1 Then
-'				Ttarget = 2
-'				If CmdSend$ <> "" Then
-'					Print "有命令 " + CmdSend$ + " 待发送！"
-'				EndIf
-'				Do While CmdSend$ <> ""
-'					Wait 0.1
-'				Loop
-'				CmdSend$ = "TMOVE,2"
-'			EndIf
-'		EndIf
-'		Wait Tcurrent <> 1
 		
 		If FeedFill(FeedPanelNum) = True Then
 			
@@ -601,7 +584,7 @@ PickFeedOperatelabel1:
 			needreleaseadjust = True
 			pickfeedflag = PickAction(0)
 			If pickfeedflag = False Then
-				Wait 0.01
+				Wait 0.5
 				pickfeedflag = PickAction(0)
 			EndIf
 			needreleaseadjust = False
@@ -633,6 +616,7 @@ PickFeedOperatelabel1:
 				Print "上料盘，吸取失败"
 				MsgSend$ = "上料盘，吸取失败"
 				Go Here +Z(10)
+				Off AdjustValve
 				Pause
 				On AdjustValve
 				BlowSuckFail(0)
@@ -2328,113 +2312,314 @@ Function GRROperate1
 	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
-	If PickHave(0) = True Then
-		'判断是否全为选测试机
-		Do
-			For i = 0 To 3
-				If Tester_Select(i) = True Then
-					Exit For
-				EndIf
-			Next
-			If i > 3 Then
-				Wait 1
-				Print "未选择测试机,参与测试！"
-				MsgSend$ = "未选择测试机，参与测试！"
-			Else
-				Exit Do
-			EndIf
-		Loop
-		'判断是否存在空穴	
-		For j = 0 To 3
-			If PcsGrrMsgArray(0, j) <= PcsGrrNeedCount Then
-				If Tester_Select(j) = True And Tester_Fill(j) = False Then '有空穴
-				 	Exit For
-				EndIf
-			EndIf
-		Next
 	
-		If j > 3 Then
-		'都满穴 或爪手无合适穴位
-		
-		Else
-		'有空穴	
-			
-			
-			
-		EndIf
-	
-	
-	
-	
-	
-	
+	'判断是否全为选测试机
+	Do
 		For i = 0 To 3
-
-			If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+			If Tester_Select(i) = True Then
 				Exit For
 			EndIf
-			
 		Next
 		If i > 3 Then
-			'所有测试机，都在测试中都在测试中
-			Print "所有选中的测试机，都在测试中。前往预判位置。"
-			MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
-			realbox = 0
-			i_index = 0
-			For i = 0 To 3
-
-				If Tester_Select(i) = True And Tester_Fill(i) = True Then
-					If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
-						realbox = TesterTimeElapse(i)
-						i_index = i
-					EndIf
-				EndIf
-'				
-			Next
-			Select i_index
-				Case 0
-					TargetPosition_Num = 2
-					'A_1，依据TesterOperate1更改
-					FinalPosition1 = A1PASS1
-'						Position2NeedNeedAnotherMove = True
-					
-				Case 1
-					TargetPosition_Num = 3
-					FinalPosition1 = A2PASS1
-					
-				Case 2
-					TargetPosition_Num = 4
-					FinalPosition1 = A3PASS1
-				Case 3
-					TargetPosition_Num = 5
-					FinalPosition1 = A4PASS3
-			Send
-			FinalPosition = FinalPosition1
-			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			isInWaitPosition(i_index) = True
-GRROperate1_lable1:
-			For i = 0 To 3
-
-				If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
-					Exit For
-				EndIf
-			
-			Next
-			If i > 3 Then
-				Wait 0.2
-				'一直判断
-				GoTo GRROperate1_lable1
-			EndIf
-			GoTo GRROperate1_lable2
+			Wait 1
+			Print "未选择测试机,参与测试！"
+			MsgSend$ = "未选择测试机，参与测试！"
 		Else
-		'存在测完的，待处理的穴
-GRROperate1_lable2:
-
+			Exit Do
+		EndIf
+	Loop
+	
+	If PickHave(0) = True Then
+		For i = 0 To 3
+			If Tester_Select(i) = True And Tester_Fill(i) = False And PcsGrrMsgArray(0, i) < PcsGrrNeedCount Then
+				Exit For
+			EndIf
+		Next
+		If i <= 3 Then
+			'往里放
+			'***************************
+			'***************************
+			'***************************
+			'***************************
+			'***************************
 		EndIf
 	Else
 	'爪手A没产品	
-		
+		selectNum = 8 * Tester_Select(3) + 4 * Tester_Select(2) + 2 * Tester_Select(1) + Tester_Select(0)
+		fillNum = 8 * Tester_Fill(3) + 4 * Tester_Fill(2) + 2 * Tester_Fill(1) + Tester_Fill(0)
+		If (selectNum = fillNum Or PcsGrrNum >= PcsGrrNeedNum) And fillNum <> 0 Then
+			'无需从矫正盘取料
+			For i = 0 To 3
+				If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+					Exit For
+				EndIf
+			Next
+			If i > 3 Then
+				'所有测试机，都在测试中都在测试中
+				Print "所有选中的测试机，都在测试中。前往预判位置。"
+				MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+				realbox = 0
+				i_index = 0
+				For i = 0 To 3
+
+					If Tester_Select(i) = True And Tester_Fill(i) = True Then
+						If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
+							realbox = TesterTimeElapse(i)
+							i_index = i
+						EndIf
+					EndIf
+
+				Next
+				Select i_index
+					Case 0
+						TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = A1PASS1
+'						Position2NeedNeedAnotherMove = True
+						
+					Case 1
+						TargetPosition_Num = 3
+						FinalPosition1 = A2PASS1
+						
+					Case 2
+						TargetPosition_Num = 4
+						FinalPosition1 = A3PASS1
+					Case 3
+						TargetPosition_Num = 5
+						FinalPosition1 = A4PASS3
+				Send
+				FinalPosition = FinalPosition1
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				isInWaitPosition(i_index) = True
+GRROperate1_lable1:
+				For i = 0 To 3
+
+					If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False Then
+						Exit For
+					EndIf
+
+				Next
+				If i > 3 Then
+					Wait 0.2
+					'一直判断
+					GoTo GRROperate1_lable1
+				EndIf
+				GoTo GRROperate1_lable2
+			Else
+GRROperate1_lable2:
+                GoSub GRROperate1SuckSub
+            EndIf
+		EndIf
 	EndIf
+Exit Function
+
+GRROperate1SuckSub:
+	'取
+	Select i
+		Case 0
+'			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			
+			rearnum = 4
+		Case 1
+'			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+'			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS1
+			rearnum = 14
+		Case 3
+'			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(i + 1) + "未到位，运动到等待位置"
+
+
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+
+	EndIf
+	Wait Sw(rearnum) = 1
+	Select i
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A_1
+			NeedAnotherMove(0) = True
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			FinalPosition1 = A_2
+			NeedAnotherMove(1) = True
+			rearnum = 5
+			
+		Case 2
+			TargetPosition_Num = 4
+			FinalPosition1 = A_3
+			NeedAnotherMove(2) = True
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			FinalPosition1 = A_4
+			NeedAnotherMove(3) = True
+			rearnum = 15
+	Send
+	FinalPosition = FinalPosition1
+	
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+
+'	If Ttarget <> Tcurrent Then
+'		Print "下料轴，未准备好"
+'		MsgSend$ = "下料轴，未准备好"
+'	EndIf
+'	Do While Ttarget <> Tcurrent
+'		Wait 0.02
+'	Loop
+'	
+'	Ttarget = i + 1
+'	If CmdSend$ <> "" Then
+'		Print "有命令 " + CmdSend$ + " 待发送！"
+'	EndIf
+'	Do While CmdSend$ <> ""
+'		Wait 0.1
+'	Loop
+'	CmdSend$ = "TMOVE," + Str$(i + 1)
+
+
+
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+	
+	PickHave(0) = PickAction(0)
+	If PickHave(0) = False Then
+		Wait 1
+		PickHave(0) = PickAction(0)
+	EndIf
+
+	Tester_Fill(i) = False;
+	
+	If PickHave(0) = True Then
+		If Tester_Pass(i) <> 0 Then
+'GRR
+'0,A爪；{已测试穴1数}{已测试穴2数}{已测试穴3数}{已测试穴4数}
+'1,B爪
+'2,测试机穴1
+'3,测试机穴2
+'4,测试机穴3
+'5,测试机穴4				
+			Pick_P_Msg(1) = 0
+			NgContinue(i) = 0
+			PcsGrrMsgArray(i + 2, i) = PcsGrrMsgArray(i + 2, i) + 1
+
+		Else
+			'判断超时
+			If Tester_Timeout(i) <> 0 Then
+				Print "测试机" + Str$(i + 1) + "，测试超时"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，测试超时"
+				Pause
+			EndIf
+			'判断连续NG
+			If Tester_Ng(i) <> 0 Then
+				NgContinue(i) = NgContinue(i) + 1
+			EndIf
+
+			If NgContinue(i) >= NgContinueNum Then
+				Select i
+					Case 0
+		'				TargetPosition_Num = 2
+						'A_1，依据TesterOperate1更改
+						FinalPosition1 = A1PASS1
+		'				Position2NeedNeedAnotherMove = True
+						
+						rearnum = 4
+					Case 1
+		'				TargetPosition_Num = 3
+						FinalPosition1 = A2PASS1
+						
+						rearnum = 5
+					Case 2
+		'				TargetPosition_Num = 4
+						FinalPosition1 = A3PASS1
+						rearnum = 14
+					Case 3
+		'				TargetPosition_Num = 5
+						FinalPosition1 = A4PASS3
+						rearnum = 15
+				Send
+		'		Go FinalPosition1
+				TargetPosition_Num = -2
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				For j = 0 To 3
+					isInWaitPosition(j) = False
+				Next
+				Print "测试机" + Str$(i + 1) + "，连续NG"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，连续NG"
+				Pause
+				NgContinue(i) = 0
+			EndIf
+			
+			'复测
+			If Tester_ReTestFalg(i) = 1 And ReTest_ Then
+			'需要到另一台测试机测试
+				Pick_P_Msg(1) = i + 2
+			Else
+				Pick_P_Msg(1) = 1
+			EndIf
+			
+		EndIf
+	Else
+		Select i
+			Case 0
+'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		Print "测试机" + Str$(i + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Pause
+		Off SuckB
+	EndIf
+Return
+
+
 Fend
 'B爪手GRR处理
 Function GRROperate2
@@ -3075,24 +3260,24 @@ Function PickAction(num As Integer) As Boolean
 			blownum = 7
 			vacuumnum = 3
 	Send
-	If needreleaseadjust Then
-		Off AdjustValve
-		Wait 0.05
-	EndIf
+'	If needreleaseadjust Then
+'		Off AdjustValve
+'		Wait 0.05
+'	EndIf
 	Off blownum; On valvenum; On sucknum
 	Wait Sw(vacuumnum), 0.3
 		
-'	If needreleaseadjust Then
-'		Off AdjustValve
-'		Wait 0.1
-'	EndIf
+	If needreleaseadjust Then
+		Off AdjustValve
+		Wait 0.3
+	EndIf
 	Off valvenum
 	Wait 0.25
 
 	If Sw(vacuumnum) = 0 Then
 		If needreleaseadjust Then
 			On AdjustValve
-			Wait 0.1
+'			Wait 0.1
 		EndIf
 		PickAction = False
 	Else
@@ -3187,15 +3372,20 @@ Function CleanBlowAction(num As Integer, Flexnum As Integer)
 			blownum = 7
 			vacuumnum = 3
 	Send
-	
- 	On valvenum
-	For i = 0 To 2
-		On blownum; Off sucknum
-	 	Wait 0.8
-	 	Off blownum
-	 	Wait 0.4
+	CleanPosition1 = Here +Y(10)
+	CleanPosition2 = Here +Y(-10)
+	CleanPosition3 = Here
+ 	On valvenum; On blownum; Off sucknum
+ 	Accel 10, 10
+	For i = 0 To 4
+		Pass CleanPosition1
+		Go CleanPosition3
+		Pass CleanPosition2
+		Go CleanPosition3
 	Next
-	Off valvenum
+	Accel 50, 50
+	Go CleanPosition3 ! D1; Off valvenum; Off blownum !
+	
 	Wait 0.5
 Fend
 '释放动作
@@ -3245,9 +3435,6 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 
 	PickHave(num) = False
 	
-	
-	
- 	Wait 0.2
 	Select Flexnum
 		Case 1
 			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
@@ -3258,36 +3445,35 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 		Case 4
 			On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
 	Send
+	
+	
+ 	Wait 0.3
+
 
 	
- 	If Flexnum <> -1 Then
+ 	If Flexnum <> -1 And (Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0) Then
  		Off valvenum
  		Wait 0.2
- 	EndIf
-	
-
-
-	
- 	If Flexnum <> -1 Then
- 	    Go Here -Z(2.5)
- 		On valvenum
- 		Wait 0.1  '等待气缸下压
+ 	    Go Here -Z(2.5) ! D1; On valvenum !
+ 		Wait 0.3  '等待气缸下压
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True
  		Else
  			CheckFlexVoccum(Flexnum - 1) = False
  		EndIf
-
- 	EndIf
- 	
- 	Off valvenum; Off blownum '抬气缸，关吹气
-	Wait 0.3
-	If Flexnum <> -1 Then
+	 	Off valvenum
+		Wait 0.3
 		If CheckFlexVoccum(Flexnum - 1) = True Then
 			Wait 0.45
 		EndIf
-		
-	EndIf
+		Off blownum
+	Else
+		Off valvenum; Off blownum
+		Wait 0.3
+ 	EndIf
+	 	
+	
+
 	
 Fend
 '吸取失败，吹动作

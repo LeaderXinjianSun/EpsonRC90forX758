@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/03/20 13:53:04:281,DS:0000037463,CS:43261,MA:00-0E-C6-CE-B0-D0,EI:           
+ENVT0100,LM:2017/04/02 10:06:34:252,DS:0000038632,CS:40425,MA:C4-8E-8F-74-5D-89,EI:           
 sVersion="2.0.0"
 nDisplayMode=2
 bDisplayR=False
 bDisplayS=False
 bDisplayT=False
 nNumberOfJoints=4
-nNumberOfPoints=124
+nNumberOfPoints=128
 Point1 {
 	nNumber=0
 	sLabel=""
@@ -3153,6 +3153,110 @@ Point121 {
 	bSimVisible=False
 }
 Point122 {
+	nNumber=980
+	sLabel="NowPosition"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point123 {
+	nNumber=990
+	sLabel="CleanPosition1"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point124 {
+	nNumber=991
+	sLabel="CleanPosition2"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point125 {
+	nNumber=992
+	sLabel="CleanPosition3"
+	sDescription=""
+	nUndefined=262143
+	rX=0
+	rY=0
+	rZ=0
+	rU=0
+	rV=0
+	rW=0
+	rR=0
+	rS=0
+	rT=0
+	nLocal=0
+	nHand=1
+	nElbow=1
+	nWrist=1
+	nJ1Flag=0
+	nJ2Flag=0
+	nJ4Flag=0
+	nJ6Flag=0
+	rJ1Angle=0
+	rJ4Angle=0
+	bSimVisible=False
+}
+Point126 {
 	nNumber=993
 	sLabel="PP"
 	sDescription=""
@@ -3178,7 +3282,7 @@ Point122 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point123 {
+Point127 {
 	nNumber=998
 	sLabel="FinalPosition1"
 	sDescription=""
@@ -3204,7 +3308,7 @@ Point123 {
 	rJ4Angle=0
 	bSimVisible=False
 }
-Point124 {
+Point128 {
 	nNumber=999
 	sLabel="FinalPosition"
 	sDescription=""
