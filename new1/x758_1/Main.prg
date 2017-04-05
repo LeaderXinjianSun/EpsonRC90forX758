@@ -94,7 +94,28 @@ Global Preserve Integer PcsGrrNeedNum
 
 Global Preserve Integer PcsGrrNum
 
+'******************************* 样本程序 ******************************************
 
+'[ NG3  ][ NG2  ]
+'[ PASS ][ NG1  ]
+Global Preserve Boolean SamPanelHave(4)
+'0,A爪；{PASS}{NG1}{NG2}{NG3}
+'1,B爪
+'2,测试机穴1
+'3,测试机穴2
+'4,测试机穴3
+'5,测试机穴4
+Global Preserve Boolean SamTestRecord(6, 4)
+'0,测试机穴1；{PASS}{NG1}{NG2}{NG3}
+'1,测试机穴2
+'2,测试机穴3
+'3,测试机穴4
+Global Preserve Boolean SamTestResult(4, 4)
+Global Boolean NeedSamAction
+Global Preserve Boolean SamActionFlag
+Global Boolean SamActionFinishFlag
+
+'******************************* 结束 ********************************************
 
 
 Function main
@@ -153,24 +174,41 @@ Function main2
 	
 main_label1:
 	Wait 0.2
-	If CleanActionFlag Then
-		Print "清洁操作，开始"
-		MsgSend$ = "清洁操作，开始"
-		Call CleanActionProcess
-		Print "清洁操作，结束"
-		MsgSend$ = "清洁操作，结束"
-		CleanActionFlag = False
-		CleanActionFinishFlag = True
+	
+	If Not SamActionFlag Then
+		
+		If CleanActionFlag Then
+			Print "清洁操作，开始"
+			MsgSend$ = "清洁操作，开始"
+			Call CleanActionProcess
+			Print "清洁操作，结束"
+			MsgSend$ = "清洁操作，结束"
+			CleanActionFlag = False
+			CleanActionFinishFlag = True
+			Discharge = 0
+			Off Discharing, Forced
+		EndIf
+	Else
+		Print "样本测试，开始"
+		MsgSend$ = "样本测试，开始"
+		Call SamActionProcess
+		Print "样本测试，结束"
+		MsgSend$ = "样本测试，结束"
+		SamActionFlag = False
+		SamActionFinishFlag = True
 		Discharge = 0
 		Off Discharing, Forced
 	EndIf
+
 	
-	If Not CleanActionFinishFlag Then
+	If Not CleanActionFinishFlag And Not SamActionFinishFlag Then
 		Print "请按继续，开始运行"
 		MsgSend$ = "请按继续，开始运行"
 		Pause
-	Else
+	ElseIf Not CleanActionFinishFlag Then
 		CleanActionFinishFlag = False
+	Else
+		SamActionFinishFlag = False
 	EndIf
 
 	Do
@@ -189,13 +227,19 @@ main_label1:
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 			Print "排料完成"
 			MsgSend$ = "排料完成"
-			If NeedCleanAction Then
-				NeedCleanAction = False
-				CleanActionFlag = True
+			If Not NeedSamAction Then
+				If NeedCleanAction Then
+					NeedCleanAction = False
+					CleanActionFlag = True
+				Else
+					Discharge = 0
+					Off Discharing, Forced
+				EndIf
 			Else
-				Discharge = 0
-				Off Discharing, Forced
+				NeedSamAction = False
+				SamActionFlag = True
 			EndIf
+
 			Exit Do
 		EndIf
 			If PickHave(0) = False And PickHave(1) = False Then
@@ -303,6 +347,15 @@ main_label2:
 	Loop
 	GoTo main_label2
 Fend
+Function SamActionProcess
+	
+Fend
+Function SamOperate1
+	
+Fend
+Function SamOperate2
+	
+Fend
 Function CleanActionProcess
 	Integer i, rearnum
 	For i = 0 To 3
@@ -314,9 +367,9 @@ Function CleanActionProcess
 	Next
 	TargetPosition_Num = 1
 	If Hand = 1 Then
-		FinalPosition = ChangeHandL /R :Z(-10)
+		FinalPosition = ChangeHandL /R
 	Else
-		FinalPosition = ChangeHandL /L :Z(-10)
+		FinalPosition = ChangeHandL /L
 	EndIf
 	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -1305,9 +1358,10 @@ TesterOperate1ReleaseSub:
 		Tester_Testing(i) = True
 		PickAorC$(i) = "A"
 	Else
+
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Tester_Testing(i) = True
 		PickAorC$(i) = "A"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	
 	For j = 0 To 3
@@ -1449,9 +1503,10 @@ TesterOperate1ReleaseSub_1:
 		Tester_Testing(i) = True
 		PickAorC$(i) = "B"
 	Else
+
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Tester_Testing(i) = True
 		PickAorC$(i) = "B"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 
 
@@ -2122,9 +2177,10 @@ TesterOperate1ReleaseSub:
 		Tester_Testing(i) = True
 		PickAorC$(i) = "B"
 	Else
+
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Tester_Testing(i) = True
 		PickAorC$(i) = "B"
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	EndIf
 	For j = 0 To 3
 		isInWaitPosition(j) = False
