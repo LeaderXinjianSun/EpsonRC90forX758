@@ -111,9 +111,17 @@ Global Preserve Boolean SamTestRecord(6, 4)
 '2,测试机穴3
 '3,测试机穴4
 Global Preserve Boolean SamTestResult(4, 4)
+'0,未测
+'1,项目1
+'2,项目2
+'3,项目3
+'4,项目4
+Global Preserve Integer SamTestNowItems(4)
 Global Boolean NeedSamAction
 Global Preserve Boolean SamActionFlag
 Global Boolean SamActionFinishFlag
+
+Global Preserve Integer SamNeedItemsnum
 
 '******************************* 结束 ********************************************
 
