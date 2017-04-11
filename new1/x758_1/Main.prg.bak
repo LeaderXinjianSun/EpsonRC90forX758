@@ -121,6 +121,8 @@ Global Boolean NeedSamAction
 Global Preserve Boolean SamActionFlag
 Global Boolean SamActionFinishFlag
 
+Global Preserve Integer SamNeedItemsnum
+
 '******************************* ½áÊø ********************************************
 
 
