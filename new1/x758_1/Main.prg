@@ -131,11 +131,24 @@ Global Boolean SamScanNewPcs
 
 '******************************* ½áÊø ********************************************
 
-
+Global Integer IndexArray_A(4)
+Global Integer IndexArray_B(4)
 Function main
-	
+	Integer i
+	For i = 0 To 3
+		IndexArray_B(i) = 3 - i
+		IndexArray_A(i) = i + 11
+	Next
 	Do
-		Wait 1
+		Wait 5
+		For i = 0 To 3
+			Print Str$(IndexArray_B(i))
+			
+		Next
+		For i = 0 To 3
+
+			Print Str$(IndexArray_A(IndexArray_B(i)))
+		Next
 		
 	Loop
 
