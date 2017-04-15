@@ -17,6 +17,7 @@ Global String PickAorC$(4)
 
 Global Integer NgContinue(4)
 Global Preserve Integer NgContinueNum
+
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -78,6 +79,9 @@ Global Integer Tcurrent
 Global Boolean needreleaseadjust
 
 Global Preserve Integer IndexArray_i(4)
+
+Global Boolean PcsLostAlarm1
+Global Boolean PcsLostAlarm2
 
 
 'GRR
@@ -2378,8 +2382,8 @@ PickFeedOperatelabel1:
 				
 
 			Else
-				Print "上料盘，吸取失败"
-				MsgSend$ = "上料盘，吸取失败"
+				Print "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
+				MsgSend$ = "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
 				Go Here +Z(10)
 				Off AdjustValve
 				Pause
@@ -3120,6 +3124,14 @@ CheckVoccum_label1:
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
+		If PcsLostAlarm2 Then
+			Print "B爪手掉料"
+			MsgSend$ = "B爪手掉料"
+			Pause
+			PcsLostAlarm2 = False
+		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
 	EndIf
@@ -3267,6 +3279,15 @@ CheckVoccum_label2:
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
+		If PcsLostAlarm1 Then
+			Print "A爪手掉料"
+			MsgSend$ = "A爪手掉料"
+			Pause
+			PcsLostAlarm1 = False
+		EndIf
+		
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
 	EndIf
@@ -3982,6 +4003,14 @@ CheckVoccum_label3:
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
+		If PcsLostAlarm1 Then
+			Print "A爪手掉料"
+			MsgSend$ = "A爪手掉料"
+			Pause
+			PcsLostAlarm1 = False
+		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
 	EndIf
@@ -4137,6 +4166,14 @@ CheckVoccum_label4:
 		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
+		If PcsLostAlarm2 Then
+			Print "B爪手掉料"
+			MsgSend$ = "B爪手掉料"
+			Pause
+			PcsLostAlarm2 = False
+		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
 	EndIf
@@ -5781,6 +5818,7 @@ Fend
 Function PickhaveMoniterA
 	Boolean StartCount
 	StartCount = False
+	PcsLostAlarm1 = False
 	Do
 		Wait 0.2
 		If PickHave(0) Then
@@ -5790,9 +5828,9 @@ Function PickhaveMoniterA
 					StartCount = True
 				EndIf
 				If Tmr(8) > 0.25 Then
-					Print "A爪手掉料"
-					MsgSend$ = "A爪手掉料"
-					Pause
+'					Print "A爪手掉料"
+'					MsgSend$ = "A爪手掉料"
+					PcsLostAlarm1 = True
 					Off SuckA
 					PickHave(0) = False
 				EndIf
@@ -5800,6 +5838,7 @@ Function PickhaveMoniterA
 				StartCount = False
 			EndIf
 		Else
+			
 			Exit Do
 		EndIf
 	Loop
@@ -5807,6 +5846,7 @@ Fend
 Function PickhaveMoniterB
 	Boolean StartCount
 	StartCount = False
+	PcsLostAlarm2 = False
 	Do
 		Wait 0.2
 		If PickHave(1) Then
@@ -5816,9 +5856,9 @@ Function PickhaveMoniterB
 					StartCount = True
 				EndIf
 				If Tmr(9) > 0.25 Then
-					Print "B爪手掉料"
-					MsgSend$ = "B爪手掉料"
-					Pause
+'					Print "B爪手掉料"
+'					MsgSend$ = "B爪手掉料"
+					PcsLostAlarm2 = True
 					Off SuckB
 					PickHave(1) = False
 				EndIf
@@ -5826,6 +5866,7 @@ Function PickhaveMoniterB
 				StartCount = False
 			EndIf
 		Else
+			
 			Exit Do
 		EndIf
 	Loop
@@ -6184,6 +6225,10 @@ Function TcpIpCmdRev
 						On Discharing, Forced
 						NeedSamAction = True
 					EndIf
+				Case "GONOGOCancel"
+					SamActionFlag = False
+					NeedSamAction = False
+					SamActionFinishFlag = False
 				Case "SamRetest"
 					SamRetest = 1
 				Case "XQTAction"
@@ -6724,6 +6769,7 @@ Function TrapInterruptAbort
 	Off DangerOut, Forced
 
 Fend
+
 
 
 
