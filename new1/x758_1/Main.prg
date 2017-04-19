@@ -179,7 +179,9 @@ Function main2
 		On RollValve
 	EndIf
     
-	
+	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 14 Then
+		NgTrayPalletNum = 1
+	EndIf
 	Call HomeReturnAction
 
 	If Sw(FeedReady) = 0 Then
@@ -2059,8 +2061,9 @@ SamUnload_Ng:
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
-		Pause
 		NgTrayPalletNum = 1
+		Pause
+		
 	EndIf
 Return
 Fend
@@ -5227,8 +5230,9 @@ UnloadOperate_Ng:
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
-		Pause
 		NgTrayPalletNum = 1
+		Pause
+		
 	EndIf
 Return
 
@@ -6558,7 +6562,7 @@ Function TesterStart1
 				
 				
 				On AL_Suck, Forced
-				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1, 1
+				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
 				Off AL_Suck, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
@@ -6619,7 +6623,7 @@ Function TesterStart2
 				Loop
 
 				On AR_Suck, Forced
-				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1, 1
+				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
 				Off AR_Suck, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
@@ -6680,7 +6684,7 @@ Function TesterStart3
 				Loop
 
 				On BL_Suck, Forced
-				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1, 1
+				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
 				Off BL_Suck, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
@@ -6741,7 +6745,7 @@ Function TesterStart4
 				
 				
 				On BR_Suck, Forced
-				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1, 1
+				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
 				Off BR_Suck, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False

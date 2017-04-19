@@ -17,6 +17,7 @@ Global String PickAorC$(4)
 
 Global Integer NgContinue(4)
 Global Preserve Integer NgContinueNum
+
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -2058,8 +2059,9 @@ SamUnload_Ng:
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
-		Pause
 		NgTrayPalletNum = 1
+		Pause
+		
 	EndIf
 Return
 Fend
@@ -2381,8 +2383,8 @@ PickFeedOperatelabel1:
 				
 
 			Else
-				Print "上料盘，吸取失败"
-				MsgSend$ = "上料盘，吸取失败"
+				Print "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
+				MsgSend$ = "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
 				Go Here +Z(10)
 				Off AdjustValve
 				Pause
@@ -3123,12 +3125,14 @@ CheckVoccum_label1:
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
 		If PcsLostAlarm2 Then
 			Print "B爪手掉料"
 			MsgSend$ = "B爪手掉料"
 			Pause
 			PcsLostAlarm2 = False
 		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
 	EndIf
@@ -3283,6 +3287,8 @@ CheckVoccum_label2:
 			Pause
 			PcsLostAlarm1 = False
 		EndIf
+		
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
 	EndIf
@@ -3998,12 +4004,14 @@ CheckVoccum_label3:
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
 		If PcsLostAlarm1 Then
 			Print "A爪手掉料"
 			MsgSend$ = "A爪手掉料"
 			Pause
 			PcsLostAlarm1 = False
 		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
 	EndIf
@@ -4159,12 +4167,14 @@ CheckVoccum_label4:
 		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
 		If PcsLostAlarm2 Then
 			Print "B爪手掉料"
 			MsgSend$ = "B爪手掉料"
 			Pause
 			PcsLostAlarm2 = False
 		EndIf
+		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
 	EndIf
@@ -5218,8 +5228,9 @@ UnloadOperate_Ng:
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
-		Pause
 		NgTrayPalletNum = 1
+		Pause
+		
 	EndIf
 Return
 
@@ -6216,6 +6227,10 @@ Function TcpIpCmdRev
 						On Discharing, Forced
 						NeedSamAction = True
 					EndIf
+				Case "GONOGOCancel"
+					SamActionFlag = False
+					NeedSamAction = False
+					SamActionFinishFlag = False
 				Case "SamRetest"
 					SamRetest = 1
 				Case "XQTAction"
@@ -6545,7 +6560,7 @@ Function TesterStart1
 				
 				
 				On AL_Suck, Forced
-				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1, 1
+				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
 				Off AL_Suck, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
@@ -6606,7 +6621,7 @@ Function TesterStart2
 				Loop
 
 				On AR_Suck, Forced
-				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1, 1
+				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
 				Off AR_Suck, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
@@ -6667,7 +6682,7 @@ Function TesterStart3
 				Loop
 
 				On BL_Suck, Forced
-				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1, 1
+				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
 				Off BL_Suck, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
@@ -6728,7 +6743,7 @@ Function TesterStart4
 				
 				
 				On BR_Suck, Forced
-				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1, 1
+				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
 				Off BR_Suck, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False
@@ -6756,6 +6771,7 @@ Function TrapInterruptAbort
 	Off DangerOut, Forced
 
 Fend
+
 
 
 
