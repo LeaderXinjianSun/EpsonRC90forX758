@@ -2288,7 +2288,7 @@ Function AllMonitor
 				
 				Off FeedEmpty, Forced
 				On AdjustValve, Forced
-				Wait 0.3
+				Wait 0.8
 				FeedReadySigleDown = 1
 				FeedPanelNum = 0
 			Else
@@ -5796,7 +5796,7 @@ Function PickAction(num As Integer) As Boolean
 		
 	If needreleaseadjust Then
 		Off AdjustValve
-		Wait 0.3
+		Wait 0.5
 	EndIf
 	Off valvenum
 	Wait 0.25
