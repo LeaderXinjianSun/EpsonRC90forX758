@@ -78,6 +78,8 @@ Global Integer Tcurrent
 
 Global Boolean needreleaseadjust
 
+Global Integer pickRetryTimes
+
 Global Preserve Integer IndexArray_i(4)
 
 Global Boolean PcsLostAlarm1
@@ -195,6 +197,8 @@ Function main2
 	EndIf
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
+	
+	pickRetryTimes = 0
 	
 main_label1:
 	Wait 0.2
@@ -502,8 +506,10 @@ Function SamPickfromPanel
 		TargetPosition_Num = 7
 		FinalPosition = P(128 + i)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		pickRetryTimes = 0
 		pickfeedflag = PickAction(0)
 		If pickfeedflag = False Then
+			pickRetryTimes = pickRetryTimes + 1
 			Wait 0.5
 			pickfeedflag = PickAction(0)
 		EndIf
@@ -1087,8 +1093,10 @@ SamOperate1SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
+	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(0) = PickAction(0)
 	EndIf
@@ -1731,8 +1739,10 @@ SamOperate2SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
 	
+	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(1) = PickAction(1)
 	EndIf
@@ -2224,11 +2234,18 @@ Function XQTAction(num As Integer)
 	Send
 	isXqtting = False
 Fend
+Function AdjustDoubleAction
+	On AdjustValve, Forced
+	Wait 0.5
+	Off AdjustValve, Forced
+	Wait 0.5
+	On AdjustValve, Forced
+Fend
 Function AllMonitor
 	
-	Integer FeedReady_, PassTrayRdy_, INP_Home_, i, NgTrayRdy_
+	Integer FeedReady_, PassTrayRdy_, INP_Home_, i, NgTrayRdy_, CloseCMD_
 	FeedReady_ = Sw(FeedReady)
-
+	CloseCMD_ = Sw(CloseCMD)
 	Do
 		Wait 0.1
 		If NgTrayPalletNum < 1 Then
@@ -2243,12 +2260,17 @@ Function AllMonitor
 			
 		If Sw(RollReset) = 1 Then
 			On RollResetout, Forced
-			
 		Else
 			Off RollResetout, Forced
 			
 		EndIf
 		
+		If CloseCMD_ <> Sw(CloseCMD) Then
+			CloseCMD_ = Sw(CloseCMD)
+			If Sw(CloseCMD) Then
+				Xqt AdjustDoubleAction, NoEmgAbort
+			EndIf
+		EndIf
 		
 		If FeedReady_ <> Sw(FeedReady) Then
 			FeedReady_ = Sw(FeedReady)
@@ -2288,7 +2310,7 @@ Function AllMonitor
 				
 				Off FeedEmpty, Forced
 				On AdjustValve, Forced
-				Wait 0.6
+'				Wait 0.8
 				FeedReadySigleDown = 1
 				FeedPanelNum = 0
 			Else
@@ -2353,10 +2375,13 @@ PickFeedOperatelabel1:
 			
 			
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-			needreleaseadjust = True
+'			needreleaseadjust = True
+			pickRetryTimes = 0
 			pickfeedflag = PickAction(0)
 			If pickfeedflag = False Then
+				pickRetryTimes = pickRetryTimes + 1
 				Wait 0.5
+				needreleaseadjust = True
 				pickfeedflag = PickAction(0)
 			EndIf
 			needreleaseadjust = False
@@ -2836,10 +2861,17 @@ TesterOperate1SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",B"
 	
+	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(1) = PickAction(1)
+		If PickHave(1) = False Then
+			pickRetryTimes = pickRetryTimes + 1
+			Wait 1
+			PickHave(1) = PickAction(1)
+		EndIf
 	EndIf
 
 	Tester_Fill(IndexArray_i(i)) = False;
@@ -3720,10 +3752,17 @@ TesterOperate1SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",A"
 	
+	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(0) = PickAction(0)
+		If PickHave(0) = False Then
+			pickRetryTimes = pickRetryTimes + 1
+			Wait 1
+			PickHave(0) = PickAction(0)
+		EndIf
 	EndIf
 
 	Tester_Fill(IndexArray_i(i)) = False;
@@ -4594,8 +4633,10 @@ GRROperate1Rsuck:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
+	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(0) = PickAction(0)
 	EndIf
@@ -5029,8 +5070,10 @@ GRROperate2Rsuck:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
 	
+	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
+		pickRetryTimes = pickRetryTimes + 1
 		Wait 1
 		PickHave(1) = PickAction(1)
 	EndIf
@@ -5787,19 +5830,17 @@ Function PickAction(num As Integer) As Boolean
 			blownum = 7
 			vacuumnum = 3
 	Send
-'	If needreleaseadjust Then
-'		Off AdjustValve
-'		Wait 0.05
-'	EndIf
+
 	Off blownum; On valvenum; On sucknum
-	Wait Sw(vacuumnum), 0.3
+	
+	Wait Sw(vacuumnum), 0.3 + pickRetryTimes * 0.3
 		
 	If needreleaseadjust Then
 		Off AdjustValve
 		Wait 0.5
 	EndIf
 	Off valvenum
-	Wait 0.25
+	Wait 0.3
 
 	If Sw(vacuumnum) = 0 Then
 		If needreleaseadjust Then
@@ -5963,9 +6004,9 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	
     Wait 0.2
  	On valvenum
- 	Wait 0.3
+ 	Wait 0.1
 	On blownum; Off sucknum
-
+	Wait 0.3
 	PickHave(num) = False
 	
 	Select Flexnum
@@ -5979,16 +6020,36 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 			On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
 	Send
 	
-	
- 	Wait 0.3
+	If Flexnum <> -1 Then
+		Wait 0.2
+	EndIf
 
-
-	
  	If Flexnum <> -1 And (Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0) Then
+		Select Flexnum
+			Case 1
+				Off AL_Suck
+			Case 2
+				Off AR_Suck
+			Case 3
+				Off BL_Suck
+			Case 4
+				Off BR_Suck
+		Send
  		Off valvenum
  		Wait 0.2
  		NowPosition = Here
  	    Go NowPosition -Z(2.5) ! D1; On valvenum !
+ 	    Wait 0.2
+		Select Flexnum
+			Case 1
+				On AL_Suck
+			Case 2
+				On AR_Suck
+			Case 3
+				On BL_Suck
+			Case 4
+				On BR_Suck
+		Send
  		Wait Sw(FlexVoccum1) = 1 And Sw(FlexVoccum2) = 1, 1  '等待气缸下压
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True
@@ -5996,14 +6057,14 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  			CheckFlexVoccum(Flexnum - 1) = False
  		EndIf
 	 	Off valvenum
-		Wait 0.3
+		Wait 0.2
 		If CheckFlexVoccum(Flexnum - 1) = True Then
 			Wait 0.45
 		EndIf
 		Off blownum
 	Else
 		Off valvenum; Off blownum
-		Wait 0.3
+		Wait 0.2
  	EndIf
 	 	
 	

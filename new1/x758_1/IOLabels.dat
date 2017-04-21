@@ -1,7 +1,7 @@
-ENVT0100,LM:2017/04/09 00:45:46:061,DS:0000003767,CS:10809,MA:00-15-17-CD-76-F0,EI:           
+ENVT0100,LM:2017/04/21 12:19:07:800,DS:0000003835,CS:02394,MA:C6-8E-8F-74-5D-89,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
-	nNumberOfLabels=31
+	nNumberOfLabels=32
 	Label1 {
 		nBit=0
 		sLabel="VacuumValueA"
@@ -128,31 +128,36 @@ InputBitLabels {
 		sDescription=""
 	}
 	Label26 {
+		nBit=522
+		sLabel="CloseCMD"
+		sDescription=""
+	}
+	Label27 {
 		nBit=535
 		sLabel="PreFill1"
 		sDescription=""
 	}
-	Label27 {
+	Label28 {
 		nBit=536
 		sLabel="PreFill2"
 		sDescription=""
 	}
-	Label28 {
+	Label29 {
 		nBit=537
 		sLabel="PreFill3"
 		sDescription=""
 	}
-	Label29 {
+	Label30 {
 		nBit=538
 		sLabel="PreFill4"
 		sDescription=""
 	}
-	Label30 {
+	Label31 {
 		nBit=539
 		sLabel="PreFill5"
 		sDescription=""
 	}
-	Label31 {
+	Label32 {
 		nBit=540
 		sLabel="PreFill6"
 		sDescription=""
