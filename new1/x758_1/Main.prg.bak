@@ -85,6 +85,8 @@ Global Preserve Integer IndexArray_i(4)
 Global Boolean PcsLostAlarm1
 Global Boolean PcsLostAlarm2
 
+Global Integer SelectSampleResultfromDtFinish
+
 
 'GRR
 '0,A爪；{已测试穴1数}{已测试穴2数}{已测试穴3数}{已测试穴4数}
@@ -145,7 +147,6 @@ Function main
 	
 	Do
 		Wait 1
-		
 	Loop
 
 Fend
@@ -167,7 +168,7 @@ Function main2
 	Xqt TesterStart3, NoEmgAbort
 	Wait 0.2
 	Xqt TesterStart4, NoEmgAbort
-	Xqt AllMonitor, NoEmgAbort
+	Xqt AllMonitor, NoPause
 '	Call InitAction
 	Wait 0.2
 	Off Discharing
@@ -198,7 +199,7 @@ Function main2
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
 	
-	pickRetryTimes = 0
+	
 	
 main_label1:
 	Wait 0.2
@@ -311,7 +312,7 @@ Function main3
 	Xqt TesterStart3, NoEmgAbort
 	Wait 0.2
 	Xqt TesterStart4, NoEmgAbort
-	Xqt AllMonitor, NoEmgAbort
+	Xqt AllMonitor, NoPause
 '	Call InitAction
 	Wait 0.2
 	Off Discharing
@@ -618,6 +619,19 @@ SamActionProcess_label1:
 		
 	Loop
 	'判断样本是否测试正确
+	Print "延时10秒，等待查询样本测试结果"
+	MsgSend$ = "延时10秒，等待查询样本测试结果"
+	Wait 10
+	SelectSampleResultfromDtFinish = 0
+	If CmdSend$ <> "" Then
+		Print "有命令 " + CmdSend$ + " 待发送！"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "SelectSampleResultfromDt"
+	Wait SelectSampleResultfromDtFinish = 1
+	
 	SamFail = False
 	SamRetest = 0
 	For i = 0 To 4
@@ -2268,7 +2282,7 @@ Function AllMonitor
 		If CloseCMD_ <> Sw(CloseCMD) Then
 			CloseCMD_ = Sw(CloseCMD)
 			If Sw(CloseCMD) Then
-				Xqt AdjustDoubleAction, NoEmgAbort
+				Xqt AdjustDoubleAction
 			EndIf
 		EndIf
 		
@@ -6296,6 +6310,33 @@ Function TcpIpCmdRev
 					SamActionFinishFlag = False
 				Case "SamRetest"
 					SamRetest = 1
+				Case "SelectSampleResultfromDtFinish"
+					SelectSampleResultfromDtFinish = 1
+				Case "SelectSampleResultfromDt"
+					Select CmdRevStr$(2)
+						Case "OK"
+							SamTestResult(0, 0) = False
+						Case "NG"
+							SamTestResult(0, 1) = False
+						Case "NG1"
+							SamTestResult(0, 2) = False
+						Case "NG2"
+							SamTestResult(0, 3) = False
+						Case "NG3"
+							SamTestResult(0, 4) = False
+						Case "NG4"
+							SamTestResult(0, 5) = False
+						Case "NG5"
+							SamTestResult(0, 6) = False
+						Case "NG6"
+							SamTestResult(0, 7) = False
+						Case "NG7"
+							SamTestResult(0, 8) = False
+						Case "NG8"
+							SamTestResult(0, 9) = False
+						Case "Error"
+
+					Send
 				Case "XQTAction"
 					If isXqtting = False Then
 						Select CmdRevStr$(1)
@@ -6832,6 +6873,8 @@ Function TrapInterruptAbort
 
 	Off Discharing, Forced
 	Off DangerOut, Forced
+	
+	pickRetryTimes = 0
 
 Fend
 
