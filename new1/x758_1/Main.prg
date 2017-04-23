@@ -5862,6 +5862,9 @@ Function PickAction(num As Integer) As Boolean
 '			Wait 0.1
 		EndIf
 		PickAction = False
+		On blownum; Off sucknum
+		Wait 0.1
+		Off blownum
 	Else
 		PickAction = True
 		Select num
