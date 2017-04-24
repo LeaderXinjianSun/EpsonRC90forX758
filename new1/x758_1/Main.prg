@@ -88,6 +88,7 @@ Global Boolean PcsLostAlarm2
 Global Integer SelectSampleResultfromDtFinish
 
 Global Integer Delta_Z
+Global Boolean PickFeedFirstSuck
 'GRR
 '0,A爪；{已测试穴1数}{已测试穴2数}{已测试穴3数}{已测试穴4数}
 '1,B爪
@@ -2391,6 +2392,7 @@ PickFeedOperatelabel1:
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 '			needreleaseadjust = True
 			pickRetryTimes = 0
+			PickFeedFirstSuck = True
 			pickfeedflag = PickAction(0)
 			If pickfeedflag = False Then
 				pickRetryTimes = pickRetryTimes + 1
@@ -2420,6 +2422,12 @@ PickFeedOperatelabel1:
 						Pick_P_Msg(0) = 1
 						
 				Send
+				If PcsLostAlarm1 Then
+					Print "A爪手掉料"
+					MsgSend$ = "A爪手掉料"
+					Pause
+					PcsLostAlarm1 = False
+				EndIf
 
 				
 
@@ -5863,9 +5871,21 @@ Function PickAction(num As Integer) As Boolean
 '			Wait 0.1
 		EndIf
 		PickAction = False
-		On blownum; Off sucknum
-		Wait 0.1
-		Off blownum
+		If PickFeedFirstSuck Then
+		    PickFeedFirstSuck = False
+			Off AdjustValve
+			Wait 0.5
+			On valvenum
+			Wait 0.2
+			On blownum; Off valvenum
+			Wait 0.2
+			Off blownum
+			On AdjustValve; Off valvenum
+			Wait 0.5
+		EndIf
+'		On blownum; Off sucknum
+'		Wait 0.1
+'		Off blownum
 	Else
 		PickAction = True
 		Select num
