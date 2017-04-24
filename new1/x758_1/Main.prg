@@ -87,7 +87,7 @@ Global Boolean PcsLostAlarm2
 
 Global Integer SelectSampleResultfromDtFinish
 
-
+Global Integer Delta_Z
 'GRR
 '0,A爪；{已测试穴1数}{已测试穴2数}{已测试穴3数}{已测试穴4数}
 '1,B爪
@@ -940,22 +940,22 @@ SamOperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1 +Z(2.5)
+			FinalPosition1 = A_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2 +Z(2.5)
+			FinalPosition1 = A_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3 +Z(2.5)
+			FinalPosition1 = A_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4 +Z(2.5)
+			FinalPosition1 = A_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -1586,22 +1586,22 @@ SamOperate2ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(2.5)
+			FinalPosition1 = B_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(2.5)
+			FinalPosition1 = B_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(2.5)
+			FinalPosition1 = B_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(2.5)
+			FinalPosition1 = B_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -3098,22 +3098,22 @@ TesterOperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1 +Z(2.5)
+			FinalPosition1 = A_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2 +Z(2.5)
+			FinalPosition1 = A_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3 +Z(2.5)
+			FinalPosition1 = A_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4 +Z(2.5)
+			FinalPosition1 = A_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -3258,22 +3258,22 @@ TesterOperate1ReleaseSub_1:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(2.5)
+			FinalPosition1 = B_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(2.5)
+			FinalPosition1 = B_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(2.5)
+			FinalPosition1 = B_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(2.5)
+			FinalPosition1 = B_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -3989,22 +3989,22 @@ TesterOperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(2.5)
+			FinalPosition1 = B_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(2.5)
+			FinalPosition1 = B_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(2.5)
+			FinalPosition1 = B_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(2.5)
+			FinalPosition1 = B_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -4141,22 +4141,22 @@ TesterOperate1ReleaseSub_1:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1 +Z(2.5)
+			FinalPosition1 = A_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2 +Z(2.5)
+			FinalPosition1 = A_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3 +Z(2.5)
+			FinalPosition1 = A_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4 +Z(2.5)
+			FinalPosition1 = A_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -4475,22 +4475,22 @@ GRROperate1ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1 +Z(2.5)
+			FinalPosition1 = A_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2 +Z(2.5)
+			FinalPosition1 = A_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3 +Z(2.5)
+			FinalPosition1 = A_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4 +Z(2.5)
+			FinalPosition1 = A_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -4912,22 +4912,22 @@ GRROperate2ReleaseSub:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1 +Z(2.5)
+			FinalPosition1 = B_1 +Z(Delta_Z)
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2 +Z(2.5)
+			FinalPosition1 = B_2 +Z(Delta_Z)
 			NeedAnotherMove(1) = True
 			rearnum = 5
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3 +Z(2.5)
+			FinalPosition1 = B_3 +Z(Delta_Z)
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4 +Z(2.5)
+			FinalPosition1 = B_4 +Z(Delta_Z)
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -5391,6 +5391,7 @@ Function HomeReturnAction
 	LimZ -24
 	Speed 50
 	Boolean HomeSuccessFlage
+	Delta_Z = 4
 
 '	SFree 1, 2
 '	Pulse 378192, -313239, -77072, 93736
@@ -6015,7 +6016,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 
 	
 '	If Flexnum <> -1 Then
-'		Go Here +Z(2.5)
+'		Go Here +Z(Delta_Z)
 '	EndIf
 
 	
@@ -6055,7 +6056,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  		Off valvenum
  		Wait 0.2
  		NowPosition = Here
- 	    Go NowPosition -Z(2.5) ! D1; On valvenum !
+ 	    Go NowPosition -Z(Delta_Z) ! D1; On valvenum !
  	    Wait 0.2
 		Select Flexnum
 			Case 1
