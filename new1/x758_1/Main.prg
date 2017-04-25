@@ -5907,6 +5907,9 @@ Function PickAction(num As Integer) As Boolean
 		Send
 		
 	EndIf
+	needreleaseadjust = False
+	PickFeedFirstSuck = False
+	PickFlexFirstSuck = False
 '	PickAction = True
 Fend
 Function PickhaveMoniterA

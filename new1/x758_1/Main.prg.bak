@@ -3775,18 +3775,18 @@ TesterOperate1SuckSub:
 		Wait 0.1
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",A"
-	
+	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
 '		Wait 1
 		PickHave(0) = PickAction(0)
-		If PickHave(0) = False Then
-			pickRetryTimes = pickRetryTimes + 1
-'			Wait 1
-			PickHave(0) = PickAction(0)
-		EndIf
+'		If PickHave(0) = False Then
+'			pickRetryTimes = pickRetryTimes + 1
+''			Wait 1
+'			PickHave(0) = PickAction(0)
+'		EndIf
 	EndIf
 
 	Tester_Fill(IndexArray_i(i)) = False;
