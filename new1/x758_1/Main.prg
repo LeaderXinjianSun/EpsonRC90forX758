@@ -2396,7 +2396,7 @@ PickFeedOperatelabel1:
 			pickfeedflag = PickAction(0)
 			If pickfeedflag = False Then
 				pickRetryTimes = pickRetryTimes + 1
-				Wait 0.5
+'				Wait 0.5
 				needreleaseadjust = True
 				pickfeedflag = PickAction(0)
 			EndIf
@@ -2441,15 +2441,16 @@ PickFeedOperatelabel1:
 				BlowSuckFail(0)
 				FeedPanelNum = FeedPanelNum + 1
 				fullflag = IsFeedPanelEmpty(True)
-				If fullflag Then
-					GoTo PickFeedOperatelabel1
-				EndIf
+				
+				GoTo PickFeedOperatelabel1
+				
 			EndIf
 				
 
 		Else
 			FeedPanelNum = FeedPanelNum + 1;
 			Call IsFeedPanelEmpty(True)
+			GoTo PickFeedOperatelabel1
 		EndIf
 	Else
 		TargetPosition_Num = 1
@@ -2887,11 +2888,11 @@ TesterOperate1SuckSub:
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(1) = PickAction(1)
 		If PickHave(1) = False Then
 			pickRetryTimes = pickRetryTimes + 1
-			Wait 1
+'			Wait 1
 			PickHave(1) = PickAction(1)
 		EndIf
 	EndIf
@@ -3778,11 +3779,11 @@ TesterOperate1SuckSub:
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(0) = PickAction(0)
 		If PickHave(0) = False Then
 			pickRetryTimes = pickRetryTimes + 1
-			Wait 1
+'			Wait 1
 			PickHave(0) = PickAction(0)
 		EndIf
 	EndIf
@@ -5856,7 +5857,7 @@ Function PickAction(num As Integer) As Boolean
 
 	Off blownum; On valvenum; On sucknum
 	
-	Wait Sw(vacuumnum), 0.3 + pickRetryTimes * 0.3
+	Wait 0.3 + pickRetryTimes * 0.3
 		
 	If needreleaseadjust Then
 		Off AdjustValve
