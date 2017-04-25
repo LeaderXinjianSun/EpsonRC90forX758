@@ -89,6 +89,7 @@ Global Integer SelectSampleResultfromDtFinish
 
 Global Integer Delta_Z
 Global Boolean PickFeedFirstSuck
+Global Boolean PickFlexFirstSuck
 'GRR
 '0,A×¦£»{ÒÑ²âÊÔÑ¨1Êý}{ÒÑ²âÊÔÑ¨2Êý}{ÒÑ²âÊÔÑ¨3Êý}{ÒÑ²âÊÔÑ¨4Êý}
 '1,B×¦
@@ -2883,18 +2884,18 @@ TesterOperate1SuckSub:
 		Wait 0.1
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",B"
-	
+	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(1) = PickAction(1)
-		If PickHave(1) = False Then
-			pickRetryTimes = pickRetryTimes + 1
-			Wait 1
-			PickHave(1) = PickAction(1)
-		EndIf
+'		If PickHave(1) = False Then
+'			pickRetryTimes = pickRetryTimes + 1
+''			Wait 1
+'			PickHave(1) = PickAction(1)
+'		EndIf
 	EndIf
 
 	Tester_Fill(IndexArray_i(i)) = False;
@@ -3779,11 +3780,11 @@ TesterOperate1SuckSub:
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(0) = PickAction(0)
 		If PickHave(0) = False Then
 			pickRetryTimes = pickRetryTimes + 1
-			Wait 1
+'			Wait 1
 			PickHave(0) = PickAction(0)
 		EndIf
 	EndIf
@@ -5857,14 +5858,15 @@ Function PickAction(num As Integer) As Boolean
 
 	Off blownum; On valvenum; On sucknum
 	
-	Wait 0.3 + pickRetryTimes * 0.3
+	Wait 0.5 + pickRetryTimes * 0.3
 		
 	If needreleaseadjust Then
 		Off AdjustValve
 		Wait 0.5
 	EndIf
 	Off valvenum
-	Wait 0.3
+	Wait 0.2
+	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
 		If needreleaseadjust Then
@@ -5883,6 +5885,14 @@ Function PickAction(num As Integer) As Boolean
 			Off blownum
 			On AdjustValve; Off valvenum
 			Wait 0.5
+		EndIf
+		If PickFlexFirstSuck Then
+			PickFlexFirstSuck = False
+			On valvenum
+			Wait 0.2
+			On blownum; Off valvenum
+			Wait 0.2
+			Off blownum
 		EndIf
 '		On blownum; Off sucknum
 '		Wait 0.1
