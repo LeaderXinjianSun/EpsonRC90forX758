@@ -2419,9 +2419,10 @@ PickFeedOperatelabel1:
 				pickfeedflag = PickAction(0)
 			EndIf
 			needreleaseadjust = False
-			FeedFill(FeedPanelNum) = False
+			
 			PickHave(0) = pickfeedflag
 			If pickfeedflag Then
+				FeedFill(FeedPanelNum) = False
 				Go Here +Z(10)
 				On AdjustValve
 				
@@ -2463,8 +2464,9 @@ PickFeedOperatelabel1:
 '				Go Here +Z(10)
 				Off AdjustValve
 				BlowSuckFail(0)
+				Accel 50, 50
 				Go FailFeedWaitP
-				
+				Accel 100, 100
 				Pause
 				On AdjustValve
 				Wait 0.2
@@ -6952,6 +6954,8 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
 
 
 

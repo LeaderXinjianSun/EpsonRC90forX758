@@ -5349,6 +5349,15 @@ Function ScanBarcodeOpetateP3(picksting$ As String)
     re_scan = False
 	TargetPosition_Num = 1
 	ScanResult = 0
+	
+	If CmdSend$ <> "" Then
+		Print "ÓÐÃüÁî " + CmdSend$ + " ´ý·¢ËÍ£¡"
+	EndIf
+	Do While CmdSend$ <> ""
+		Wait 0.1
+	Loop
+	CmdSend$ = "ScanP3," + picksting$
+	
 	Accel 50, 50
 	Go ScanPositionP3L
 	Accel 90, 90
@@ -5357,14 +5366,19 @@ Function ScanBarcodeOpetateP3(picksting$ As String)
 	
 ScanBarcodeOpetateP3label:
 	
-	Wait 0.2
-	If CmdSend$ <> "" Then
-		Print "ÓÐÃüÁî " + CmdSend$ + " ´ý·¢ËÍ£¡"
+'	Wait 0.2
+	If re_scan Then
+		
+		If CmdSend$ <> "" Then
+			Print "ÓÐÃüÁî " + CmdSend$ + " ´ý·¢ËÍ£¡"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "ScanP3," + picksting$
+	
 	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "ScanP3," + picksting$
+
 	TmReset 7
 	Do While ScanResult = 0 And Tmr(7) < 10
 		Wait 0.2
