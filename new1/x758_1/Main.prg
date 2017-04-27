@@ -2,6 +2,7 @@ Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
 
+'ver 20170427.01
 Global Boolean NeedChancel(4)
 
 Global Preserve Boolean Tester_Select(4), Tester_Fill(4)
@@ -509,11 +510,25 @@ Function SamPickfromPanel
 		TargetPosition_Num = 7
 		FinalPosition = P(128 + i)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		
+		
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		PickFlexFirstSuck = True
 		pickRetryTimes = 0
 		pickfeedflag = PickAction(0)
 		If pickfeedflag = False Then
 			pickRetryTimes = pickRetryTimes + 1
-			Wait 0.5
+'			Wait 0.5
 			pickfeedflag = PickAction(0)
 		EndIf
 		SamPanelHave(i) = False
@@ -1109,11 +1124,12 @@ SamOperate1SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
+	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(0) = PickAction(0)
 	EndIf
 
@@ -1755,11 +1771,12 @@ SamOperate2SuckSub:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
 	
+	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(1) = PickAction(1)
 	EndIf
 
@@ -2344,7 +2361,7 @@ Fend
 '爪手A取操作
 Function PickFeedOperate1
 	Boolean pickfeedflag, fullflag, InWaitPosition
-	Integer scanflag
+	Integer scanflag, i
 	InWaitPosition = False
 PickFeedOperatelabel1:
 	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
@@ -2407,7 +2424,15 @@ PickFeedOperatelabel1:
 			If pickfeedflag Then
 				Go Here +Z(10)
 				On AdjustValve
+				
 				FeedPanelNum = FeedPanelNum + 1
+				For i = FeedPanelNum To 5
+					If FeedFill(FeedPanelNum) = True Then
+						Exit For
+					Else
+						FeedPanelNum = FeedPanelNum + 1
+					EndIf
+				Next
 				
 				scanflag = ScanBarcodeOpetateP3("A")
 				fullflag = IsFeedPanelEmpty(False)
@@ -2435,13 +2460,16 @@ PickFeedOperatelabel1:
 			Else
 				Print "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
 				MsgSend$ = "上料盘" + Str$(FeedPanelNum + 1) + "，吸取失败"
-				Go Here +Z(10)
+'				Go Here +Z(10)
 				Off AdjustValve
+				BlowSuckFail(0)
+				Go FailFeedWaitP
+				
 				Pause
 				On AdjustValve
-				BlowSuckFail(0)
-				FeedPanelNum = FeedPanelNum + 1
-				fullflag = IsFeedPanelEmpty(True)
+				Wait 0.2
+'				FeedPanelNum = FeedPanelNum + 1
+'				fullflag = IsFeedPanelEmpty(True)
 				
 				GoTo PickFeedOperatelabel1
 				
@@ -2450,6 +2478,13 @@ PickFeedOperatelabel1:
 
 		Else
 			FeedPanelNum = FeedPanelNum + 1;
+			For i = FeedPanelNum To 5
+				If FeedFill(FeedPanelNum) = True Then
+					Exit For
+				Else
+					FeedPanelNum = FeedPanelNum + 1
+				EndIf
+			Next
 			Call IsFeedPanelEmpty(True)
 			GoTo PickFeedOperatelabel1
 		EndIf
@@ -2481,7 +2516,7 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 		Off AdjustValve
 		If needwait Then
 			Wait Sw(RollReset) = 1
-			Wait 1.5
+'			Wait 1.5
 		EndIf
 		On FeedEmpty
 		FeedReadySigleDown = 0
@@ -2489,11 +2524,11 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 		FeedPanelNum = 0
 
 	Else
-		If FeedPanelNum = 3 Then
+		If FeedPanelNum >= 3 Then
 			On RollValve
 			If needwait Then
 				Wait Sw(RollSet) = 1
-				Wait 1.5
+'				Wait 1.5
 			EndIf
 		EndIf
 		IsFeedPanelEmpty = False
@@ -4657,11 +4692,12 @@ GRROperate1Rsuck:
 	Loop
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
+	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
 	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(0) = PickAction(0)
 	EndIf
 
@@ -5095,10 +5131,11 @@ GRROperate2Rsuck:
 	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
 	
 	pickRetryTimes = 0
+	PickFlexFirstSuck = True
 	PickHave(1) = PickAction(1)
 	If PickHave(1) = False Then
 		pickRetryTimes = pickRetryTimes + 1
-		Wait 1
+'		Wait 1
 		PickHave(1) = PickAction(1)
 	EndIf
 
