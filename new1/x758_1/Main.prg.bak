@@ -2467,7 +2467,7 @@ PickFeedOperatelabel1:
 				
 				Pause
 				On AdjustValve
-				
+				Wait 0.2
 '				FeedPanelNum = FeedPanelNum + 1
 '				fullflag = IsFeedPanelEmpty(True)
 				
