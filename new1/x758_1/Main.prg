@@ -1,8 +1,12 @@
+'ver 20170428.01
+'1、上料盘取料，最后一片，吸盘提前拎起产品
+'2、治具内吸取失败，重复吸取，直至产品成功吸取。
+
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
 
-'ver 20170427.01
+
 Global Boolean NeedChancel(4)
 
 Global Preserve Boolean Tester_Select(4), Tester_Fill(4)
@@ -1049,6 +1053,7 @@ SamOperateReLabel1:
 Return
 	
 SamOperate1SuckSub:
+SamOperate1SuckSubLabel1:
 	'取
 	Select i
 		Case 0
@@ -1116,13 +1121,7 @@ SamOperate1SuckSub:
 	Next
 
 
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+
 	
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
@@ -1133,164 +1132,181 @@ SamOperate1SuckSub:
 		PickHave(0) = PickAction(0)
 	EndIf
 
-	Tester_Fill(i) = False;
-	
-	Select i
-		Case 0
-'				TargetPosition_Num = 2
-			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A1PASS1
-'				Position2NeedNeedAnotherMove = True
-			
-			rearnum = 4
-		Case 1
-'				TargetPosition_Num = 3
-			FinalPosition1 = A2PASS1
-			
-			rearnum = 5
-		Case 2
-'				TargetPosition_Num = 4
-			FinalPosition1 = A3PASS1
-			rearnum = 14
-		Case 3
-'				TargetPosition_Num = 5
-			FinalPosition1 = A4PASS3
-			rearnum = 15
-	Send
-'		Go FinalPosition1
-	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-	
-	If Tester_Pass(i) <> 0 Then
-			
-		Pick_P_Msg(0) = 0
-		NgContinue(i) = 0
-		
-'		SampleResult$ = "OK"
-		'PASS项目测试结果
-'		If SamTestNowItems(i) = 1 Then
-'			SamTestResult(i, 0) = True
-'		Else
-'			SamTestResult(i, 0) = False
-'		EndIf
-		
-		Select SamTestNowItems(i)
-			Case 1
-				SamTestResult(i, 0) = True
-				SampleResult$ = "OK"
-			Case 2
-				SamTestResult(i, 1) = False
-				SampleResult$ = "OK"
-			Case 3
-				SamTestResult(i, 2) = False
-				SampleResult$ = "OK"
-			Case 4
-				SamTestResult(i, 3) = False
-				SampleResult$ = "OK"
-			Case 5
-				SamTestResult(i, 4) = False
-				SampleResult$ = "OK"
-			Case 6
-				SamTestResult(i, 5) = False
-				SampleResult$ = "OK"
-			Case 7
-				SamTestResult(i, 6) = False
-				SampleResult$ = "OK"
-			Case 8
-				SamTestResult(i, 7) = False
-				SampleResult$ = "OK"
-			Case 9
-				SamTestResult(i, 8) = False
-				SampleResult$ = "OK"
-			Case 10
-				SamTestResult(i, 9) = False
-				SampleResult$ = "OK"
-			Default
-		Send
 
-	Else
-		'NG项目测试结果
-'		SampleResult$ = "NG"
-'		If SamTestNowItems(i) = 2 Then
-'			SamTestResult(i, 1) = True
-'		Else
-'			SamTestResult(i, 1) = False
-'		EndIf
-'		
-		Select SamTestNowItems(i)
-			Case 1
-				SamTestResult(i, 0) = False
-				SampleResult$ = "NG"
-			Case 2
-				SamTestResult(i, 1) = True
-				SampleResult$ = "NG"
-			Case 3
-				SamTestResult(i, 2) = True
-				SampleResult$ = "NG1"
-			Case 4
-				SamTestResult(i, 3) = True
-				SampleResult$ = "NG2"
-			Case 5
-				SamTestResult(i, 4) = True
-				SampleResult$ = "NG3"
-			Case 6
-				SamTestResult(i, 5) = True
-				SampleResult$ = "NG4"
-			Case 7
-				SamTestResult(i, 6) = True
-				SampleResult$ = "NG5"
-			Case 8
-				SamTestResult(i, 7) = True
-				SampleResult$ = "NG6"
-			Case 9
-				SamTestResult(i, 8) = True
-				SampleResult$ = "NG7"
-			Case 10
-				SamTestResult(i, 9) = True
-				SampleResult$ = "NG8"
-			Default
-		Send
-
-	EndIf
-		
-	
-	Select SamTestNowItems(i)
-		Case 1
-			FlexNowTest$ = "OK"
-		Case 2
-			FlexNowTest$ = "NG"
-		Case 3
-			FlexNowTest$ = "NG1"
-		Case 4
-			FlexNowTest$ = "NG2"
-		Case 5
-			FlexNowTest$ = "NG3"
-		Case 6
-			FlexNowTest$ = "NG4"
-		Case 7
-			FlexNowTest$ = "NG5"
-		Case 8
-			FlexNowTest$ = "NG6"
-		Case 9
-			FlexNowTest$ = "NG7"
-		Case 10
-			FlexNowTest$ = "NG8"
-		Default
-			
-	Send
-	
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SampleResult," + Str$(i + 1) + "," + FlexNowTest$ + "," + SampleResult$
 
 	If PickHave(0) = True Then
+	
+	
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+	
+		Tester_Fill(i) = False;
+		
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		
+		If Tester_Pass(i) <> 0 Then
+				
+			Pick_P_Msg(0) = 0
+			NgContinue(i) = 0
+			
+	'		SampleResult$ = "OK"
+			'PASS项目测试结果
+	'		If SamTestNowItems(i) = 1 Then
+	'			SamTestResult(i, 0) = True
+	'		Else
+	'			SamTestResult(i, 0) = False
+	'		EndIf
+			
+			Select SamTestNowItems(i)
+				Case 1
+					SamTestResult(i, 0) = True
+					SampleResult$ = "OK"
+				Case 2
+					SamTestResult(i, 1) = False
+					SampleResult$ = "OK"
+				Case 3
+					SamTestResult(i, 2) = False
+					SampleResult$ = "OK"
+				Case 4
+					SamTestResult(i, 3) = False
+					SampleResult$ = "OK"
+				Case 5
+					SamTestResult(i, 4) = False
+					SampleResult$ = "OK"
+				Case 6
+					SamTestResult(i, 5) = False
+					SampleResult$ = "OK"
+				Case 7
+					SamTestResult(i, 6) = False
+					SampleResult$ = "OK"
+				Case 8
+					SamTestResult(i, 7) = False
+					SampleResult$ = "OK"
+				Case 9
+					SamTestResult(i, 8) = False
+					SampleResult$ = "OK"
+				Case 10
+					SamTestResult(i, 9) = False
+					SampleResult$ = "OK"
+				Default
+			Send
+	
+		Else
+			'NG项目测试结果
+	'		SampleResult$ = "NG"
+	'		If SamTestNowItems(i) = 2 Then
+	'			SamTestResult(i, 1) = True
+	'		Else
+	'			SamTestResult(i, 1) = False
+	'		EndIf
+	'		
+			Select SamTestNowItems(i)
+				Case 1
+					SamTestResult(i, 0) = False
+					SampleResult$ = "NG"
+				Case 2
+					SamTestResult(i, 1) = True
+					SampleResult$ = "NG"
+				Case 3
+					SamTestResult(i, 2) = True
+					SampleResult$ = "NG1"
+				Case 4
+					SamTestResult(i, 3) = True
+					SampleResult$ = "NG2"
+				Case 5
+					SamTestResult(i, 4) = True
+					SampleResult$ = "NG3"
+				Case 6
+					SamTestResult(i, 5) = True
+					SampleResult$ = "NG4"
+				Case 7
+					SamTestResult(i, 6) = True
+					SampleResult$ = "NG5"
+				Case 8
+					SamTestResult(i, 7) = True
+					SampleResult$ = "NG6"
+				Case 9
+					SamTestResult(i, 8) = True
+					SampleResult$ = "NG7"
+				Case 10
+					SamTestResult(i, 9) = True
+					SampleResult$ = "NG8"
+				Default
+			Send
+	
+		EndIf
+			
+		
+		Select SamTestNowItems(i)
+			Case 1
+				FlexNowTest$ = "OK"
+			Case 2
+				FlexNowTest$ = "NG"
+			Case 3
+				FlexNowTest$ = "NG1"
+			Case 4
+				FlexNowTest$ = "NG2"
+			Case 5
+				FlexNowTest$ = "NG3"
+			Case 6
+				FlexNowTest$ = "NG4"
+			Case 7
+				FlexNowTest$ = "NG5"
+			Case 8
+				FlexNowTest$ = "NG6"
+			Case 9
+				FlexNowTest$ = "NG7"
+			Case 10
+				FlexNowTest$ = "NG8"
+			Default
+				
+		Send
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SampleResult," + Str$(i + 1) + "," + FlexNowTest$ + "," + SampleResult$
+	
+	
+	
+	
+	
+	
 		If Tester_Pass(i) <> 0 Then
 				
 			Pick_P_Msg(0) = 0
@@ -1318,11 +1334,45 @@ SamOperate1SuckSub:
 		Wait SamSearchflag = 1
 	Else
 
+
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+
+
+
+
+
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
 		Off SuckA
-	
+		GoTo SamOperate1SuckSubLabel1
 	EndIf
 Return
 	
@@ -1696,6 +1746,7 @@ SamOperateReLabel2:
 Return
 	
 SamOperate2SuckSub:
+SamOperate2SuckSubLabel1:
 	'取
 	Select i
 		Case 0
@@ -1763,13 +1814,7 @@ SamOperate2SuckSub:
 	Next
 
 
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+
 	
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
@@ -1780,197 +1825,168 @@ SamOperate2SuckSub:
 		PickHave(1) = PickAction(1)
 	EndIf
 
-	Tester_Fill(i) = False;
-	
-	Select i
-		Case 0
-'				TargetPosition_Num = 2
-			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A1PASS1
-'				Position2NeedNeedAnotherMove = True
-			
-			rearnum = 4
-		Case 1
-'				TargetPosition_Num = 3
-			FinalPosition1 = A2PASS1
-			
-			rearnum = 5
-		Case 2
-'				TargetPosition_Num = 4
-			FinalPosition1 = A3PASS1
-			rearnum = 14
-		Case 3
-'				TargetPosition_Num = 5
-			FinalPosition1 = A4PASS3
-			rearnum = 15
-	Send
-'		Go FinalPosition1
-	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-	
-'	If Tester_Pass(i) <> 0 Then
-			
-'		Pick_P_Msg(1) = 0
-'		NgContinue(i) = 0
-'		SampleResult$ = "OK"
-'		'PASS项目测试结果
-'		If SamTestNowItems(i) = 1 Then
-'			SamTestResult(i, 0) = True
-'		Else
-'			SamTestResult(i, 0) = False
-'		EndIf
-'
-'	Else
-'		'NG项目测试结果
-'		SampleResult$ = "NG"
-'		If SamTestNowItems(i) = 2 Then
-'			SamTestResult(i, 1) = True
-'		Else
-'			SamTestResult(i, 1) = False
-'		EndIf
-'
-'	EndIf
-'	
-'	Select SamTestNowItems(i)
-'		Case 1
-'			FlexNowTest$ = "OK"
-'		Case 2
-'			FlexNowTest$ = "NG"
-'		Default
-'			FlexNowTest$ = "NG"
-'	Send
-	
-	
-	If Tester_Pass(i) <> 0 Then
-			
-		Pick_P_Msg(0) = 0
-		NgContinue(i) = 0
-		
-'		SampleResult$ = "OK"
-		'PASS项目测试结果
-'		If SamTestNowItems(i) = 1 Then
-'			SamTestResult(i, 0) = True
-'		Else
-'			SamTestResult(i, 0) = False
-'		EndIf
-		
-		Select SamTestNowItems(i)
-			Case 1
-				SamTestResult(i, 0) = True
-				SampleResult$ = "OK"
-			Case 2
-				SamTestResult(i, 1) = False
-				SampleResult$ = "OK"
-			Case 3
-				SamTestResult(i, 2) = False
-				SampleResult$ = "OK"
-			Case 4
-				SamTestResult(i, 3) = False
-				SampleResult$ = "OK"
-			Case 5
-				SamTestResult(i, 4) = False
-				SampleResult$ = "OK"
-			Case 6
-				SamTestResult(i, 5) = False
-				SampleResult$ = "OK"
-			Case 7
-				SamTestResult(i, 6) = False
-				SampleResult$ = "OK"
-			Case 8
-				SamTestResult(i, 7) = False
-				SampleResult$ = "OK"
-			Case 9
-				SamTestResult(i, 8) = False
-				SampleResult$ = "OK"
-			Case 10
-				SamTestResult(i, 9) = False
-				SampleResult$ = "OK"
-			Default
-		Send
 
-	Else
-		'NG项目测试结果
-'		SampleResult$ = "NG"
-'		If SamTestNowItems(i) = 2 Then
-'			SamTestResult(i, 1) = True
-'		Else
-'			SamTestResult(i, 1) = False
-'		EndIf
-'		
-		Select SamTestNowItems(i)
-			Case 1
-				SamTestResult(i, 0) = False
-				SampleResult$ = "NG"
-			Case 2
-				SamTestResult(i, 1) = True
-				SampleResult$ = "NG"
-			Case 3
-				SamTestResult(i, 2) = True
-				SampleResult$ = "NG1"
-			Case 4
-				SamTestResult(i, 3) = True
-				SampleResult$ = "NG2"
-			Case 5
-				SamTestResult(i, 4) = True
-				SampleResult$ = "NG3"
-			Case 6
-				SamTestResult(i, 5) = True
-				SampleResult$ = "NG4"
-			Case 7
-				SamTestResult(i, 6) = True
-				SampleResult$ = "NG5"
-			Case 8
-				SamTestResult(i, 7) = True
-				SampleResult$ = "NG6"
-			Case 9
-				SamTestResult(i, 8) = True
-				SampleResult$ = "NG7"
-			Case 10
-				SamTestResult(i, 9) = True
-				SampleResult$ = "NG8"
-			Default
-		Send
-
-	EndIf
-		
-	
-	Select SamTestNowItems(i)
-		Case 1
-			FlexNowTest$ = "OK"
-		Case 2
-			FlexNowTest$ = "NG"
-		Case 3
-			FlexNowTest$ = "NG1"
-		Case 4
-			FlexNowTest$ = "NG2"
-		Case 5
-			FlexNowTest$ = "NG3"
-		Case 6
-			FlexNowTest$ = "NG4"
-		Case 7
-			FlexNowTest$ = "NG5"
-		Case 8
-			FlexNowTest$ = "NG6"
-		Case 9
-			FlexNowTest$ = "NG7"
-		Case 10
-			FlexNowTest$ = "NG8"
-		Default
-			
-	Send
-	
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SampleResult," + Str$(i + 1) + "," + FlexNowTest$ + "," + SampleResult$
 
 	If PickHave(1) = True Then
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+		
+		Tester_Fill(i) = False;
+		
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		
+		
+		
+		If Tester_Pass(i) <> 0 Then
+				
+			Pick_P_Msg(0) = 0
+			NgContinue(i) = 0
+			
+	
+			'PASS项目测试结果
+	
+			
+			Select SamTestNowItems(i)
+				Case 1
+					SamTestResult(i, 0) = True
+					SampleResult$ = "OK"
+				Case 2
+					SamTestResult(i, 1) = False
+					SampleResult$ = "OK"
+				Case 3
+					SamTestResult(i, 2) = False
+					SampleResult$ = "OK"
+				Case 4
+					SamTestResult(i, 3) = False
+					SampleResult$ = "OK"
+				Case 5
+					SamTestResult(i, 4) = False
+					SampleResult$ = "OK"
+				Case 6
+					SamTestResult(i, 5) = False
+					SampleResult$ = "OK"
+				Case 7
+					SamTestResult(i, 6) = False
+					SampleResult$ = "OK"
+				Case 8
+					SamTestResult(i, 7) = False
+					SampleResult$ = "OK"
+				Case 9
+					SamTestResult(i, 8) = False
+					SampleResult$ = "OK"
+				Case 10
+					SamTestResult(i, 9) = False
+					SampleResult$ = "OK"
+				Default
+			Send
+	
+		Else
+			'NG项目测试结果
+		
+			Select SamTestNowItems(i)
+				Case 1
+					SamTestResult(i, 0) = False
+					SampleResult$ = "NG"
+				Case 2
+					SamTestResult(i, 1) = True
+					SampleResult$ = "NG"
+				Case 3
+					SamTestResult(i, 2) = True
+					SampleResult$ = "NG1"
+				Case 4
+					SamTestResult(i, 3) = True
+					SampleResult$ = "NG2"
+				Case 5
+					SamTestResult(i, 4) = True
+					SampleResult$ = "NG3"
+				Case 6
+					SamTestResult(i, 5) = True
+					SampleResult$ = "NG4"
+				Case 7
+					SamTestResult(i, 6) = True
+					SampleResult$ = "NG5"
+				Case 8
+					SamTestResult(i, 7) = True
+					SampleResult$ = "NG6"
+				Case 9
+					SamTestResult(i, 8) = True
+					SampleResult$ = "NG7"
+				Case 10
+					SamTestResult(i, 9) = True
+					SampleResult$ = "NG8"
+				Default
+			Send
+	
+		EndIf
+			
+		
+		Select SamTestNowItems(i)
+			Case 1
+				FlexNowTest$ = "OK"
+			Case 2
+				FlexNowTest$ = "NG"
+			Case 3
+				FlexNowTest$ = "NG1"
+			Case 4
+				FlexNowTest$ = "NG2"
+			Case 5
+				FlexNowTest$ = "NG3"
+			Case 6
+				FlexNowTest$ = "NG4"
+			Case 7
+				FlexNowTest$ = "NG5"
+			Case 8
+				FlexNowTest$ = "NG6"
+			Case 9
+				FlexNowTest$ = "NG7"
+			Case 10
+				FlexNowTest$ = "NG8"
+			Default
+				
+		Send
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SampleResult," + Str$(i + 1) + "," + FlexNowTest$ + "," + SampleResult$
+		
+		
 		If Tester_Pass(i) <> 0 Then
 				
 			Pick_P_Msg(1) = 0
@@ -1997,11 +2013,41 @@ SamOperate2SuckSub:
 		Wait SamSearchflag = 1
 	Else
 
+
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
 		Off SuckB
-	
+		GoTo SamOperate2SuckSubLabel1
 	EndIf
 Return
 
@@ -2342,6 +2388,7 @@ Function AllMonitor
 				EndIf
 				
 				Off FeedEmpty, Forced
+				Off PrePickCMD, Forced
 				On AdjustValve, Forced
 '				Wait 0.8
 				FeedReadySigleDown = 1
@@ -2349,6 +2396,7 @@ Function AllMonitor
 			Else
 '				FeedReadySigleDown = 1
 				Off FeedEmpty, Forced
+				Off PrePickCMD, Forced
 			EndIf
 		EndIf
 		
@@ -2427,11 +2475,17 @@ PickFeedOperatelabel1:
 				On AdjustValve
 				
 				FeedPanelNum = FeedPanelNum + 1
+				If FeedPanelNum = 5 Then
+					On PrePickCMD
+				EndIf
 				For i = FeedPanelNum To 5
 					If FeedFill(FeedPanelNum) = True Then
 						Exit For
 					Else
 						FeedPanelNum = FeedPanelNum + 1
+						If FeedPanelNum = 5 Then
+							On PrePickCMD
+						EndIf
 					EndIf
 				Next
 				
@@ -2480,11 +2534,17 @@ PickFeedOperatelabel1:
 
 		Else
 			FeedPanelNum = FeedPanelNum + 1;
+			If FeedPanelNum = 5 Then
+				On PrePickCMD
+			EndIf
 			For i = FeedPanelNum To 5
 				If FeedFill(FeedPanelNum) = True Then
 					Exit For
 				Else
 					FeedPanelNum = FeedPanelNum + 1
+					If FeedPanelNum = 5 Then
+						On PrePickCMD
+					EndIf
 				EndIf
 			Next
 			Call IsFeedPanelEmpty(True)
@@ -2813,6 +2873,7 @@ TesterOperate1_lable5:
 '取产品子函数	
 TesterOperate1SuckSub:
 	'取
+TesterOperate1SuckSubLabel1:
 	Select IndexArray_i(i)
 		Case 0
 '			TargetPosition_Num = 2
@@ -2839,7 +2900,7 @@ TesterOperate1SuckSub:
 '		If i = 0 Then
 '			Position2NeedNeedAnotherMove = True
 '		EndIf
-
+		
 		TargetPosition_Num = -2
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		For j = 0 To 3
@@ -2914,13 +2975,7 @@ TesterOperate1SuckSub:
 
 
 
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",B"
+
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(1) = PickAction(1)
@@ -2935,42 +2990,56 @@ TesterOperate1SuckSub:
 '		EndIf
 	EndIf
 
-	Tester_Fill(IndexArray_i(i)) = False;
 	
 	
-	If Tester_Pass(IndexArray_i(i)) <> 0 Then
 	
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
-	
-	ElseIf Not ReTest_ Then
-		
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
-		
-	ElseIf Tester_ReTestFalg(IndexArray_i(i)) > 1 Then
-		
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
-	EndIf
+
 	
 	
 	If PickHave(1) = True Then
+		
+		Tester_Fill(IndexArray_i(i)) = False;
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",B"
+		
+		If Tester_Pass(IndexArray_i(i)) <> 0 Then
+		
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
+		
+		ElseIf Not ReTest_ Then
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
+			
+		ElseIf Tester_ReTestFalg(IndexArray_i(i)) > 1 Then
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
+		EndIf
+		
+		
 		If Tester_Pass(IndexArray_i(i)) <> 0 Then
 'Pick_P_Msg
 '-1:New
@@ -3097,6 +3166,7 @@ TesterOperate1SuckSub:
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		Pause
 		Off SuckB
+		GoTo TesterOperate1SuckSubLabel1
 	EndIf
 Return
 
@@ -3712,6 +3782,7 @@ TesterOperate1_lable5:
 	Exit Function
 '取产品子函数	
 TesterOperate1SuckSub:
+TesterOperate2SuckSubLabel1:
 	'取
 	Select IndexArray_i(i)
 		Case 0
@@ -3805,13 +3876,7 @@ TesterOperate1SuckSub:
 	Loop
 	CmdSend$ = "TMOVE," + Str$(IndexArray_i(i) + 1)
 	
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",A"
+
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
 	PickHave(0) = PickAction(0)
@@ -3826,40 +3891,54 @@ TesterOperate1SuckSub:
 '		EndIf
 	EndIf
 
-	Tester_Fill(IndexArray_i(i)) = False;
 	
-	If Tester_Pass(IndexArray_i(i)) <> 0 Then
 	
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
-	
-	ElseIf Not ReTest_ Then
-		
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
-		
-	ElseIf Tester_ReTestFalg(IndexArray_i(i)) > 1 Then
-		
-		If CmdSend$ <> "" Then
-			Print "有命令 " + CmdSend$ + " 待发送！"
-		EndIf
-		Do While CmdSend$ <> ""
-			Wait 0.1
-		Loop
-		CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
-	EndIf
+
 	
 	If PickHave(0) = True Then
+		Tester_Fill(IndexArray_i(i)) = False;
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(IndexArray_i(i) + 1) + ",A"
+		
+		If Tester_Pass(IndexArray_i(i)) <> 0 Then
+		
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
+		
+		ElseIf Not ReTest_ Then
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
+			
+		ElseIf Tester_ReTestFalg(IndexArray_i(i)) > 1 Then
+			
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "TestResultCount,NG," + Str$(IndexArray_i(i) + 1)
+		EndIf
+		
+		
+		
 		If Tester_Pass(IndexArray_i(i)) <> 0 Then
 'Pick_P_Msg
 '-1:New
@@ -3979,6 +4058,7 @@ TesterOperate1SuckSub:
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		Pause
 		Off SuckA
+		GoTo TesterOperate2SuckSubLabel1
 	EndIf
 '	If PickHave(1) Then
 '		If Sw(VacuumValueB) = 0 Then
@@ -4686,13 +4766,7 @@ GRROperate1Rsuck:
 	Next
 
 
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+	
 	
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
@@ -4703,42 +4777,52 @@ GRROperate1Rsuck:
 		PickHave(0) = PickAction(0)
 	EndIf
 
-	Tester_Fill(i) = False;
 	
-'	Select i
-'		Case 0
-''				TargetPosition_Num = 2
-'			'A_1，依据TesterOperate1更改
-'			FinalPosition1 = A1PASS1
-''				Position2NeedNeedAnotherMove = True
-'			
-'			rearnum = 4
-'		Case 1
-''				TargetPosition_Num = 3
-'			FinalPosition1 = A2PASS1
-'			
-'			rearnum = 5
-'		Case 2
-''				TargetPosition_Num = 4
-'			FinalPosition1 = A3PASS1
-'			rearnum = 14
-'		Case 3
-''				TargetPosition_Num = 5
-'			FinalPosition1 = A4PASS3
-'			rearnum = 15
-'	Send
-''		Go FinalPosition1
-'	TargetPosition_Num = -2
-'	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-'	For j = 0 To 3
-'		isInWaitPosition(j) = False
-'	Next
+	
+	Select i
+		Case 0
+'				TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+'				Position2NeedNeedAnotherMove = True
+			
+			rearnum = 4
+		Case 1
+'				TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			
+			rearnum = 5
+		Case 2
+'				TargetPosition_Num = 4
+			FinalPosition1 = A3PASS1
+			rearnum = 14
+		Case 3
+'				TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+'		Go FinalPosition1
+	TargetPosition_Num = -2
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 	
 
 			
 
 
 	If PickHave(0) = True Then
+	
+		Tester_Fill(i) = False;
+		
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 	
 		For j = 0 To 3
 			PcsGrrMsgArray(0, j) = PcsGrrMsgArray(i + 2, j)
@@ -5124,13 +5208,7 @@ GRROperate2Rsuck:
 	Next
 
 
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+
 	
 	pickRetryTimes = 0
 	PickFlexFirstSuck = True
@@ -5141,42 +5219,52 @@ GRROperate2Rsuck:
 		PickHave(1) = PickAction(1)
 	EndIf
 
-	Tester_Fill(i) = False;
 	
-'	Select i
-'		Case 0
-''				TargetPosition_Num = 2
-'			'A_1，依据TesterOperate1更改
-'			FinalPosition1 = A1PASS1
-''				Position2NeedNeedAnotherMove = True
-'			
-'			rearnum = 4
-'		Case 1
-''				TargetPosition_Num = 3
-'			FinalPosition1 = A2PASS1
-'			
-'			rearnum = 5
-'		Case 2
-''				TargetPosition_Num = 4
-'			FinalPosition1 = A3PASS1
-'			rearnum = 14
-'		Case 3
-''				TargetPosition_Num = 5
-'			FinalPosition1 = A4PASS3
-'			rearnum = 15
-'	Send
-''		Go FinalPosition1
-'	TargetPosition_Num = -2
-'	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-'	For j = 0 To 3
-'		isInWaitPosition(j) = False
-'	Next
-'	
+	
+	Select i
+		Case 0
+'				TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+'				Position2NeedNeedAnotherMove = True
+			
+			rearnum = 4
+		Case 1
+'				TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			
+			rearnum = 5
+		Case 2
+'				TargetPosition_Num = 4
+			FinalPosition1 = A3PASS1
+			rearnum = 14
+		Case 3
+'				TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+'		Go FinalPosition1
+	TargetPosition_Num = -2
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+	
 
 			
 
 
 	If PickHave(1) = True Then
+	
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+		
+		Tester_Fill(i) = False;
 	
 		For j = 0 To 3
 			PcsGrrMsgArray(1, j) = PcsGrrMsgArray(i + 2, j)
@@ -5628,7 +5716,10 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 '			Position2NeedNeedAnotherMove = False
 '		EndIf
 		Accel 50, 50
-		Go FinalPosition
+		If secendPosition <> -2 Then
+			Go FinalPosition
+		EndIf
+		
 		Accel 100, 100
 		For j = 0 To 3
 			isInWaitPosition(j) = False
