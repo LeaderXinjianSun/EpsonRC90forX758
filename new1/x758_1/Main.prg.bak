@@ -2396,6 +2396,7 @@ Function AllMonitor
 			Else
 '				FeedReadySigleDown = 1
 				Off FeedEmpty, Forced
+				Off PrePickCMD, Forced
 			EndIf
 		EndIf
 		

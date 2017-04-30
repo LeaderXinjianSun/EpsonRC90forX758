@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/04/28 13:13:31:761,DS:0000002045,CS:16975,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/04/30 09:03:29:019,DS:0000002046,CS:26198,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -18,12 +18,12 @@ nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
 	bOpened=True
-	nWinState=1
+	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
-		nWidth=847
-		nHeight=406
+		nTop=579
+		nWidth=136
+		nHeight=39
 	}
 }
 nForceFileCount=0

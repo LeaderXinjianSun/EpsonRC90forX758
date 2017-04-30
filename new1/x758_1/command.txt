@@ -515,4 +515,9 @@
 > PASS B_1 +z(5);PASS A1PASS2;PASS A1PASS1;GO ChangeHandL
 > go ChangeHandL
 !!´íÎó: 5058, Collision was detected in Low power mode., Robot 1, Joint 4
+> fine
+10000, 10000, 10000, 10000
+> fine 250,250,250,250
+> fine
+250, 250, 250, 250
 > 

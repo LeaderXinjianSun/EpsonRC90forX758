@@ -5636,6 +5636,7 @@ Function HomeReturnAction
 	Power High
 	Speed 95
 	Accel 100, 100
+	Fine 250, 250, 250, 250
 
 	CurPosition_Num = -2
 	NowFlexIndex = 4
