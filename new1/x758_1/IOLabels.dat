@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/04/28 01:37:32:363,DS:0000003905,CS:32583,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/05/03 13:09:02:226,DS:0000004175,CS:13312,MA:C6-8E-8F-74-5D-89,EI:           
 sRCVersion="7.1.3"
 InputBitLabels {
 	nNumberOfLabels=32
@@ -170,7 +170,7 @@ InputWordLabels {
 	nNumberOfLabels=0
 }
 OutputBitLabels {
-	nNumberOfLabels=19
+	nNumberOfLabels=23
 	Label1 {
 		nBit=0
 		sLabel="SuckA"
@@ -207,63 +207,83 @@ OutputBitLabels {
 		sDescription=""
 	}
 	Label8 {
+		nBit=7
+		sLabel="BRRecify"
+		sDescription=""
+	}
+	Label9 {
 		nBit=8
 		sLabel="AL_Suck"
 		sDescription=""
 	}
-	Label9 {
+	Label10 {
 		nBit=9
 		sLabel="AR_Suck"
 		sDescription=""
 	}
-	Label10 {
+	Label11 {
 		nBit=10
 		sLabel="BL_Suck"
 		sDescription=""
 	}
-	Label11 {
+	Label12 {
 		nBit=11
 		sLabel="BR_Suck"
 		sDescription=""
 	}
-	Label12 {
+	Label13 {
 		nBit=12
 		sLabel="ValveA"
 		sDescription=""
 	}
-	Label13 {
+	Label14 {
 		nBit=13
 		sLabel="ValveB"
 		sDescription=""
 	}
-	Label14 {
+	Label15 {
 		nBit=14
 		sLabel="DangerOut"
 		sDescription=""
 	}
-	Label15 {
+	Label16 {
 		nBit=15
 		sLabel="FeedEmpty"
 		sDescription=""
 	}
-	Label16 {
+	Label17 {
 		nBit=516
 		sLabel="RollSetOut"
 		sDescription=""
 	}
-	Label17 {
+	Label18 {
 		nBit=517
 		sLabel="RollResetout"
 		sDescription=""
 	}
-	Label18 {
+	Label19 {
 		nBit=520
 		sLabel="Discharing"
 		sDescription=""
 	}
-	Label19 {
+	Label20 {
 		nBit=522
 		sLabel="PrePickCMD"
+		sDescription=""
+	}
+	Label21 {
+		nBit=535
+		sLabel="ALRecify"
+		sDescription=""
+	}
+	Label22 {
+		nBit=536
+		sLabel="ARRecify"
+		sDescription=""
+	}
+	Label23 {
+		nBit=537
+		sLabel="BLRecify"
 		sDescription=""
 	}
 }

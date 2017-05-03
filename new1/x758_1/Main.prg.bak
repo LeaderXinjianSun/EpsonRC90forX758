@@ -5636,6 +5636,7 @@ Function HomeReturnAction
 	Power High
 	Speed 95
 	Accel 100, 100
+	Fine 250, 250, 250, 250
 
 	CurPosition_Num = -2
 	NowFlexIndex = 4
@@ -6810,7 +6811,7 @@ Function TesterStart1
 			Loop
 			If Tester_Testing(0) = True Then
 				voccumflag = True
-
+				Off ALRecify, Forced
 '				Off AL_Suck, Forced
 
 
@@ -6827,6 +6828,7 @@ Function TesterStart1
 					Wait 0.1
 				Loop
 				CmdSend$ = "Start,1," + PickAorC$(0)
+				On ALRecify, Forced
 				TmReset 0
 '				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
 				Do While Not (Tester_Pass(0) <> 0 Or Tester_Ng(0) <> 0 Or Tester_Timeout(0) <> 0)
@@ -6834,6 +6836,7 @@ Function TesterStart1
 					If voccumflag And Sw(ALUp) = 0 Then
 						Wait 0.5
 						Off AL_Suck, Forced
+						Off ALRecify, Forced
 						voccumflag = False
 					EndIf
 					If Tester_Select(0) = False Then
@@ -6848,6 +6851,7 @@ Function TesterStart1
 				On AL_Suck, Forced
 				Wait Sw(ALRear) = 1 And Sw(ALUp) = 1
 				Off AL_Suck, Forced
+				Off ALRecify, Forced
 				TesterTimeElapse(0) = 0
 				Tester_Testing(0) = False
 			EndIf
@@ -6857,6 +6861,7 @@ Function TesterStart1
 			TesterTimeElapse(0) = 0
 			Wait 0.1
 			Off AL_Suck, Forced
+			Off ALRecify, Forced
 		EndIf
 	Loop
 Fend
@@ -6876,6 +6881,7 @@ Function TesterStart2
 			If Tester_Testing(1) = True Then
 				voccumflag = True
 '				Off AR_Suck, Forced
+				Off ARRecify, Forced
 				
 				
 				
@@ -6891,6 +6897,7 @@ Function TesterStart2
 					Wait 0.1
 				Loop
 				CmdSend$ = "Start,2," + PickAorC$(1)
+				On ARRecify, Forced
 				TmReset 1
 '				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
 				Do While Not (Tester_Pass(1) <> 0 Or Tester_Ng(1) <> 0 Or Tester_Timeout(1) <> 0)
@@ -6898,6 +6905,7 @@ Function TesterStart2
 					If voccumflag And Sw(ARUp) = 0 Then
 						Wait 0.5
 						Off AR_Suck, Forced
+						Off ARRecify, Forced
 						voccumflag = False
 					EndIf
 					If Tester_Select(1) = False Then
@@ -6909,6 +6917,7 @@ Function TesterStart2
 				On AR_Suck, Forced
 				Wait Sw(ARRear) = 1 And Sw(ARUp) = 1
 				Off AR_Suck, Forced
+				Off ARRecify, Forced
 				TesterTimeElapse(1) = 0
 				Tester_Testing(1) = False
 			EndIf
@@ -6918,6 +6927,7 @@ Function TesterStart2
 			TesterTimeElapse(1) = 0
 			Wait 0.1
 			Off AR_Suck, Forced
+			Off ARRecify, Forced
 		EndIf
 	Loop
 Fend
@@ -6936,7 +6946,7 @@ Function TesterStart3
 			Loop
 			If Tester_Testing(2) = True Then
 				voccumflag = True
-
+				Off BLRecify, Forced
 '				Off BL_Suck, Forced
 
 
@@ -6952,6 +6962,7 @@ Function TesterStart3
 					Wait 0.1
 				Loop
 				CmdSend$ = "Start,3," + PickAorC$(2)
+				On BLRecify, Forced
 				TmReset 2
 '				Wait Sw(BLRear) = 0 And Sw(BLUp) = 0
 				Do While Not (Tester_Pass(2) <> 0 Or Tester_Ng(2) <> 0 Or Tester_Timeout(2) <> 0)
@@ -6959,6 +6970,7 @@ Function TesterStart3
 					If voccumflag And Sw(BLUp) = 0 Then
 						Wait 0.5
 						Off BL_Suck, Forced
+						Off BLRecify, Forced
 						voccumflag = False
 					EndIf
 					If Tester_Select(2) = False Then
@@ -6970,6 +6982,7 @@ Function TesterStart3
 				On BL_Suck, Forced
 				Wait Sw(BLRear) = 1 And Sw(BLUp) = 1
 				Off BL_Suck, Forced
+				Off BLRecify, Forced
 				TesterTimeElapse(2) = 0
 				Tester_Testing(2) = False
 			EndIf
@@ -6979,6 +6992,7 @@ Function TesterStart3
 			TesterTimeElapse(2) = 0
 			Wait 0.1
 			Off BL_Suck, Forced
+			Off BLRecify, Forced
 		EndIf
 	Loop
 Fend
@@ -6997,7 +7011,7 @@ Function TesterStart4
 			Loop
 			If Tester_Testing(3) = True Then
 				voccumflag = True
-
+				Off BRRecify, Forced
 '				Off BR_Suck, Forced
 
 				Tester_Pass(3) = 0
@@ -7012,6 +7026,7 @@ Function TesterStart4
 					Wait 0.1
 				Loop
 				CmdSend$ = "Start,4," + PickAorC$(3)
+				On BRRecify, Forced
 				TmReset 3
 '				Wait Sw(BRRear) = 0 And Sw(BRUp) = 0
 				Do While Not (Tester_Pass(3) <> 0 Or Tester_Ng(3) <> 0 Or Tester_Timeout(3) <> 0)
@@ -7019,6 +7034,7 @@ Function TesterStart4
 					If voccumflag And Sw(BRUp) = 0 Then
 						Wait 0.5
 						Off BR_Suck, Forced
+						Off BRRecify, Forced
 						voccumflag = False
 					EndIf
 					If Tester_Select(3) = False Then
@@ -7031,6 +7047,7 @@ Function TesterStart4
 				On BR_Suck, Forced
 				Wait Sw(BRRear) = 1 And Sw(BRUp) = 1
 				Off BR_Suck, Forced
+				Off BRRecify, Forced
 				TesterTimeElapse(3) = 0
 				Tester_Testing(3) = False
 			EndIf
@@ -7040,6 +7057,7 @@ Function TesterStart4
 			TesterTimeElapse(3) = 0
 			Wait 0.1
 			Off BR_Suck, Forced
+			Off BRRecify, Forced
 		EndIf
 	Loop
 Fend
