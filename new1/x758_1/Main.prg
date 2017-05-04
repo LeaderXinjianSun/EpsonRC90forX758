@@ -1,4 +1,4 @@
-'ver 20170428.01
+'ver 20170504.01
 '1、上料盘取料，最后一片，吸盘提前拎起产品
 '2、治具内吸取失败，重复吸取，直至产品成功吸取。
 
@@ -4532,6 +4532,7 @@ Function GRROperate1
 							Loop
 							
 							Ttarget = i + 1
+							Tcurrent = -1
 							If CmdSend$ <> "" Then
 								Print "有命令 " + CmdSend$ + " 待发送！"
 							EndIf
@@ -4539,6 +4540,9 @@ Function GRROperate1
 								Wait 0.1
 							Loop
 							CmdSend$ = "TMOVE," + Str$(i + 1)
+							Do While Ttarget <> Tcurrent
+								Wait 0.02
+							Loop
 		                EndIf
 		                
 					
@@ -4779,35 +4783,7 @@ GRROperate1Rsuck:
 
 	
 	
-	Select i
-		Case 0
-'				TargetPosition_Num = 2
-			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A1PASS1
-'				Position2NeedNeedAnotherMove = True
-			
-			rearnum = 4
-		Case 1
-'				TargetPosition_Num = 3
-			FinalPosition1 = A2PASS1
-			
-			rearnum = 5
-		Case 2
-'				TargetPosition_Num = 4
-			FinalPosition1 = A3PASS1
-			rearnum = 14
-		Case 3
-'				TargetPosition_Num = 5
-			FinalPosition1 = A4PASS3
-			rearnum = 15
-	Send
-'		Go FinalPosition1
-	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-	
+
 
 			
 
@@ -4830,7 +4806,35 @@ GRROperate1Rsuck:
 		
 		
 	Else
-
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
 		Pause
@@ -4978,6 +4982,7 @@ Function GRROperate2
 							Loop
 							
 							Ttarget = i + 1
+							Tcurrent = -1
 							If CmdSend$ <> "" Then
 								Print "有命令 " + CmdSend$ + " 待发送！"
 							EndIf
@@ -4985,6 +4990,9 @@ Function GRROperate2
 								Wait 0.1
 							Loop
 							CmdSend$ = "TMOVE," + Str$(i + 1)
+							Do While Ttarget <> Tcurrent
+								Wait 0.02
+							Loop
 		                EndIf
 					
 					
@@ -5221,34 +5229,7 @@ GRROperate2Rsuck:
 
 	
 	
-	Select i
-		Case 0
-'				TargetPosition_Num = 2
-			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A1PASS1
-'				Position2NeedNeedAnotherMove = True
-			
-			rearnum = 4
-		Case 1
-'				TargetPosition_Num = 3
-			FinalPosition1 = A2PASS1
-			
-			rearnum = 5
-		Case 2
-'				TargetPosition_Num = 4
-			FinalPosition1 = A3PASS1
-			rearnum = 14
-		Case 3
-'				TargetPosition_Num = 5
-			FinalPosition1 = A4PASS3
-			rearnum = 15
-	Send
-'		Go FinalPosition1
-	TargetPosition_Num = -2
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+
 	
 
 			
@@ -5272,6 +5253,34 @@ GRROperate2Rsuck:
 		
 		
 	Else
+		Select i
+			Case 0
+	'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+	'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+	'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+	'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+	'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+	'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
 
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
@@ -7082,6 +7091,9 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
+
 
 
 
