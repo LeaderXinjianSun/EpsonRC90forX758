@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/05/05 11:28:07:181,DS:0000002047,CS:05964,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/05/28 22:34:49:472,DS:0000002053,CS:28218,MA:C6-8E-8F-74-5D-89,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -7,8 +7,8 @@ ProgramFile1 {
 	bOpened=True
 	nWinState=2
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=249
+		nTop=173
 		nWidth=663
 		nHeight=437
 	}
@@ -20,10 +20,10 @@ PointFile1 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=579
-		nWidth=136
-		nHeight=39
+		nLeft=124
+		nTop=83
+		nWidth=765
+		nHeight=472
 	}
 }
 nForceFileCount=0
@@ -53,8 +53,8 @@ IOLabelEditor {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=785
-		nHeight=454
+		nWidth=930
+		nHeight=581
 	}
 	nWinState=0
 }

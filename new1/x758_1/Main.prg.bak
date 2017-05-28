@@ -1,4 +1,4 @@
-'ver 20170504.01
+'ver 20170428.01
 '1、上料盘取料，最后一片，吸盘提前拎起产品
 '2、治具内吸取失败，重复吸取，直至产品成功吸取。
 
@@ -92,7 +92,8 @@ Global Boolean PcsLostAlarm2
 
 Global Integer SelectSampleResultfromDtFinish
 
-Global Integer Delta_Z
+Global Preserve Integer Delta_Z
+Global Preserve Integer Delta_Z1
 Global Boolean PickFeedFirstSuck
 Global Boolean PickFlexFirstSuck
 'GRR
@@ -194,6 +195,7 @@ Function main2
 	EndIf
 	Call HomeReturnAction
 
+	Wait 0.5
 	If Sw(FeedReady) = 0 Then
 		Print "等待上料结束"
 		MsgSend$ = "等待上料结束"
@@ -202,6 +204,10 @@ Function main2
 		Off AdjustValve
 		FeedReadySigleDown = 0
 		FeedPanelNum = 0
+	Else
+		Print "请确认，不得取走上料盘产品"
+		MsgSend$ = "请确认，不得取走上料盘产品"
+		Pause
 	EndIf
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
@@ -346,6 +352,7 @@ Function main3
 	
     Call ClearAction
 
+	Wait 0.5
 	If Sw(FeedReady) = 0 Then
 		Print "等待上料结束"
 		MsgSend$ = "等待上料结束"
@@ -354,6 +361,10 @@ Function main3
 		Off AdjustValve
 		FeedReadySigleDown = 0
 		FeedPanelNum = 0
+	Else
+		Print "请确认，不得取走上料盘产品"
+		MsgSend$ = "请确认，不得取走上料盘产品"
+		Pause
 	EndIf
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
@@ -512,7 +523,7 @@ Function SamPickfromPanel
 	Else
 		'取料
 		TargetPosition_Num = 7
-		FinalPosition = P(128 + i)
+		FinalPosition = P(128 + i) +Z(Delta_Z)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		
 		
@@ -1113,7 +1124,7 @@ SamOperate1SuckSubLabel1:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
@@ -1806,7 +1817,7 @@ SamOperate2SuckSubLabel1:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
@@ -2269,7 +2280,7 @@ Function ClearAction
 		Tester_Fill(i) = False
 		Tester_Testing(i) = False
 	Next
-	FeedPanelNum = 0
+'	FeedPanelNum = 0
 	For i = 0 To 5
 		For j = 0 To 4
 			PcsGrrMsgArray(i, j) = 0
@@ -2452,7 +2463,7 @@ PickFeedOperatelabel1:
 			
 			TargetPosition_Num = 1
 			
-			FinalPosition = P(11 + FeedPanelNum)
+			FinalPosition = P(11 + FeedPanelNum) +Z(Delta_Z)
 			
 			
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -2938,7 +2949,7 @@ TesterOperate1SuckSubLabel1:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 	
 	
 
@@ -3848,7 +3859,7 @@ TesterOperate2SuckSubLabel1:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 '	If PickHave(1) Then
 '		isA_NeedReJuge = True
 '	EndIf
@@ -4762,7 +4773,7 @@ GRROperate1Rsuck:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
@@ -5208,7 +5219,7 @@ GRROperate2Rsuck:
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
-	FinalPosition = FinalPosition1
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
 
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
@@ -5489,14 +5500,11 @@ ScanBarcodeOpetateP3label:
 		ScanResult = 0
 		Wait 0.5
 		GoTo ScanBarcodeOpetateP3label
-		
 	EndIf
 	
-	
-	
-	
+	Accel 50, 50
 	Go ChangeHandL
-
+	Accel 90, 90
 
 	ScanBarcodeOpetateP3 = ScanResult
 Fend
@@ -5552,6 +5560,7 @@ Function HomeReturnAction
 	Speed 50
 	Boolean HomeSuccessFlage
 	Delta_Z = 4
+	Delta_Z1 = 2
 
 '	SFree 1, 2
 '	Pulse 378192, -313239, -77072, 93736
@@ -6011,15 +6020,20 @@ Function PickAction(num As Integer) As Boolean
 	Send
 
 	Off blownum; On valvenum; On sucknum
-	
-	Wait 0.5 + pickRetryTimes * 0.3
+	Wait 0.2
+	If pickRetryTimes = 0 Then
+		NowPosition = Here
+	    Go NowPosition -Z(Delta_Z)
+	EndIf
+
+	Wait 0.3 + pickRetryTimes * 0.3
 		
 	If needreleaseadjust Then
 		Off AdjustValve
 		Wait 0.5
 	EndIf
 	Off valvenum
-	Wait 0.2
+	Wait 0.3
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
@@ -6208,11 +6222,11 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 '	EndIf
 
 	
-    Wait 0.2
+    Wait 0.1
  	On valvenum
  	Wait 0.1
 	On blownum; Off sucknum
-	Wait 0.3
+	Wait 0.1
 	PickHave(num) = False
 	
 	Select Flexnum
@@ -6244,7 +6258,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  		Off valvenum
  		Wait 0.2
  		NowPosition = Here
- 	    Go NowPosition -Z(Delta_Z) ! D1; On valvenum !
+ 	    Go NowPosition -Z(Delta_Z1) ! D1; On valvenum !
  	    Wait 0.2
 		Select Flexnum
 			Case 1
@@ -6270,7 +6284,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 		Off blownum
 	Else
 		Off valvenum; Off blownum
-		Wait 0.2
+		Wait 0.1
  	EndIf
 	 	
 	
@@ -7091,6 +7105,8 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
 
 
 

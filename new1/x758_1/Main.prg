@@ -1,6 +1,5 @@
-'ver 20170428.01
-'1、上料盘取料，最后一片，吸盘提前拎起产品
-'2、治具内吸取失败，重复吸取，直至产品成功吸取。
+'ver 20170528.01
+'1、修改取料，放料时间
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -94,6 +93,7 @@ Global Integer SelectSampleResultfromDtFinish
 
 Global Preserve Integer Delta_Z
 Global Preserve Integer Delta_Z1
+Global Preserve Integer Delta_Z_Release
 Global Boolean PickFeedFirstSuck
 Global Boolean PickFlexFirstSuck
 'GRR
@@ -2432,7 +2432,7 @@ PickFeedOperatelabel1:
 		
 		Print "上料盘，未准备好"
 		MsgSend$ = "上料盘，未准备好"
-		Off AdjustValve
+'		Off AdjustValve
 		Off DangerOut
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0 Or Sw(DangerIn) = 1
 			Wait 0.2
@@ -5559,8 +5559,9 @@ Function HomeReturnAction
 	LimZ -24
 	Speed 50
 	Boolean HomeSuccessFlage
-	Delta_Z = 4
-	Delta_Z1 = 2
+	Delta_Z = 8
+	Delta_Z1 = 8
+'	Delta_Z_Release = 4
 
 '	SFree 1, 2
 '	Pulse 378192, -313239, -77072, 93736
@@ -6026,11 +6027,16 @@ Function PickAction(num As Integer) As Boolean
 	    Go NowPosition -Z(Delta_Z)
 	EndIf
 
-	Wait 0.3 + pickRetryTimes * 0.3
+'	Wait 0.3 + pickRetryTimes * 0.3
+	Wait 0.3 + pickRetryTimes * 0
 		
 	If needreleaseadjust Then
 		Off AdjustValve
 		Wait 0.5
+	EndIf
+	If pickRetryTimes = 0 Then
+		NowPosition = Here
+	    Go NowPosition +Z(Delta_Z)
 	EndIf
 	Off valvenum
 	Wait 0.3
@@ -6048,18 +6054,28 @@ Function PickAction(num As Integer) As Boolean
 			Wait 0.5
 			On valvenum
 			Wait 0.2
+			If pickRetryTimes = 0 Then
+				NowPosition = Here
+			    Go NowPosition -Z(Delta_Z)
+			EndIf
 			On blownum; Off valvenum
-			Wait 0.2
+			Wait 0.5
 			Off blownum
-			On AdjustValve; Off valvenum
+			Off valvenum
+			Wait 0.3
+			On AdjustValve
 			Wait 0.5
 		EndIf
 		If PickFlexFirstSuck Then
 			PickFlexFirstSuck = False
 			On valvenum
 			Wait 0.2
+			If pickRetryTimes = 0 Then
+				NowPosition = Here
+			    Go NowPosition -Z(Delta_Z)
+			EndIf
 			On blownum; Off valvenum
-			Wait 0.2
+			Wait 0.5
 			Off blownum
 		EndIf
 '		On blownum; Off sucknum
@@ -7105,6 +7121,7 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
 
 
 
