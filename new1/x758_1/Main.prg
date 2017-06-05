@@ -1,6 +1,5 @@
-'ver 20170604.02
-'1、上料盘吸取失败，气缸动作加延时
-'2、上料tray吸取失败，机械手不再吸取，减少报警
+'ver 20170605.01
+'1、Noise不良不复测，分开摆放
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -12,6 +11,7 @@ Global Boolean NeedChancel(4)
 Global Preserve Boolean Tester_Select(4), Tester_Fill(4)
 Global Boolean Tester_Testing(4)
 Global Preserve Integer Tester_Pass(4), Tester_Ng(4), Tester_Timeout(4)
+Global Preserve Integer Tester_Remark(4)
 '治具中的产品为复测产品标志
 '0:New
 '1:复测1次,A
@@ -32,6 +32,10 @@ Global Preserve Integer NgContinueNum
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4
 Global Integer Pick_P_Msg(4)
+'Pick_Remark
+'0:正常
+'1:Noise不良
+Global Integer Pick_Remark(2)
 Global Real TesterTimeElapse(4)
 
 Global Integer ScanResult
@@ -39,7 +43,7 @@ Global Preserve Boolean PreFeedFill(6)
 Global Preserve Boolean FeedFill(6)
 
 Global Boolean PickHave(4)
-Global Preserve Integer PassTrayPalletNum, NgTrayPalletNum
+Global Preserve Integer PassTrayPalletNum, NgTrayPalletNum, NoiseTrayPalletNum
 Global Integer FeedReadySigleDown, PassTraySigleDown, NgTraySigleDown, INP_HomeSigleDown
 
 Global Preserve Integer FeedPanelNum
@@ -192,8 +196,11 @@ Function main2
 		On RollValve
 	EndIf
     
-	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 14 Then
+	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
 		NgTrayPalletNum = 1
+	EndIf
+	If NoiseTrayPalletNum < 9 Or NoiseTrayPalletNum > 14 Then
+		NoiseTrayPalletNum = 9
 	EndIf
 	Call HomeReturnAction
 
@@ -2149,7 +2156,7 @@ SamUnload_Ng:
 	
 	TargetPosition_Num = 6
 
-	
+
 	If picknum = 1 Then
 		FinalPosition = Pallet(5, NgTrayPalletNum)
 	Else
@@ -2159,7 +2166,7 @@ SamUnload_Ng:
 	Call ReleaseAction(picknum, -1)
 	PickHave(picknum) = False
 	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 14 Then
+	If NgTrayPalletNum > 8 Then
 		Go P(349 + PassStepNum)
 		Print "Ng下料盘，换料"
 		MsgSend$ = "Ng下料盘，换料"
@@ -2167,6 +2174,7 @@ SamUnload_Ng:
 		Pause
 		
 	EndIf
+
 Return
 Fend
 Function CleanActionProcess
@@ -2342,6 +2350,9 @@ Function AllMonitor
 		Wait 0.1
 		If NgTrayPalletNum < 1 Then
 			NgTrayPalletNum = 1
+		EndIf
+		If NoiseTrayPalletNum < 9 Then
+			NoiseTrayPalletNum = 9
 		EndIf
 		
 		If Sw(RollSet) = 1 Then
@@ -3064,8 +3075,8 @@ TesterOperate1SuckSubLabel1:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(1) = 0
 			NgContinue(IndexArray_i(i)) = 0
+			Pick_Remark(1) = 0
 			
-
 			
 '			If Ttarget <> Tcurrent Then
 '				Print "下料轴，未准备好"
@@ -3136,11 +3147,17 @@ TesterOperate1SuckSubLabel1:
 			EndIf
 			
 			'复测
-			If Tester_ReTestFalg(IndexArray_i(i)) = 1 And ReTest_ Then
+			If Tester_ReTestFalg(IndexArray_i(i)) = 1 And Tester_Remark(IndexArray_i(i)) <> 1 And ReTest_ Then
 			'需要到另一台测试机测试
 				Pick_P_Msg(1) = IndexArray_i(i) + 2
 			Else
 				Pick_P_Msg(1) = 1
+				If Tester_Remark(IndexArray_i(i)) <> 1 Then
+					Pick_Remark(1) = 0
+				Else
+					'Noise不良
+					Pick_Remark(1) = 1
+				EndIf
 				
 				
 			EndIf
@@ -3963,6 +3980,7 @@ TesterOperate2SuckSubLabel1:
 '5:ReTest_from_Tester4				
 			Pick_P_Msg(0) = 0
 			NgContinue(IndexArray_i(i)) = 0
+			Pick_Remark(0) = 0
 '			If Ttarget <> Tcurrent Then
 '				Print "下料轴，未准备好"
 '				MsgSend$ = "下料轴，未准备好"
@@ -4031,10 +4049,16 @@ TesterOperate2SuckSubLabel1:
 			EndIf
 			
 			'复测
-			If Tester_ReTestFalg(IndexArray_i(i)) = 1 And ReTest_ Then
+			If Tester_ReTestFalg(IndexArray_i(i)) = 1 And Tester_Remark(IndexArray_i(i)) <> 1 And ReTest_ Then
 				Pick_P_Msg(0) = IndexArray_i(i) + 2
 			Else
 				Pick_P_Msg(0) = 1
+				If Tester_Remark(IndexArray_i(i)) <> 1 Then
+					Pick_Remark(0) = 0
+				Else
+					'Noise不良
+					Pick_Remark(0) = 1
+				EndIf
 			EndIf
 			
 		EndIf
@@ -5432,24 +5456,46 @@ UnloadOperate_Ng:
 	
 	TargetPosition_Num = 6
 
-	
-	If num = 1 Then
-		FinalPosition = Pallet(5, NgTrayPalletNum)
+	If Pick_Remark(num) = 1 Then
+		'Noise不良放料
+		If num = 1 Then
+			FinalPosition = Pallet(5, NoiseTrayPalletNum)
+		Else
+			FinalPosition = Pallet(10, NoiseTrayPalletNum)
+		EndIf
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Call ReleaseAction(num, -1)
+		PickHave(num) = False
+		NoiseTrayPalletNum = NoiseTrayPalletNum + 1
+		If NoiseTrayPalletNum > 14 Then
+			Go P(349 + PassStepNum)
+			Print "Noise下料盘，换料"
+			MsgSend$ = "Noise下料盘，换料"
+			NoiseTrayPalletNum = 9
+			Pause
+			
+		EndIf
+		Pick_Remark(num) = 0
 	Else
-		FinalPosition = Pallet(10, NgTrayPalletNum)
+		If num = 1 Then
+			FinalPosition = Pallet(5, NgTrayPalletNum)
+		Else
+			FinalPosition = Pallet(10, NgTrayPalletNum)
+		EndIf
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Call ReleaseAction(num, -1)
+		PickHave(num) = False
+		NgTrayPalletNum = NgTrayPalletNum + 1
+		If NgTrayPalletNum > 8 Then
+			Go P(349 + PassStepNum)
+			Print "Ng下料盘，换料"
+			MsgSend$ = "Ng下料盘，换料"
+			NgTrayPalletNum = 1
+			Pause
+			
+		EndIf
 	EndIf
-	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-	Call ReleaseAction(num, -1)
-	PickHave(num) = False
-	NgTrayPalletNum = NgTrayPalletNum + 1
-	If NgTrayPalletNum > 14 Then
-		Go P(349 + PassStepNum)
-		Print "Ng下料盘，换料"
-		MsgSend$ = "Ng下料盘，换料"
-		NgTrayPalletNum = 1
-		Pause
-		
-	EndIf
+
 Return
 
 Fend
@@ -6536,6 +6582,12 @@ Function TcpIpCmdRev
 								Case "TimeOut"
 									Tester_Timeout(0) = 1
 							Send
+							Select CmdRevStr$(3)
+								Case "Noise"
+									Tester_Remark(0) = 1
+								Default
+									Tester_Remark(0) = 0
+							Send
 						Case "2"
 							Select CmdRevStr$(1)
 								Case "Pass"
@@ -6544,6 +6596,12 @@ Function TcpIpCmdRev
 									Tester_Ng(1) = 1
 								Case "TimeOut"
 									Tester_Timeout(1) = 1
+							Send
+							Select CmdRevStr$(3)
+								Case "Noise"
+									Tester_Remark(1) = 1
+								Default
+									Tester_Remark(1) = 0
 							Send
 						Case "3"
 							Select CmdRevStr$(1)
@@ -6554,6 +6612,12 @@ Function TcpIpCmdRev
 								Case "TimeOut"
 									Tester_Timeout(2) = 1
 							Send
+							Select CmdRevStr$(3)
+								Case "Noise"
+									Tester_Remark(2) = 1
+								Default
+									Tester_Remark(2) = 0
+							Send
 						Case "4"
 							Select CmdRevStr$(1)
 								Case "Pass"
@@ -6562,6 +6626,12 @@ Function TcpIpCmdRev
 									Tester_Ng(3) = 1
 								Case "TimeOut"
 									Tester_Timeout(3) = 1
+							Send
+							Select CmdRevStr$(3)
+								Case "Noise"
+									Tester_Remark(3) = 1
+								Default
+									Tester_Remark(3) = 0
 							Send
 					Send
 					Case "FeedFill"
@@ -6920,6 +6990,7 @@ Function TesterStart1
 				Tester_Pass(0) = 0
 				Tester_Ng(0) = 0
 				Tester_Timeout(0) = 0
+				Tester_Remark(0) = 0
 				Print "测试机AL，开始测试"
 				MsgSend$ = "测试机AL，开始测试"
 				If CmdSend$ <> "" Then
@@ -6989,6 +7060,7 @@ Function TesterStart2
 				Tester_Pass(1) = 0
 				Tester_Ng(1) = 0
 				Tester_Timeout(1) = 0
+				Tester_Remark(1) = 0
 				Print "测试机AR，开始测试"
 				MsgSend$ = "测试机AR，开始测试"
 				If CmdSend$ <> "" Then
@@ -7054,6 +7126,7 @@ Function TesterStart3
 				Tester_Pass(2) = 0
 				Tester_Ng(2) = 0
 				Tester_Timeout(2) = 0
+				Tester_Remark(2) = 0
 				Print "测试机BL，开始测试"
 				MsgSend$ = "测试机BL，开始测试"
 				If CmdSend$ <> "" Then
@@ -7118,6 +7191,7 @@ Function TesterStart4
 				Tester_Pass(3) = 0
 				Tester_Ng(3) = 0
 				Tester_Timeout(3) = 0
+				Tester_Remark(3) = 0
 				Print "测试机BR，开始测试"
 				MsgSend$ = "测试机BR，开始测试"
 				If CmdSend$ <> "" Then
