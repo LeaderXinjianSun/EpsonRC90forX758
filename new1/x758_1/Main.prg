@@ -1,5 +1,6 @@
-'ver 20170528.01
-'1、修改取料，放料时间
+'ver 20170604.02
+'1、上料盘吸取失败，气缸动作加延时
+'2、上料tray吸取失败，机械手不再吸取，减少报警
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -94,6 +95,7 @@ Global Integer SelectSampleResultfromDtFinish
 Global Preserve Integer Delta_Z
 Global Preserve Integer Delta_Z1
 Global Preserve Integer Delta_Z_Release
+Global Preserve Integer Delta_Z_Release1
 Global Boolean PickFeedFirstSuck
 Global Boolean PickFlexFirstSuck
 'GRR
@@ -5561,6 +5563,7 @@ Function HomeReturnAction
 	Boolean HomeSuccessFlage
 	Delta_Z = 8
 	Delta_Z1 = 8
+	Delta_Z_Release = 4
 '	Delta_Z_Release = 4
 
 '	SFree 1, 2
@@ -6060,9 +6063,9 @@ Function PickAction(num As Integer) As Boolean
 			EndIf
 			On blownum; Off valvenum
 			Wait 0.5
-			Off blownum
 			Off valvenum
 			Wait 0.3
+			Off blownum
 			On AdjustValve
 			Wait 0.5
 		EndIf
@@ -6208,6 +6211,9 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 '3 : D
 	Integer sucknum, blownum, valvenum, vacuumnum
 	Integer FlexVoccum1, FlexVoccum2
+	Integer retry_num
+	retry_num = 0
+'ReleaseActionLable1:
 	Select num
 		Case 0
 			valvenum = 12
@@ -6231,20 +6237,28 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 			vacuumnum = 3
 	Send
 	
-
+'    Wait 0.1
+	If Flexnum <> -1 Then
+		NowPosition = Here
+	    Go NowPosition -Z(Delta_Z_Release)
+	EndIf
 	
-'	If Flexnum <> -1 Then
-'		Go Here +Z(Delta_Z)
-'	EndIf
-
-	
-    Wait 0.1
+'    Wait 0.1
  	On valvenum
- 	Wait 0.1
+ 	
+	If Flexnum <> -1 Then
+'		Wait 0.3
+		Wait 0.5
+	EndIf
+ 	
 	On blownum; Off sucknum
 	Wait 0.1
+	If Flexnum = -1 Then
+		Wait 0.2
+	EndIf
+'	Off blownum
 	PickHave(num) = False
-	
+	Wait 0.3
 	Select Flexnum
 		Case 1
 			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
@@ -6257,7 +6271,8 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Send
 	
 	If Flexnum <> -1 Then
-		Wait 0.2
+		Wait 0.3
+		Off blownum
 	EndIf
 
  	If Flexnum <> -1 And (Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0) Then
@@ -6271,11 +6286,11 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 			Case 4
 				Off BR_Suck
 		Send
- 		Off valvenum
- 		Wait 0.2
+' 		Off valvenum
+' 		Wait 0.2
  		NowPosition = Here
- 	    Go NowPosition -Z(Delta_Z1) ! D1; On valvenum !
- 	    Wait 0.2
+ 	    Go NowPosition -Z(Delta_Z1 - Delta_Z_Release) ! D1; On valvenum !
+ 	    
 		Select Flexnum
 			Case 1
 				On AL_Suck
@@ -6286,18 +6301,65 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 			Case 4
 				On BR_Suck
 		Send
- 		Wait Sw(FlexVoccum1) = 1 And Sw(FlexVoccum2) = 1, 1  '等待气缸下压
+		Wait 0.5
+' 		Wait Sw(FlexVoccum1) = 1 And Sw(FlexVoccum2) = 1, 1  '等待气缸下压
+'	 	Off valvenum
+'		Wait 0.3
  		If Sw(FlexVoccum1) = 0 Or Sw(FlexVoccum2) = 0 Then
  			CheckFlexVoccum(Flexnum - 1) = True
+' 			retry_num = retry_num + 1;
+' 			If retry_num <= 1 Then
+'	 			Off blownum; On sucknum; On valvenum
+'	 			Wait 0.5
+'	 			Off valvenum
+'	 			Wait 0.5
+'		 		NowPosition = Here
+'		 	    Go NowPosition +Z(Delta_Z1)
+'	 	    	GoTo ReleaseActionLable1
+'	 	    EndIf
  		Else
  			CheckFlexVoccum(Flexnum - 1) = False
  		EndIf
-	 	Off valvenum
-		Wait 0.2
+
 		If CheckFlexVoccum(Flexnum - 1) = True Then
-			Wait 0.45
+'			Wait 0.45
+			Off blownum; On sucknum
+			Select Flexnum
+				Case 1
+					Off AL_Suck
+				Case 2
+					Off AR_Suck
+				Case 3
+					Off BL_Suck
+				Case 4
+					Off BR_Suck
+			Send
+			Wait 0.3
+	 		NowPosition = Here
+	 	    Go NowPosition +Z(Delta_Z1 - Delta_Z_Release)
+			Wait 0.3
+	 		NowPosition = Here
+	 	    Go NowPosition -Z(Delta_Z1 - Delta_Z_Release)
+	 	    On blownum; Off sucknum
+	 	    Wait 0.2
+			Select Flexnum
+				Case 1
+					On AL_Suck
+				Case 2
+					On AR_Suck
+				Case 3
+					On BL_Suck
+				Case 4
+					On BR_Suck
+			Send
+	 	    Off valvenum; Off blownum
+	 	    Wait 0.3
+	 	Else
+	 		Off valvenum; Off blownum
+	 		Wait 0.3
 		EndIf
-		Off blownum
+		
+		
 	Else
 		Off valvenum; Off blownum
 		Wait 0.1
@@ -7121,6 +7183,13 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
+
+
+
+
+
 
 
 
