@@ -1,6 +1,5 @@
-'ver 20170604.02
-'1、上料盘吸取失败，气缸动作加延时
-'2、上料tray吸取失败，机械手不再吸取，减少报警
+'ver 20170605.01
+'1、Noise不良不复测，分开摆放
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -3158,6 +3157,7 @@ TesterOperate1SuckSubLabel1:
 				Else
 					'Noise不良
 					Pick_Remark(1) = 1
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
 				EndIf
 				
 				
@@ -4059,6 +4059,7 @@ TesterOperate2SuckSubLabel1:
 				Else
 					'Noise不良
 					Pick_Remark(0) = 1
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
 				EndIf
 			EndIf
 			
@@ -5458,6 +5459,7 @@ UnloadOperate_Ng:
 	TargetPosition_Num = 6
 
 	If Pick_Remark(num) = 1 Then
+		'Noise不良放料
 		If num = 1 Then
 			FinalPosition = Pallet(5, NoiseTrayPalletNum)
 		Else
@@ -6077,7 +6079,7 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 
 '	Wait 0.3 + pickRetryTimes * 0.3
-	Wait 0.3 + pickRetryTimes * 0
+	Wait 0.5 + pickRetryTimes * 0
 		
 	If needreleaseadjust Then
 		Off AdjustValve
@@ -6295,6 +6297,8 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	If Flexnum <> -1 Then
 '		Wait 0.3
 		Wait 0.5
+	Else
+		Wait 0.3
 	EndIf
  	
 	On blownum; Off sucknum
@@ -7257,6 +7261,8 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
 
 
 
