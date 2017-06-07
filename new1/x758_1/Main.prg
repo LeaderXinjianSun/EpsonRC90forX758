@@ -1,5 +1,5 @@
-'ver 20170606.01
-'1、Noise不良不复测，分开摆放;验证版本
+'ver 20170607.01
+'1、添加Link功能
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -67,6 +67,7 @@ Global Boolean isXqtting
 'Global Boolean Position2NeedNeedAnotherMove
 
 Global Preserve Integer BarcodeMode
+Global Preserve Boolean isCheckUpload
 
 Global Boolean NeedCleanAction
 Global Boolean CleanActionFlag
@@ -155,8 +156,10 @@ Global Integer SamRetest
 Global Boolean SamScanNewPcs
 
 '******************************* 结束 ********************************************
-
-
+'******************************* 检测上传软体 ********************************************
+Global Boolean StatusOfUpload(4)
+Global Integer StatusOfUploadFinish
+'******************************* 检测上传软体结束 ********************************************
 Function main
 	
 	Do
@@ -305,6 +308,7 @@ main_label1:
 			Exit Do
 		EndIf
 		If PickHave(0) = False And PickHave(1) = False And Discharge = 0 Then
+			Call CheckUploadStatus
 			Call PickFeedOperate1
 		EndIf
 		Call UnloadOperate(0)
@@ -317,6 +321,30 @@ main_label1:
 
 	Loop
 	GoTo main_label1
+Fend
+Function CheckUploadStatus
+		
+	Integer i
+CheckUploadStatusLabel1:
+	If isCheckUpload Then
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "StatusOfUpload"
+		StatusOfUploadFinish = 0
+		Wait StatusOfUploadFinish <> 0
+		For i = 0 To 3
+			If Not StatusOfUpload(i) And isCheckUpload And Tester_Select(i) Then
+				Print "测试机" + Str$(i + 1) + "，上传软体异常"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，上传软体异常"
+				Pause
+				GoTo CheckUploadStatusLabel1
+			EndIf
+		Next
+	EndIf
 Fend
 'GRR
 Function main3
@@ -6475,6 +6503,15 @@ Function TcpIpCmdRev
 			CmdRevStr$(0) = ""
 			StringSplit(CmdRev$, ";")
 			Select CmdRevStr$(0)
+				Case "StatusOfUpload"
+					For i = 0 To 3
+						If CmdRevStr$(i + 1) = "1" Then
+							StatusOfUpload(i) = True;
+						Else
+							StatusOfUpload(i) = False;
+						EndIf
+					Next
+					StatusOfUploadFinish = 1;
 				Case "Select"
 					For i = 0 To 3
 '						If CmdRevStr$(i + 1) = "1" Then
@@ -6532,12 +6569,12 @@ Function TcpIpCmdRev
 					Next
 				Case "NGContinueNum"
 					NgContinueNum = Val(CmdRevStr$(1))
-				Case "BarcodeMode"
+				Case "CheckUpload"
 					Select CmdRevStr$(1)
 						Case "True"
-							BarcodeMode = 0
+							isCheckUpload = True
 						Case "False"
-							BarcodeMode = 1
+							isCheckUpload = False
 					Send
 				Case "AABReTest"
 					Select CmdRevStr$(1)
