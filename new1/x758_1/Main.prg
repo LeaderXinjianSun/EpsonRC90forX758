@@ -1,5 +1,6 @@
-'ver 20170607.01
+'ver 20170608.01
 '1、添加Link功能
+'2、清洁双吸头吹气，来回次数减少
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -341,6 +342,7 @@ CheckUploadStatusLabel1:
 				Print "测试机" + Str$(i + 1) + "，上传软体异常"
 				MsgSend$ = "测试机" + Str$(i + 1) + "，上传软体异常"
 				Pause
+				Wait 1
 				GoTo CheckUploadStatusLabel1
 			EndIf
 		Next
@@ -6263,16 +6265,16 @@ Function CleanBlowAction(num As Integer, Flexnum As Integer)
 	CleanPosition1 = Here +Y(10)
 	CleanPosition2 = Here +Y(-10)
 	CleanPosition3 = Here
- 	On valvenum; On blownum; Off sucknum
+ 	On valvenum; On blownum; Off sucknum; On 1; On 3
  	Accel 10, 10
-	For i = 0 To 4
+	For i = 0 To 2
 		Pass CleanPosition1
 		Go CleanPosition3
 		Pass CleanPosition2
 		Go CleanPosition3
 	Next
 	Accel 50, 50
-	Go CleanPosition3 ! D1; Off valvenum; Off blownum !
+	Go CleanPosition3 ! D1; Off valvenum; Off blownum; Off 1; Off 3 !
 	Go Here +Z(-10)
 	Wait 0.5
 	Accel 100, 100
