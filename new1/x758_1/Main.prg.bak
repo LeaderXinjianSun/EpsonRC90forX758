@@ -1,5 +1,6 @@
 'ver 20170608.01
 '1、添加Link功能
+'2、清洁双吸头吹气，来回次数减少
 
 Global String CmdRev$, CmdSend$, MsgSend$
 Global String CmdRevStr$(20)
@@ -2493,7 +2494,7 @@ PickFeedOperatelabel1:
 	
 	If Discharge = 0 Then
 		On DangerOut
-		On BlowA
+'		On BlowA
 		If Sw(RollReset) = 0 And Sw(RollSet) = 0 Then
 			Print "等待 旋转盘到位"
 			MsgSend$ = "等待 旋转盘到位"
