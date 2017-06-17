@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/06/10 00:28:53:850,DS:0000002054,CS:12813,MA:C6-8E-8F-74-5D-89,EI:           
-sActiveChild="Main.prg"
+ENVT0100,LM:2017/06/17 12:01:22:246,DS:0000002060,CS:61457,MA:C6-8E-8F-74-5D-89,EI:           
+sActiveChild="I/O±Í«©±‡º≠∆\x"
 bMdiMaximized=True
 nProgramFileCount=1
 ProgramFile1 {
 	sName="Main.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=249
 		nTop=173
@@ -49,14 +49,14 @@ RunWindow {
 	nWinState=0
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
 		nWidth=930
 		nHeight=581
 	}
-	nWinState=0
+	nWinState=2
 }
 IOMonitor {
 	bOpened=False
@@ -138,7 +138,7 @@ ProjectExplorer {
 	bIncludesOpened=False
 	bLabelsOpened=True
 	bMacrosOpened=True
-	bFunctionsOpened=True
+	bFunctionsOpened=False
 	bVisionOpened=True
 	bVisionSequencesOpened=False
 	bVisionCalibsOpened=False

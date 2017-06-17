@@ -1,8 +1,8 @@
-'ver 20170610.01
-'1、取消吸取前吹气功能
+'ver 20170617.01
+'1、自动排料
 
-Global String CmdRev$, CmdSend$, MsgSend$
-Global String CmdRevStr$(20)
+Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
+Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
 
 
@@ -2365,10 +2365,10 @@ Function XQTAction(num As Integer)
 Fend
 Function AdjustDoubleAction
 	On AdjustValve, Forced
-	Wait 0.5
-	Off AdjustValve, Forced
-	Wait 0.5
-	On AdjustValve, Forced
+'	Wait 0.5
+'	Off AdjustValve, Forced
+'	Wait 0.5
+'	On AdjustValve, Forced
 Fend
 Function AllMonitor
 	
@@ -2625,7 +2625,10 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 			Go ChangeHandL
 
 		EndIf
-
+		If Sw(AutoDischarge) = 1 Then
+			Discharge = 1
+			On Discharing, Forced
+		EndIf
 		
 		Off RollValve
 		Off AdjustValve
@@ -6133,15 +6136,15 @@ Function PickAction(num As Integer) As Boolean
 			Off AdjustValve
 			Wait 0.5
 			On valvenum
-			Wait 0.2
+			Wait 0.5
 			If pickRetryTimes = 0 Then
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
-			On blownum; Off valvenum
+			On blownum; Off vacuumnum
 			Wait 0.5
 			Off valvenum
-			Wait 0.3
+			Wait 0.5
 			Off blownum
 			On AdjustValve
 			Wait 0.5
@@ -6154,9 +6157,10 @@ Function PickAction(num As Integer) As Boolean
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
-			On blownum; Off valvenum
+			On blownum; Off vacuumnum
 			Wait 0.5
-			Off blownum
+			Off blownum; Off valvenum
+			Wait 0.5
 		EndIf
 '		On blownum; Off sucknum
 '		Wait 0.1
@@ -6487,6 +6491,8 @@ Function bgmain
 	Xqt TcpIpCmdRev
 	Xqt TcpIpCmdSend
 	Xqt TcpIpMsgSend
+	Xqt TcpIpCmdRevFlex
+	Xqt TcpIpCmdSendFlex
 Fend
 '接收上位机的命令
 Function TcpIpCmdRev
@@ -6613,77 +6619,15 @@ Function TcpIpCmdRev
 '									ScanResultC = 3
 '							Send
 					Send
-				Case "TestResult"
-					Select CmdRevStr$(2)
-						Case "1"
-							Select CmdRevStr$(1)
-								Case "Pass"
-									Tester_Pass(0) = 1
-								Case "Ng"
-									Tester_Ng(0) = 1
-								Case "TimeOut"
-									Tester_Timeout(0) = 1
-							Send
-							Select CmdRevStr$(3)
-								Case "Noise"
-									Tester_Remark(0) = 1
-								Default
-									Tester_Remark(0) = 0
-							Send
-						Case "2"
-							Select CmdRevStr$(1)
-								Case "Pass"
-									Tester_Pass(1) = 1
-								Case "Ng"
-									Tester_Ng(1) = 1
-								Case "TimeOut"
-									Tester_Timeout(1) = 1
-							Send
-							Select CmdRevStr$(3)
-								Case "Noise"
-									Tester_Remark(1) = 1
-								Default
-									Tester_Remark(1) = 0
-							Send
-						Case "3"
-							Select CmdRevStr$(1)
-								Case "Pass"
-									Tester_Pass(2) = 1
-								Case "Ng"
-									Tester_Ng(2) = 1
-								Case "TimeOut"
-									Tester_Timeout(2) = 1
-							Send
-							Select CmdRevStr$(3)
-								Case "Noise"
-									Tester_Remark(2) = 1
-								Default
-									Tester_Remark(2) = 0
-							Send
-						Case "4"
-							Select CmdRevStr$(1)
-								Case "Pass"
-									Tester_Pass(3) = 1
-								Case "Ng"
-									Tester_Ng(3) = 1
-								Case "TimeOut"
-									Tester_Timeout(3) = 1
-							Send
-							Select CmdRevStr$(3)
-								Case "Noise"
-									Tester_Remark(3) = 1
-								Default
-									Tester_Remark(3) = 0
-							Send
-					Send
-					Case "FeedFill"
-						For i = 0 To 5
-							If CmdRevStr$(i + 1) = "1" Then
-								PreFeedFill(i) = True
-							Else
-								PreFeedFill(i) = False
-							EndIf
-						Next
+
+				Case "FeedFill"
+					For i = 0 To 5
+						If CmdRevStr$(i + 1) = "1" Then
+							PreFeedFill(i) = True
+						Else
+							PreFeedFill(i) = False
+						EndIf
+					Next
 				Case "Discharge"
 					Discharge = 1
 					On Discharing, Forced
@@ -6913,6 +6857,110 @@ Function TcpIpCmdRev
 		EndIf
 		EResume Next
 Fend
+Function TcpIpCmdRevFlex
+	Integer chknet1, errTask, i;
+	OpenNet #205 As Server
+	Print "端口205打开"
+	WaitNet #205
+	Print "端口205连接"
+	Do
+		OnErr GoTo NetErr
+		chknet1 = ChkNet(205)
+		If chknet1 >= 0 Then
+			Input #205, CmdRevFlex$
+			Print "CmdRevFlex$收到： " + CmdRevFlex$
+			CmdRevFlexStr$(0) = ""
+			StringSplit1(CmdRevFlex$, ";")
+			Select CmdRevFlexStr$(0)
+				Case "TestResult"
+					Select CmdRevFlexStr$(2)
+						Case "1"
+							Select CmdRevFlexStr$(1)
+								Case "Pass"
+									Tester_Pass(0) = 1
+								Case "Ng"
+									Tester_Ng(0) = 1
+								Case "TimeOut"
+									Tester_Timeout(0) = 1
+							Send
+							Select CmdRevFlexStr$(3)
+								Case "Noise"
+									Tester_Remark(0) = 1
+								Default
+									Tester_Remark(0) = 0
+							Send
+						Case "2"
+							Select CmdRevFlexStr$(1)
+								Case "Pass"
+									Tester_Pass(1) = 1
+								Case "Ng"
+									Tester_Ng(1) = 1
+								Case "TimeOut"
+									Tester_Timeout(1) = 1
+							Send
+							Select CmdRevFlexStr$(3)
+								Case "Noise"
+									Tester_Remark(1) = 1
+								Default
+									Tester_Remark(1) = 0
+							Send
+						Case "3"
+							Select CmdRevFlexStr$(1)
+								Case "Pass"
+									Tester_Pass(2) = 1
+								Case "Ng"
+									Tester_Ng(2) = 1
+								Case "TimeOut"
+									Tester_Timeout(2) = 1
+							Send
+							Select CmdRevFlexStr$(3)
+								Case "Noise"
+									Tester_Remark(2) = 1
+								Default
+									Tester_Remark(2) = 0
+							Send
+						Case "4"
+							Select CmdRevFlexStr$(1)
+								Case "Pass"
+									Tester_Pass(3) = 1
+								Case "Ng"
+									Tester_Ng(3) = 1
+								Case "TimeOut"
+									Tester_Timeout(3) = 1
+							Send
+							Select CmdRevFlexStr$(3)
+								Case "Noise"
+									Tester_Remark(3) = 1
+								Default
+									Tester_Remark(3) = 0
+							Send
+					Send
+			Send
+			CmdRevFlex$ = ""
+		Else
+			CloseNet #205
+			Print "端口205关闭"
+			Wait 0.1
+			OpenNet #205 As Server
+			Print "端口205重新打开"
+			WaitNet #205
+			Print "端口205重新连接"
+		EndIf
+	Loop
+	NetErr:
+		Print "The Error code is ", Err
+		Print "The Error Message is ", ErrMsg$(Err, LANGID_SIMPLIFIED_CHINESE)
+		errTask = Ert
+		If errTask > 0 Then
+			Print "Task number in which error occurred is ", errTask
+			Print "The line where the error occurred is Line ", Erl(errTask)
+			If Era(errTask) > 0 Then
+				Print "Joint which caused the error is ", Era(errTask)
+			EndIf
+		EndIf
+		EResume Next
+	
+Fend
 '发送命令到上位机
 Function TcpIpCmdSend
 	Integer chknet2, errTask
@@ -6937,6 +6985,46 @@ Function TcpIpCmdSend
 			Print "端口202重新打开"
 			WaitNet #202
 			Print "端口202重新连接"
+		EndIf
+	Loop
+	 
+	NetErr:
+		Print "The Error code is ", Err
+		Print "The Error Message is ", ErrMsg$(Err, LANGID_SIMPLIFIED_CHINESE)
+		errTask = Ert
+		If errTask > 0 Then
+			Print "Task number in which error occurred is ", errTask
+			Print "The line where the error occurred is Line ", Erl(errTask)
+			If Era(errTask) > 0 Then
+				Print "Joint which caused the error is ", Era(errTask)
+			EndIf
+		EndIf
+		EResume Next
+Fend
+'发送命令到上位机
+Function TcpIpCmdSendFlex
+	Integer chknet2, errTask
+	OpenNet #206 As Server
+	Print "端口206打开"
+	WaitNet #206
+	Print "端口206连接"
+	Do
+		OnErr GoTo NetErr
+		chknet2 = ChkNet(206)
+		If chknet2 >= 0 Then
+			If CmdSendFlex$ <> "" Then
+				Print #206, CmdSendFlex$
+				Print "CmdSendFlex$： " + CmdSendFlex$
+				CmdSendFlex$ = ""
+			EndIf
+		Else
+			CloseNet #206
+			Print "端口206关闭"
+			Wait 0.1
+			OpenNet #206 As Server
+			Print "端口206重新打开"
+			WaitNet #206
+			Print "端口206重新连接"
 		EndIf
 	Loop
 	 
@@ -7008,6 +7096,20 @@ Function StringSplit(StrSplit$ As String, CharSelect$ As String)
 	Loop
 	CmdRevStr$(i) = RemainStr$
 Fend
+Function StringSplit1(StrSplit$ As String, CharSelect$ As String)
+	Integer findstr, i
+	String RemainStr$
+	RemainStr$ = StrSplit$
+	i = 0
+	findstr = InStr(RemainStr$, CharSelect$)
+	Do While findstr <> -1
+		CmdRevFlexStr$(i) = Mid$(RemainStr$, 1, findstr - 1)
+		RemainStr$ = Mid$(RemainStr$, findstr + 1)
+		i = i + 1
+		findstr = InStr(RemainStr$, CharSelect$)
+	Loop
+	CmdRevFlexStr$(i) = RemainStr$
+Fend
 '测试机1测试过程
 Function TesterStart1
 	Boolean voccumflag
@@ -7035,13 +7137,13 @@ Function TesterStart1
 				Tester_Remark(0) = 0
 				Print "测试机AL，开始测试"
 				MsgSend$ = "测试机AL，开始测试"
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
+				If CmdSendFlex$ <> "" Then
+					Print "有命令 " + CmdSendFlex$ + " 待发送！"
 				EndIf
-				Do While CmdSend$ <> ""
+				Do While CmdSendFlex$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "Start,1," + PickAorC$(0)
+				CmdSendFlex$ = "Start,1," + PickAorC$(0)
 				On ALRecify, Forced
 				TmReset 0
 '				Wait Sw(ALRear) = 0 And Sw(ALUp) = 0
@@ -7105,13 +7207,13 @@ Function TesterStart2
 				Tester_Remark(1) = 0
 				Print "测试机AR，开始测试"
 				MsgSend$ = "测试机AR，开始测试"
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
+				If CmdSendFlex$ <> "" Then
+					Print "有命令 " + CmdSendFlex$ + " 待发送！"
 				EndIf
-				Do While CmdSend$ <> ""
+				Do While CmdSendFlex$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "Start,2," + PickAorC$(1)
+				CmdSendFlex$ = "Start,2," + PickAorC$(1)
 				On ARRecify, Forced
 				TmReset 1
 '				Wait Sw(ARRear) = 0 And Sw(ARUp) = 0
@@ -7171,13 +7273,13 @@ Function TesterStart3
 				Tester_Remark(2) = 0
 				Print "测试机BL，开始测试"
 				MsgSend$ = "测试机BL，开始测试"
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
+				If CmdSendFlex$ <> "" Then
+					Print "有命令 " + CmdSendFlex$ + " 待发送！"
 				EndIf
-				Do While CmdSend$ <> ""
+				Do While CmdSendFlex$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "Start,3," + PickAorC$(2)
+				CmdSendFlex$ = "Start,3," + PickAorC$(2)
 				On BLRecify, Forced
 				TmReset 2
 '				Wait Sw(BLRear) = 0 And Sw(BLUp) = 0
@@ -7236,13 +7338,13 @@ Function TesterStart4
 				Tester_Remark(3) = 0
 				Print "测试机BR，开始测试"
 				MsgSend$ = "测试机BR，开始测试"
-				If CmdSend$ <> "" Then
-					Print "有命令 " + CmdSend$ + " 待发送！"
+				If CmdSendFlex$ <> "" Then
+					Print "有命令 " + CmdSendFlex$ + " 待发送！"
 				EndIf
-				Do While CmdSend$ <> ""
+				Do While CmdSendFlex$ <> ""
 					Wait 0.1
 				Loop
-				CmdSend$ = "Start,4," + PickAorC$(3)
+				CmdSendFlex$ = "Start,4," + PickAorC$(3)
 				On BRRecify, Forced
 				TmReset 3
 '				Wait Sw(BRRear) = 0 And Sw(BRUp) = 0
@@ -7299,6 +7401,10 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
+
+
 
 
 
