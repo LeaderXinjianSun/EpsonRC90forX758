@@ -1,5 +1,5 @@
-'ver 20170617.01
-'1、自动排料
+'ver 20170622.01
+'1、矫正盘夹爪，夹两次
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -2365,10 +2365,10 @@ Function XQTAction(num As Integer)
 Fend
 Function AdjustDoubleAction
 	On AdjustValve, Forced
-'	Wait 0.5
-'	Off AdjustValve, Forced
-'	Wait 0.5
-'	On AdjustValve, Forced
+	Wait 0.5
+	Off AdjustValve, Forced
+	Wait 0.5
+	On AdjustValve, Forced
 Fend
 Function AllMonitor
 	
@@ -6134,7 +6134,7 @@ Function PickAction(num As Integer) As Boolean
 		If PickFeedFirstSuck Then
 		    PickFeedFirstSuck = False
 			Off AdjustValve
-			Wait 0.5
+			Wait 1
 			On valvenum
 			Wait 0.5
 			If pickRetryTimes = 0 Then
@@ -6144,10 +6144,10 @@ Function PickAction(num As Integer) As Boolean
 			On blownum; Off vacuumnum
 			Wait 0.5
 			Off valvenum
-			Wait 0.5
+			Wait 1
 			Off blownum
 			On AdjustValve
-			Wait 0.5
+			Wait 1
 		EndIf
 		If PickFlexFirstSuck Then
 			PickFlexFirstSuck = False
@@ -7401,6 +7401,7 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
 
 
 

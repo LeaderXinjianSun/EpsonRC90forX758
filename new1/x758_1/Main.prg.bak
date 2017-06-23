@@ -1,5 +1,5 @@
-'ver 20170610.02
-'1、更改测试机命令单独TCP端口
+'ver 20170617.01
+'1、自动排料
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -2365,10 +2365,10 @@ Function XQTAction(num As Integer)
 Fend
 Function AdjustDoubleAction
 	On AdjustValve, Forced
-	Wait 0.5
-	Off AdjustValve, Forced
-	Wait 0.5
-	On AdjustValve, Forced
+'	Wait 0.5
+'	Off AdjustValve, Forced
+'	Wait 0.5
+'	On AdjustValve, Forced
 Fend
 Function AllMonitor
 	
@@ -2625,7 +2625,10 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 			Go ChangeHandL
 
 		EndIf
-
+		If Sw(AutoDischarge) = 1 Then
+			Discharge = 1
+			On Discharing, Forced
+		EndIf
 		
 		Off RollValve
 		Off AdjustValve
@@ -6133,15 +6136,15 @@ Function PickAction(num As Integer) As Boolean
 			Off AdjustValve
 			Wait 0.5
 			On valvenum
-			Wait 0.2
+			Wait 0.5
 			If pickRetryTimes = 0 Then
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
-			On blownum; Off valvenum
+			On blownum; Off vacuumnum
 			Wait 0.5
 			Off valvenum
-			Wait 0.3
+			Wait 0.5
 			Off blownum
 			On AdjustValve
 			Wait 0.5
@@ -6154,9 +6157,10 @@ Function PickAction(num As Integer) As Boolean
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
-			On blownum; Off valvenum
+			On blownum; Off vacuumnum
 			Wait 0.5
-			Off blownum
+			Off blownum; Off valvenum
+			Wait 0.5
 		EndIf
 '		On blownum; Off sucknum
 '		Wait 0.1
@@ -6932,7 +6936,7 @@ Function TcpIpCmdRevFlex
 							Send
 					Send
 			Send
-			CmdRev$ = ""
+			CmdRevFlex$ = ""
 		Else
 			CloseNet #205
 			Print "端口205关闭"
@@ -7397,6 +7401,10 @@ Function TrapInterruptAbort
 	pickRetryTimes = 0
 
 Fend
+
+
+
+
 
 
 
