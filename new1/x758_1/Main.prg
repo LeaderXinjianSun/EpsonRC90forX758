@@ -1,5 +1,11 @@
-'ver 20170622.01
-'1、矫正盘夹爪，夹两次
+'ver 20170623.01
+'1、Noise添加NA
+'2、报警声
+'3、上位机减少按键
+'4、启动提示，将上料盘料取走
+'5、产品没放好，将料取走，放NG盘
+'6、吸取失败，提示报警，需要人将其取走
+
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -193,11 +199,12 @@ Function main2
 	MsgSend$ = "请按继续，开始复位"
 	Pause
 	Call TrapInterruptAbort
-	If FeedPanelNum < 3 Then
-		Off RollValve
-	Else
-		On RollValve
-	EndIf
+'	If FeedPanelNum < 3 Then
+'		Off RollValve
+'	Else
+'		On RollValve
+'	EndIf
+
     
 	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
 		NgTrayPalletNum = 1
@@ -208,21 +215,33 @@ Function main2
 	Call HomeReturnAction
 
 	Wait 0.5
-	If Sw(FeedReady) = 0 Then
-		Print "等待上料结束"
-		MsgSend$ = "等待上料结束"
-		Off RollValve
-		On FeedEmpty
-		Off AdjustValve
-		FeedReadySigleDown = 0
-		FeedPanelNum = 0
-	Else
-		Print "请确认，不得取走上料盘产品"
-		MsgSend$ = "请确认，不得取走上料盘产品"
-		Pause
-	EndIf
+    Off RollValve
+    Off FeedEmpty
+    FeedPanelNum = 0
+    For i = 0 To 5
+    	FeedFill(FeedPanelNum) = False
+    Next
+	Print "请确认，取走上料盘产品"
+	MsgSend$ = "请确认，取走上料盘产品"
+	Pause
+	On FeedEmpty
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
+'	If Sw(FeedReady) = 0 Then
+'		Print "等待上料结束"
+'		MsgSend$ = "等待上料结束"
+'		Off RollValve
+'		On FeedEmpty
+'		Off AdjustValve
+'		FeedReadySigleDown = 0
+'		FeedPanelNum = 0
+'	Else
+'		Print "请确认，不得取走上料盘产品"
+'		MsgSend$ = "请确认，不得取走上料盘产品"
+'		Pause
+'	EndIf
+'	Wait Sw(FeedReady) = 1
+'	FeedReadySigleDown = 1
 	
 	
 	
@@ -371,11 +390,11 @@ Function main3
 	MsgSend$ = "GRR模式，请按继续，开始复位"
 	Pause
 	Call TrapInterruptAbort
-	If FeedPanelNum < 3 Then
-		Off RollValve
-	Else
-		On RollValve
-	EndIf
+'	If FeedPanelNum < 3 Then
+'		Off RollValve
+'	Else
+'		On RollValve
+'	EndIf
     
 	
 	Call HomeReturnAction
@@ -391,24 +410,33 @@ Function main3
     Call ClearAction
 
 	Wait 0.5
-	If Sw(FeedReady) = 0 Then
-		Print "等待上料结束"
-		MsgSend$ = "等待上料结束"
-		Off RollValve
-		On FeedEmpty
-		Off AdjustValve
-		FeedReadySigleDown = 0
-		FeedPanelNum = 0
-	Else
-		Print "请确认，不得取走上料盘产品"
-		MsgSend$ = "请确认，不得取走上料盘产品"
-		Pause
-	EndIf
+'	If Sw(FeedReady) = 0 Then
+'		Print "等待上料结束"
+'		MsgSend$ = "等待上料结束"
+'		Off RollValve
+'		On FeedEmpty
+'		Off AdjustValve
+'		FeedReadySigleDown = 0
+'		FeedPanelNum = 0
+'	Else
+'		Print "请确认，不得取走上料盘产品"
+'		MsgSend$ = "请确认，不得取走上料盘产品"
+'		Pause
+'	EndIf
+'	Wait Sw(FeedReady) = 1
+'	FeedReadySigleDown = 1
+	Off FeedEmpty
+    Off RollValve
+    FeedPanelNum = 0
+    For i = 0 To 5
+    	FeedFill(FeedPanelNum) = False
+    Next
+	Print "请确认，取走上料盘产品"
+	MsgSend$ = "请确认，取走上料盘产品"
+	Pause
+	On FeedEmpty
 	Wait Sw(FeedReady) = 1
 	FeedReadySigleDown = 1
-	
-	
-	
 	
 	
 	
@@ -629,7 +657,9 @@ Function SamPickfromPanel
 			Print "样本盘，吸取失败"
 			MsgSend$ = "样本盘，吸取失败"
 			Go Here +Z(10)
+			On Alarm_SuckFail
 			Pause
+			Off Alarm_SuckFail
 		EndIf
 	EndIf
 
@@ -1080,7 +1110,9 @@ SamOperateReLabel1:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
+		Off Alarm_ReleaseFail
 		FinalPosition = Here
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		GoTo SamOperateReLabel1
@@ -1419,7 +1451,9 @@ SamOperate1SuckSubLabel1:
 
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckA
 		GoTo SamOperate1SuckSubLabel1
 	EndIf
@@ -1773,7 +1807,9 @@ SamOperateReLabel2:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
+		Off Alarm_ReleaseFail
 		FinalPosition = Here
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		GoTo SamOperateReLabel2
@@ -2094,7 +2130,9 @@ SamOperate2SuckSubLabel1:
 
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckB
 		GoTo SamOperate2SuckSubLabel1
 	EndIf
@@ -2574,7 +2612,9 @@ PickFeedOperatelabel1:
 				Accel 50, 50
 				Go FailFeedWaitP
 				Accel 100, 100
+				On Alarm_SuckFail
 				Pause
+				Off Alarm_SuckFail
 				On AdjustValve
 				Wait 0.2
 '				FeedPanelNum = FeedPanelNum + 1
@@ -3227,9 +3267,12 @@ TesterOperate1SuckSubLabel1:
 		Next
 		Print "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckB
-		GoTo TesterOperate1SuckSubLabel1
+		Tester_Fill(IndexArray_i(i)) = False;
+'		GoTo TesterOperate1SuckSubLabel1
 	EndIf
 Return
 
@@ -3345,11 +3388,14 @@ CheckVoccum_label1:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
-		FinalPosition = Here
-		GoTo CheckVoccum_label1
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "A"
+		Off Alarm_ReleaseFail
+		Tester_Fill(IndexArray_i(i)) = False;
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label1
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -3363,13 +3409,6 @@ CheckVoccum_label1:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
-	EndIf
-	
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-	
-	
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -3378,19 +3417,27 @@ CheckVoccum_label1:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-	Select Pick_P_Msg(0)
-		Case -1
-			Tester_ReTestFalg(IndexArray_i(i)) = 0
-		Case 2
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 3
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 4
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 5
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		
-	Send
+		Select Pick_P_Msg(0)
+			Case -1
+				Tester_ReTestFalg(IndexArray_i(i)) = 0
+			Case 2
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 3
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 4
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 5
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			
+		Send
+	EndIf
+	
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+	
+	
+
 Return
 
 TesterOperate1ReleaseSub_1:
@@ -3500,11 +3547,14 @@ CheckVoccum_label2:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
-		FinalPosition = Here
-		GoTo CheckVoccum_label2
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "B"
+		Off Alarm_ReleaseFail
+		Tester_Fill(IndexArray_i(i)) = False;
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label2
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "B"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -4127,9 +4177,12 @@ TesterOperate2SuckSubLabel1:
 		Next
 		Print "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckA
-		GoTo TesterOperate2SuckSubLabel1
+		Tester_Fill(IndexArray_i(i)) = False;
+'		GoTo TesterOperate2SuckSubLabel1
 	EndIf
 '	If PickHave(1) Then
 '		If Sw(VacuumValueB) = 0 Then
@@ -4249,11 +4302,14 @@ CheckVoccum_label3:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
-		FinalPosition = Here
-		GoTo CheckVoccum_label3
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "B"
+		Off Alarm_ReleaseFail
+		Tester_Fill(IndexArray_i(i)) = False;
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label3
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "B"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -4267,10 +4323,6 @@ CheckVoccum_label3:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
-	EndIf
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -4279,19 +4331,24 @@ CheckVoccum_label3:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-	Select Pick_P_Msg(1)
-		Case -1
-			Tester_ReTestFalg(IndexArray_i(i)) = 0
-		Case 2
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 3
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 4
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 5
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		
-	Send
+		Select Pick_P_Msg(1)
+			Case -1
+				Tester_ReTestFalg(IndexArray_i(i)) = 0
+			Case 2
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 3
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 4
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 5
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			
+		Send
+	EndIf
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+
 Return
 
 TesterOperate1ReleaseSub_1:
@@ -4413,11 +4470,14 @@ CheckVoccum_label4:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
-		FinalPosition = Here
-		GoTo CheckVoccum_label4
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "A"
+		Off Alarm_ReleaseFail
+		Tester_Fill(IndexArray_i(i)) = False;
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label4
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		
@@ -4750,7 +4810,9 @@ GRROperate1ReLabel1:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
+		Off Alarm_ReleaseFail
 		FinalPosition = Here
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		GoTo GRROperate1ReLabel1
@@ -4908,7 +4970,9 @@ GRROperate1Rsuck:
 		
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckA
 		GoTo GRROperate1Rsuck
 	
@@ -5196,7 +5260,9 @@ GRROperate2ReLabel1:
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Print "测试工位" + Str$(i + 1) + "，产品没放好"
 		MsgSend$ = "测试工位" + Str$(i + 1) + "，产品没放好"
+		On Alarm_ReleaseFail
 		Pause
+		Off Alarm_ReleaseFail
 		FinalPosition = Here
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		GoTo GRROperate2ReLabel1
@@ -5355,7 +5421,9 @@ GRROperate2Rsuck:
 
 		Print "测试机" + Str$(i + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		On Alarm_SuckFail
 		Pause
+		Off Alarm_SuckFail
 		Off SuckA
 		GoTo GRROperate2Rsuck
 	
@@ -7399,8 +7467,13 @@ Function TrapInterruptAbort
 	Off BLRecify, Forced
 	Off BRRecify, Forced
 	pickRetryTimes = 0
+	Off Alarm_ReleaseFail, Forced
+	Off Alarm_SuckFail, Forced
+	
 
 Fend
+
+
 
 
 
