@@ -1,11 +1,5 @@
-'ver 20170623.01
-'1、Noise添加NA
-'2、报警声
-'3、上位机减少按键
-'4、启动提示，将上料盘料取走
-'5、产品没放好，将料取走，放NG盘
-'6、吸取失败，提示报警，需要人将其取走
-
+'ver 20170624.01
+'1、防止上料盘叠料
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -166,6 +160,9 @@ Global Boolean SamScanNewPcs
 Global Boolean StatusOfUpload(4)
 Global Integer StatusOfUploadFinish
 '******************************* 检测上传软体结束 ********************************************
+
+Global Boolean ReStart_flag
+
 Function main
 	
 	Do
@@ -199,11 +196,11 @@ Function main2
 	MsgSend$ = "请按继续，开始复位"
 	Pause
 	Call TrapInterruptAbort
-'	If FeedPanelNum < 3 Then
-'		Off RollValve
-'	Else
-'		On RollValve
-'	EndIf
+	If FeedPanelNum < 3 Then
+		Off RollValve
+	Else
+		On RollValve
+	EndIf
 
     
 	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
@@ -214,34 +211,31 @@ Function main2
 	EndIf
 	Call HomeReturnAction
 
+	ReStart_flag = False
+	Off FeedEmpty
 	Wait 0.5
-    Off RollValve
-    Off FeedEmpty
-    FeedPanelNum = 0
-    For i = 0 To 5
-    	FeedFill(FeedPanelNum) = False
+	For i = 0 To 5
+    	If FeedFill(i) Then
+    		ReStart_flag = True
+    	EndIf
     Next
-	Print "请确认，取走上料盘产品"
-	MsgSend$ = "请确认，取走上料盘产品"
-	Pause
-	On FeedEmpty
-	Wait Sw(FeedReady) = 1
-	FeedReadySigleDown = 1
-'	If Sw(FeedReady) = 0 Then
-'		Print "等待上料结束"
-'		MsgSend$ = "等待上料结束"
-'		Off RollValve
-'		On FeedEmpty
-'		Off AdjustValve
-'		FeedReadySigleDown = 0
-'		FeedPanelNum = 0
-'	Else
-'		Print "请确认，不得取走上料盘产品"
-'		MsgSend$ = "请确认，不得取走上料盘产品"
-'		Pause
-'	EndIf
-'	Wait Sw(FeedReady) = 1
-'	FeedReadySigleDown = 1
+    If Not ReStart_flag Then
+		Print "等待上料结束"
+		MsgSend$ = "等待上料结束"
+		Off RollValve
+		On FeedEmpty
+		Off AdjustValve
+		FeedReadySigleDown = 0
+		FeedPanelNum = 0
+		Wait Sw(FeedReady) = 1
+		FeedReadySigleDown = 1
+	Else
+		Print "请确认，不得取走上料盘产品"
+		MsgSend$ = "请确认，不得取走上料盘产品"
+		On AdjustValve
+		Pause
+    EndIf
+
 	
 	
 	
@@ -390,11 +384,11 @@ Function main3
 	MsgSend$ = "GRR模式，请按继续，开始复位"
 	Pause
 	Call TrapInterruptAbort
-'	If FeedPanelNum < 3 Then
-'		Off RollValve
-'	Else
-'		On RollValve
-'	EndIf
+	If FeedPanelNum < 3 Then
+		Off RollValve
+	Else
+		On RollValve
+	EndIf
     
 	
 	Call HomeReturnAction
@@ -409,34 +403,30 @@ Function main3
 	
     Call ClearAction
 
-	Wait 0.5
-'	If Sw(FeedReady) = 0 Then
-'		Print "等待上料结束"
-'		MsgSend$ = "等待上料结束"
-'		Off RollValve
-'		On FeedEmpty
-'		Off AdjustValve
-'		FeedReadySigleDown = 0
-'		FeedPanelNum = 0
-'	Else
-'		Print "请确认，不得取走上料盘产品"
-'		MsgSend$ = "请确认，不得取走上料盘产品"
-'		Pause
-'	EndIf
-'	Wait Sw(FeedReady) = 1
-'	FeedReadySigleDown = 1
+	ReStart_flag = False
 	Off FeedEmpty
-    Off RollValve
-    FeedPanelNum = 0
-    For i = 0 To 5
-    	FeedFill(FeedPanelNum) = False
+	Wait 0.5
+	For i = 0 To 5
+    	If FeedFill(i) Then
+    		ReStart_flag = True
+    	EndIf
     Next
-	Print "请确认，取走上料盘产品"
-	MsgSend$ = "请确认，取走上料盘产品"
-	Pause
-	On FeedEmpty
-	Wait Sw(FeedReady) = 1
-	FeedReadySigleDown = 1
+    If Not ReStart_flag Then
+		Print "等待上料结束"
+		MsgSend$ = "等待上料结束"
+		Off RollValve
+		On FeedEmpty
+		Off AdjustValve
+		FeedReadySigleDown = 0
+		FeedPanelNum = 0
+		Wait Sw(FeedReady) = 1
+		FeedReadySigleDown = 1
+	Else
+		Print "请确认，不得取走上料盘产品"
+		MsgSend$ = "请确认，不得取走上料盘产品"
+		On AdjustValve
+		Pause
+    EndIf
 	
 	
 	
@@ -2503,7 +2493,7 @@ Function PickFeedOperate1
 	Integer scanflag, i
 	InWaitPosition = False
 PickFeedOperatelabel1:
-	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Discharge = 0 Then
+	If (Sw(FeedReady) = 0 Or FeedReadySigleDown = 0) And Not ReStart_flag And Discharge = 0 Then
 	
 		TargetPosition_Num = 1
 		FinalPosition = ChangeHandL
@@ -2680,7 +2670,7 @@ Function IsFeedPanelEmpty(needwait As Boolean) As Boolean
 		FeedReadySigleDown = 0
 		IsFeedPanelEmpty = True
 		FeedPanelNum = 0
-
+		ReStart_flag = False
 	Else
 		If FeedPanelNum >= 3 Then
 			On RollValve
@@ -3271,8 +3261,8 @@ TesterOperate1SuckSubLabel1:
 		Pause
 		Off Alarm_SuckFail
 		Off SuckB
-		Tester_Fill(IndexArray_i(i)) = False;
-'		GoTo TesterOperate1SuckSubLabel1
+'		Tester_Fill(IndexArray_i(i)) = False;
+		GoTo TesterOperate1SuckSubLabel1
 	EndIf
 Return
 
@@ -3391,11 +3381,11 @@ CheckVoccum_label1:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
-		Tester_Fill(IndexArray_i(i)) = False;
-'		FinalPosition = Here
-'		GoTo CheckVoccum_label1
-'		Tester_Testing(IndexArray_i(i)) = True
-'		PickAorC$(IndexArray_i(i)) = "A"
+'		Tester_Fill(IndexArray_i(i)) = False;
+		FinalPosition = Here
+		GoTo CheckVoccum_label1
+		Tester_Testing(IndexArray_i(i)) = True
+		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -3409,6 +3399,11 @@ CheckVoccum_label1:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
+	EndIf
+	
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -3417,25 +3412,19 @@ CheckVoccum_label1:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-		Select Pick_P_Msg(0)
-			Case -1
-				Tester_ReTestFalg(IndexArray_i(i)) = 0
-			Case 2
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 3
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 4
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 5
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			
-		Send
-	EndIf
-	
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-	
+	Select Pick_P_Msg(0)
+		Case -1
+			Tester_ReTestFalg(IndexArray_i(i)) = 0
+		Case 2
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 3
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 4
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 5
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		
+	Send
 	
 
 Return
@@ -3550,11 +3539,11 @@ CheckVoccum_label2:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
-		Tester_Fill(IndexArray_i(i)) = False;
-'		FinalPosition = Here
-'		GoTo CheckVoccum_label2
-'		Tester_Testing(IndexArray_i(i)) = True
-'		PickAorC$(IndexArray_i(i)) = "B"
+'		Tester_Fill(IndexArray_i(i)) = False;
+		FinalPosition = Here
+		GoTo CheckVoccum_label2
+		Tester_Testing(IndexArray_i(i)) = True
+		PickAorC$(IndexArray_i(i)) = "B"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -4181,8 +4170,8 @@ TesterOperate2SuckSubLabel1:
 		Pause
 		Off Alarm_SuckFail
 		Off SuckA
-		Tester_Fill(IndexArray_i(i)) = False;
-'		GoTo TesterOperate2SuckSubLabel1
+'		Tester_Fill(IndexArray_i(i)) = False;
+		GoTo TesterOperate2SuckSubLabel1
 	EndIf
 '	If PickHave(1) Then
 '		If Sw(VacuumValueB) = 0 Then
@@ -4305,11 +4294,11 @@ CheckVoccum_label3:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
-		Tester_Fill(IndexArray_i(i)) = False;
-'		FinalPosition = Here
-'		GoTo CheckVoccum_label3
-'		Tester_Testing(IndexArray_i(i)) = True
-'		PickAorC$(IndexArray_i(i)) = "B"
+'		Tester_Fill(IndexArray_i(i)) = False;
+		FinalPosition = Here
+		GoTo CheckVoccum_label3
+		Tester_Testing(IndexArray_i(i)) = True
+		PickAorC$(IndexArray_i(i)) = "B"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -4323,6 +4312,11 @@ CheckVoccum_label3:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
+
+	EndIf
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -4331,24 +4325,19 @@ CheckVoccum_label3:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-		Select Pick_P_Msg(1)
-			Case -1
-				Tester_ReTestFalg(IndexArray_i(i)) = 0
-			Case 2
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 3
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 4
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			Case 5
-				Tester_ReTestFalg(IndexArray_i(i)) = 2
-			
-		Send
-	EndIf
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
-
+	Select Pick_P_Msg(1)
+		Case -1
+			Tester_ReTestFalg(IndexArray_i(i)) = 0
+		Case 2
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 3
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 4
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		Case 5
+			Tester_ReTestFalg(IndexArray_i(i)) = 2
+		
+	Send
 Return
 
 TesterOperate1ReleaseSub_1:
@@ -4473,11 +4462,11 @@ CheckVoccum_label4:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
-		Tester_Fill(IndexArray_i(i)) = False;
-'		FinalPosition = Here
-'		GoTo CheckVoccum_label4
-'		Tester_Testing(IndexArray_i(i)) = True
-'		PickAorC$(IndexArray_i(i)) = "A"
+'		Tester_Fill(IndexArray_i(i)) = False;
+		FinalPosition = Here
+		GoTo CheckVoccum_label4
+		Tester_Testing(IndexArray_i(i)) = True
+		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		

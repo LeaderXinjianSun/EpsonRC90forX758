@@ -216,6 +216,7 @@ Function main2
 
 	Wait 0.5
     Off RollValve
+    Off FeedEmpty
     FeedPanelNum = 0
     For i = 0 To 5
     	FeedFill(FeedPanelNum) = False
@@ -223,7 +224,9 @@ Function main2
 	Print "请确认，取走上料盘产品"
 	MsgSend$ = "请确认，取走上料盘产品"
 	Pause
-	
+	On FeedEmpty
+	Wait Sw(FeedReady) = 1
+	FeedReadySigleDown = 1
 '	If Sw(FeedReady) = 0 Then
 '		Print "等待上料结束"
 '		MsgSend$ = "等待上料结束"
@@ -422,7 +425,7 @@ Function main3
 '	EndIf
 '	Wait Sw(FeedReady) = 1
 '	FeedReadySigleDown = 1
-	
+	Off FeedEmpty
     Off RollValve
     FeedPanelNum = 0
     For i = 0 To 5
@@ -431,7 +434,9 @@ Function main3
 	Print "请确认，取走上料盘产品"
 	MsgSend$ = "请确认，取走上料盘产品"
 	Pause
-	
+	On FeedEmpty
+	Wait Sw(FeedReady) = 1
+	FeedReadySigleDown = 1
 	
 	
 	
@@ -7467,6 +7472,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 
