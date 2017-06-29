@@ -1,5 +1,5 @@
-'ver 20170624.01
-'1、防止上料盘叠料
+'ver 20170629.01
+'1、“产品没放好”报警，若负压达到-测，若负压未达到-取出放NG盘，若取出“吸取失败”-报警人为取走
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -162,6 +162,11 @@ Global Integer StatusOfUploadFinish
 '******************************* 检测上传软体结束 ********************************************
 
 Global Boolean ReStart_flag
+
+Global Integer ReleaseFailFlexIndex
+'0 A爪手
+'1 B爪手
+Global Integer ReleaseFailPickNum
 
 Function main
 	
@@ -328,9 +333,17 @@ main_label1:
 		'处理A爪头
 		Call TesterOperate1
 		Call UnloadOperate(1)
+		If ReleaseFailFlexIndex <> -1 Then
+			Call TesterOperateReleaseFail
+			Call UnloadOperate(ReleaseFailPickNum)
+		EndIf
         '处理B爪头
 		Call TesterOperate2
 		Call UnloadOperate(0)
+		If ReleaseFailFlexIndex <> -1 Then
+			Call TesterOperateReleaseFail
+			Call UnloadOperate(ReleaseFailPickNum)
+		EndIf
 
 	Loop
 	GoTo main_label1
@@ -3261,13 +3274,14 @@ TesterOperate1SuckSubLabel1:
 		Pause
 		Off Alarm_SuckFail
 		Off SuckB
-'		Tester_Fill(IndexArray_i(i)) = False;
-		GoTo TesterOperate1SuckSubLabel1
+		Tester_Fill(IndexArray_i(i)) = False;
+'		GoTo TesterOperate1SuckSubLabel1
 	EndIf
 Return
 
 TesterOperate1ReleaseSub:
 '有空穴
+	ReleaseFailFlexIndex = -1
 	Select IndexArray_i(i)
 		Case 0
 '			TargetPosition_Num = 2
@@ -3382,10 +3396,47 @@ CheckVoccum_label1:
 		Pause
 		Off Alarm_ReleaseFail
 '		Tester_Fill(IndexArray_i(i)) = False;
-		FinalPosition = Here
-		GoTo CheckVoccum_label1
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "A"
+		If Sw(voccumValue1) = 1 And Sw(voccumValue2) = 1 Then
+		'产品被扶好	
+			Tester_Testing(IndexArray_i(i)) = True
+			PickAorC$(IndexArray_i(i)) = "A"
+			
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4	
+			Select Pick_P_Msg(0)
+				Case -1
+					Tester_ReTestFalg(IndexArray_i(i)) = 0
+				Case 2
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 3
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 4
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 5
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				
+			Send
+			ReleaseFailFlexIndex = -1
+		Else
+			ReleaseFailFlexIndex = IndexArray_i(i)
+'0 A爪手
+'1 B爪手
+			ReleaseFailPickNum = 0
+			
+		EndIf
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label1
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "A"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -3399,11 +3450,9 @@ CheckVoccum_label1:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
-	EndIf
-	
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -3412,25 +3461,30 @@ CheckVoccum_label1:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-	Select Pick_P_Msg(0)
-		Case -1
-			Tester_ReTestFalg(IndexArray_i(i)) = 0
-		Case 2
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 3
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 4
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 5
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		
-	Send
+		Select Pick_P_Msg(0)
+			Case -1
+				Tester_ReTestFalg(IndexArray_i(i)) = 0
+			Case 2
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 3
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 4
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 5
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			
+		Send
+		ReleaseFailFlexIndex = -1
+	EndIf
+	
+
 	
 
 Return
 
 TesterOperate1ReleaseSub_1:
 '有空穴
+	ReleaseFailFlexIndex = -1
 	Select IndexArray_i(i)
 		Case 0
 '			TargetPosition_Num = 2
@@ -3540,10 +3594,23 @@ CheckVoccum_label2:
 		Pause
 		Off Alarm_ReleaseFail
 '		Tester_Fill(IndexArray_i(i)) = False;
-		FinalPosition = Here
-		GoTo CheckVoccum_label2
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "B"
+		If Sw(voccumValue1) = 1 And Sw(voccumValue2) = 1 Then
+			Tester_Testing(IndexArray_i(i)) = True
+			PickAorC$(IndexArray_i(i)) = "B"
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+			ReleaseFailFlexIndex = -1
+		Else
+			ReleaseFailFlexIndex = IndexArray_i(i)
+'0 A爪手
+'1 B爪手
+			ReleaseFailPickNum = 1
+		EndIf
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label2
+'		Tester_Testing(IndexArray_i(i)) = True
+'		PickAorC$(IndexArray_i(i)) = "B"
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -3558,14 +3625,18 @@ CheckVoccum_label2:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		ReleaseFailFlexIndex = -1
 	EndIf
 
 
 
 	
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+'	For j = 0 To 3
+'		isInWaitPosition(j) = False
+'	Next
 
 'Pick_P_Msg
 '-1:New
@@ -3590,6 +3661,177 @@ CheckVoccum_label2:
 '	Send
 Return
 
+Fend
+Function TesterOperateReleaseFail
+Integer j, rearnum
+
+	If ReleaseFailFlexIndex <> -1 Then
+		GoSub TOReleaseFail_SuckSub
+		ReleaseFailFlexIndex = -1
+	EndIf
+TOReleaseFail_SuckSub:
+
+	Select ReleaseFailFlexIndex
+		Case 0
+			Off AL_Suck;
+		Case 1
+			Off AR_Suck;
+		Case 2
+			Off BL_Suck;
+		Case 3
+			Off BR_Suck;
+	Send
+	
+	Select ReleaseFailFlexIndex
+		Case 0
+'			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			FinalPosition1 = A1PASS1
+			
+			rearnum = 4
+		Case 1
+'			TargetPosition_Num = 3
+			FinalPosition1 = A2PASS1
+			rearnum = 5
+		Case 2
+'			TargetPosition_Num = 4
+			FinalPosition1 = A3PASS1
+			rearnum = 14
+		Case 3
+'			TargetPosition_Num = 5
+			FinalPosition1 = A4PASS3
+			rearnum = 15
+	Send
+	If Sw(rearnum) = 0 Then
+		Print "磁感传感器" + Str$(ReleaseFailFlexIndex + 1) + "未到位，运动到等待位置"
+		MsgSend$ = "磁感传感器" + Str$(ReleaseFailFlexIndex + 1) + "未到位，运动到等待位置"
+'		If i = 0 Then
+'			Position2NeedNeedAnotherMove = True
+'		EndIf
+		
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+'		If isInWaitPosition(i) = False Then
+'			FinalPosition = FinalPosition1
+'			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+'			isInWaitPosition(i) = True
+'		EndIf
+
+	EndIf
+	Wait Sw(rearnum) = 1
+	Select ReleaseFailFlexIndex
+		Case 0
+			TargetPosition_Num = 2
+			'A_1，依据TesterOperate1更改
+			Select ReleaseFailPickNum
+				Case 0
+					FinalPosition1 = A_1
+				Case 1
+					FinalPosition1 = B_1
+			Send
+			
+			NeedAnotherMove(0) = True
+			rearnum = 4
+		Case 1
+			TargetPosition_Num = 3
+			Select ReleaseFailPickNum
+				Case 0
+					FinalPosition1 = A_2
+				Case 1
+					FinalPosition1 = B_2
+			Send
+			NeedAnotherMove(1) = True
+			rearnum = 5
+			
+		Case 2
+			TargetPosition_Num = 4
+			Select ReleaseFailPickNum
+				Case 0
+					FinalPosition1 = A_3
+				Case 1
+					FinalPosition1 = B_3
+			Send
+			NeedAnotherMove(2) = True
+			rearnum = 14
+		Case 3
+			TargetPosition_Num = 5
+			Select ReleaseFailPickNum
+				Case 0
+					FinalPosition1 = A_4
+				Case 1
+					FinalPosition1 = B_4
+			Send
+			NeedAnotherMove(3) = True
+			rearnum = 15
+	Send
+	FinalPosition = FinalPosition1 +Z(Delta_Z)
+
+	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	For j = 0 To 3
+		isInWaitPosition(j) = False
+	Next
+
+	
+	PickFlexFirstSuck = True
+	pickRetryTimes = 0
+	PickHave(ReleaseFailPickNum) = PickAction(ReleaseFailPickNum)
+	If PickHave(ReleaseFailPickNum) = False Then
+		pickRetryTimes = pickRetryTimes + 1
+'		Wait 1
+		PickHave(ReleaseFailPickNum) = PickAction(ReleaseFailPickNum)
+'		If PickHave(1) = False Then
+'			pickRetryTimes = pickRetryTimes + 1
+''			Wait 1
+'			PickHave(1) = PickAction(1)
+'		EndIf
+	EndIf
+	If PickHave(ReleaseFailPickNum) = True Then
+	'吸取成功，当NG产品处理
+		Pick_P_Msg(ReleaseFailFlexIndex) = 1
+		Pick_Remark(ReleaseFailFlexIndex) = 0
+	Else
+		Select ReleaseFailFlexIndex
+			Case 0
+'				TargetPosition_Num = 2
+				'A_1，依据TesterOperate1更改
+				FinalPosition1 = A1PASS1
+'				Position2NeedNeedAnotherMove = True
+				
+				rearnum = 4
+			Case 1
+'				TargetPosition_Num = 3
+				FinalPosition1 = A2PASS1
+				
+				rearnum = 5
+			Case 2
+'				TargetPosition_Num = 4
+				FinalPosition1 = A3PASS1
+				rearnum = 14
+			Case 3
+'				TargetPosition_Num = 5
+				FinalPosition1 = A4PASS3
+				rearnum = 15
+		Send
+'		Go FinalPosition1
+		TargetPosition_Num = -2
+		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		Print "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败"
+		MsgSend$ = "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败"
+		On Alarm_SuckFail
+		Pause
+		Off Alarm_SuckFail
+		Off SuckB
+		
+'		GoTo TesterOperate1SuckSubLabel1
+	EndIf
+	Tester_Fill(ReleaseFailFlexIndex) = False;
+Return
 Fend
 'B抓手处理测试机程序
 Function TesterOperate2
@@ -4170,8 +4412,8 @@ TesterOperate2SuckSubLabel1:
 		Pause
 		Off Alarm_SuckFail
 		Off SuckA
-'		Tester_Fill(IndexArray_i(i)) = False;
-		GoTo TesterOperate2SuckSubLabel1
+		Tester_Fill(IndexArray_i(i)) = False;
+'		GoTo TesterOperate2SuckSubLabel1
 	EndIf
 '	If PickHave(1) Then
 '		If Sw(VacuumValueB) = 0 Then
@@ -4186,6 +4428,7 @@ Return
 
 TesterOperate1ReleaseSub:
 '有空穴
+	ReleaseFailFlexIndex = -1
 	Select IndexArray_i(i)
 		Case 0
 '			TargetPosition_Num = 2
@@ -4294,11 +4537,45 @@ CheckVoccum_label3:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
+		If Sw(voccumValue1) = 1 And Sw(voccumValue2) = 1 Then
+			Tester_Testing(IndexArray_i(i)) = True
+			PickAorC$(IndexArray_i(i)) = "B"
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+'Pick_P_Msg
+'-1:New
+'0:Pass
+'1:Ng
+'2:ReTest_from_Tester1
+'3:ReTest_from_Tester2
+'4:ReTest_from_Tester3
+'5:ReTest_from_Tester4	
+			Select Pick_P_Msg(1)
+				Case -1
+					Tester_ReTestFalg(IndexArray_i(i)) = 0
+				Case 2
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 3
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 4
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				Case 5
+					Tester_ReTestFalg(IndexArray_i(i)) = 2
+				
+			Send
+			ReleaseFailFlexIndex = -1
+		Else
+			ReleaseFailFlexIndex = IndexArray_i(i)
+'0 A爪手
+'1 B爪手
+			ReleaseFailPickNum = 1
+			
+		EndIf
 '		Tester_Fill(IndexArray_i(i)) = False;
-		FinalPosition = Here
-		GoTo CheckVoccum_label3
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "B"
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label3
+
 	Else
 
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -4312,11 +4589,9 @@ CheckVoccum_label3:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "B"
-
-	EndIf
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
 'Pick_P_Msg
 '-1:New
 '0:Pass
@@ -4325,23 +4600,27 @@ CheckVoccum_label3:
 '3:ReTest_from_Tester2
 '4:ReTest_from_Tester3
 '5:ReTest_from_Tester4	
-	Select Pick_P_Msg(1)
-		Case -1
-			Tester_ReTestFalg(IndexArray_i(i)) = 0
-		Case 2
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 3
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 4
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		Case 5
-			Tester_ReTestFalg(IndexArray_i(i)) = 2
-		
-	Send
+		Select Pick_P_Msg(1)
+			Case -1
+				Tester_ReTestFalg(IndexArray_i(i)) = 0
+			Case 2
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 3
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 4
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			Case 5
+				Tester_ReTestFalg(IndexArray_i(i)) = 2
+			
+		Send
+		ReleaseFailFlexIndex = -1
+	EndIf
+
 Return
 
 TesterOperate1ReleaseSub_1:
 '有空穴
+	ReleaseFailFlexIndex = -1
 	Select IndexArray_i(i)
 		Case 0
 '			TargetPosition_Num = 2
@@ -4462,11 +4741,23 @@ CheckVoccum_label4:
 		On Alarm_ReleaseFail
 		Pause
 		Off Alarm_ReleaseFail
+		If Sw(voccumValue1) = 1 And Sw(voccumValue2) = 1 Then
+			Tester_Testing(IndexArray_i(i)) = True
+			PickAorC$(IndexArray_i(i)) = "A"
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+			ReleaseFailFlexIndex = -1
+		Else
+			ReleaseFailFlexIndex = IndexArray_i(i)
+'0 A爪手
+'1 B爪手
+			ReleaseFailPickNum = 0
+		EndIf
 '		Tester_Fill(IndexArray_i(i)) = False;
-		FinalPosition = Here
-		GoTo CheckVoccum_label4
-		Tester_Testing(IndexArray_i(i)) = True
-		PickAorC$(IndexArray_i(i)) = "A"
+'		FinalPosition = Here
+'		GoTo CheckVoccum_label4
+
 	Else
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		
@@ -4479,11 +4770,13 @@ CheckVoccum_label4:
 		
 		Tester_Testing(IndexArray_i(i)) = True
 		PickAorC$(IndexArray_i(i)) = "A"
+		For j = 0 To 3
+			isInWaitPosition(j) = False
+		Next
+		ReleaseFailFlexIndex = -1
 	EndIf
 
-	For j = 0 To 3
-		isInWaitPosition(j) = False
-	Next
+
 'Pick_P_Msg
 '-1:New
 '0:Pass
