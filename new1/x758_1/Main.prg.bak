@@ -1,4 +1,4 @@
-'ver 20170628.01
+'ver 20170629.01
 '1、“产品没放好”报警，若负压达到-测，若负压未达到-取出放NG盘，若取出“吸取失败”-报警人为取走
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
@@ -3669,6 +3669,7 @@ Integer j, rearnum
 		GoSub TOReleaseFail_SuckSub
 		ReleaseFailFlexIndex = -1
 	EndIf
+	Exit Function
 TOReleaseFail_SuckSub:
 
 	Select ReleaseFailFlexIndex
@@ -3790,8 +3791,8 @@ TOReleaseFail_SuckSub:
 	EndIf
 	If PickHave(ReleaseFailPickNum) = True Then
 	'吸取成功，当NG产品处理
-		Pick_P_Msg(ReleaseFailFlexIndex) = 1
-		Pick_Remark(ReleaseFailFlexIndex) = 0
+		Pick_P_Msg(ReleaseFailPickNum) = 1
+		Pick_Remark(ReleaseFailPickNum) = 0
 	Else
 		Select ReleaseFailFlexIndex
 			Case 0
@@ -7754,6 +7755,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 
