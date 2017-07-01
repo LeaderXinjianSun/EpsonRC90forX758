@@ -1,5 +1,5 @@
-'ver 20170629.01
-'1、“产品没放好”报警，若负压达到-测，若负压未达到-取出放NG盘，若取出“吸取失败”-报警人为取走
+'ver 20170701.02
+'1、“吸取失败”报警，需要人将产品取走，再开治具真空判断是否拿走
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -2698,7 +2698,7 @@ Fend
 
 'A抓手处理测试机程序
 Function TesterOperate1
-	Integer i, i_index, j
+	Integer i, i_index, j, FlexVoccum1, FlexVoccum2
 	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
@@ -3039,17 +3039,6 @@ TesterOperate1SuckSubLabel1:
 	Send
 	FinalPosition = FinalPosition1 +Z(Delta_Z)
 	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	For j = 0 To 3
 		isInWaitPosition(j) = False
@@ -3268,12 +3257,39 @@ TesterOperate1SuckSubLabel1:
 		For j = 0 To 3
 			isInWaitPosition(j) = False
 		Next
+suckfailrecheck:
 		Print "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		On Alarm_SuckFail
+		
+		Select IndexArray_i(i)
+			Case 0
+				Off AL_Suck;
+			Case 1
+				Off AR_Suck;
+			Case 2
+				Off BL_Suck;
+			Case 3
+				Off BR_Suck;
+		Send
 		Pause
 		Off Alarm_SuckFail
 		Off SuckB
+		Select IndexArray_i(i)
+			Case 0
+				On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
+			Case 1
+				On AR_Suck; FlexVoccum1 = 12; FlexVoccum2 = 13
+			Case 2
+				On BL_Suck; FlexVoccum1 = 20; FlexVoccum2 = 21
+			Case 3
+				On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
+		Send
+		Wait 1
+		If Sw(FlexVoccum1) = 1 Or Sw(FlexVoccum2) = 1 Then
+			GoTo suckfailrecheck
+		EndIf
+	
 		Tester_Fill(IndexArray_i(i)) = False;
 '		GoTo TesterOperate1SuckSubLabel1
 	EndIf
@@ -3663,7 +3679,7 @@ Return
 
 Fend
 Function TesterOperateReleaseFail
-Integer j, rearnum
+Integer j, rearnum, FlexVoccum1, FlexVoccum2
 
 	If ReleaseFailFlexIndex <> -1 Then
 		GoSub TOReleaseFail_SuckSub
@@ -3822,13 +3838,37 @@ TOReleaseFail_SuckSub:
 		For j = 0 To 3
 			isInWaitPosition(j) = False
 		Next
-		Print "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败"
-		MsgSend$ = "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败"
+suckfailrecheck:
+		Print "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败1"
+		MsgSend$ = "测试机" + Str$(ReleaseFailFlexIndex + 1) + "，吸取失败1"
 		On Alarm_SuckFail
+		Select ReleaseFailFlexIndex
+			Case 0
+				Off AL_Suck;
+			Case 1
+				Off AR_Suck;
+			Case 2
+				Off BL_Suck;
+			Case 3
+				Off BR_Suck;
+		Send
 		Pause
 		Off Alarm_SuckFail
 		Off SuckB
-		
+		Select ReleaseFailFlexIndex
+			Case 0
+				On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
+			Case 1
+				On AR_Suck; FlexVoccum1 = 12; FlexVoccum2 = 13
+			Case 2
+				On BL_Suck; FlexVoccum1 = 20; FlexVoccum2 = 21
+			Case 3
+				On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
+		Send
+		Wait 1
+		If Sw(FlexVoccum1) = 1 Or Sw(FlexVoccum2) = 1 Then
+			GoTo suckfailrecheck
+		EndIf
 '		GoTo TesterOperate1SuckSubLabel1
 	EndIf
 	Tester_Fill(ReleaseFailFlexIndex) = False;
@@ -3836,7 +3876,7 @@ Return
 Fend
 'B抓手处理测试机程序
 Function TesterOperate2
-	Integer i, i_index, j
+	Integer i, i_index, j, FlexVoccum1, FlexVoccum2
 	Integer rearnum, voccumValue1, voccumValue2
 	Integer selectNum, fillNum, testingNum
 	Real realbox
@@ -4407,12 +4447,40 @@ TesterOperate2SuckSubLabel1:
 		For j = 0 To 3
 			isInWaitPosition(j) = False
 		Next
+		
+suckfailrecheck:
 		Print "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		MsgSend$ = "测试机" + Str$(IndexArray_i(i) + 1) + "，吸取失败"
 		On Alarm_SuckFail
+		
+		Select IndexArray_i(i)
+			Case 0
+				Off AL_Suck;
+			Case 1
+				Off AR_Suck;
+			Case 2
+				Off BL_Suck;
+			Case 3
+				Off BR_Suck;
+		Send
 		Pause
 		Off Alarm_SuckFail
 		Off SuckA
+		Select IndexArray_i(i)
+			Case 1
+				On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
+			Case 2
+				On AR_Suck; FlexVoccum1 = 12; FlexVoccum2 = 13
+			Case 3
+				On BL_Suck; FlexVoccum1 = 20; FlexVoccum2 = 21
+			Case 4
+				On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
+		Send
+		Wait 1
+		If Sw(FlexVoccum1) = 1 Or Sw(FlexVoccum2) = 1 Then
+			GoTo suckfailrecheck
+		EndIf
+		
 		Tester_Fill(IndexArray_i(i)) = False;
 '		GoTo TesterOperate2SuckSubLabel1
 	EndIf
