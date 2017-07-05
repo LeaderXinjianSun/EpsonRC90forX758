@@ -1,5 +1,6 @@
-'ver 20170704.01
-'1、样本，过程中不能将产品放回
+'ver 20170706.01
+'1、无需等待上料结束
+'2、样本测试失败，记忆该样本在样本盘位置
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -126,6 +127,7 @@ Global Integer GRRTimesAsk
 '[ PASS ][ NG1  ]
 Global Preserve Boolean SamPanelHave(8)
 Global Preserve Boolean SamPanelHave_Back(8)
+Global Preserve Integer SamRetestHave_index(8)
 '0,A爪；{PASS}{NG1}{NG2}{NG3}
 '1,B爪
 '2,测试机穴1
@@ -200,6 +202,7 @@ Function main2
 	MsgSend$ = "请按继续，开始复位"
 	Pause
 	Call TrapInterruptAbort
+	On AdjustValve
 	If FeedPanelNum < 3 Then
 		Off RollValve
 	Else
@@ -215,14 +218,15 @@ Function main2
 	EndIf
 	Call HomeReturnAction
 
-	ReStart_flag = False
+'	ReStart_flag = False
+	ReStart_flag = True
 	Off FeedEmpty
 	Wait 0.5
-	For i = 0 To 5
-    	If FeedFill(i) Then
-    		ReStart_flag = True
-    	EndIf
-    Next
+'	For i = 0 To 5
+'    	If FeedFill(i) Then
+'    		ReStart_flag = True
+'    	EndIf
+'    Next
     If Not ReStart_flag Then
 		Print "等待上料结束"
 		MsgSend$ = "等待上料结束"
@@ -565,14 +569,14 @@ Fend
 Function SamPickfromPanel
 	Integer i, scanflag
 	Boolean pickfeedflag
-	For i = 0 To 3
+	For i = 0 To 7
 		If SamPanelHave(i) = True Then
 			Exit For
 		EndIf
 	Next
 '	SamScanNewPcs = False
 	
-	If i > 3 Then
+	If i > 7 Then
 		'样品盘没料
 		For i = 0 To 3
 			If Tester_Select(i) = True And Tester_Fill(i) = True Then
@@ -668,7 +672,7 @@ Function SamPickfromPanel
 
 Fend
 Function SamActionProcess
-	Integer i, j
+	Integer i, j, k
 	Boolean SamFail
 '	SamNeedItemsNum = 2
 	For i = 0 To 4
@@ -680,7 +684,16 @@ Function SamActionProcess
 		Next
 	Next
 	For i = 0 To 7
+		Wait 0.2
 		SamPanelHave(i) = False
+		SamPanelHave_Back(i) = False
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "SamPanelHave,False," + Str$(i)
 
 	Next
 SamActionProcess_label1:
@@ -745,6 +758,20 @@ SamActionProcess_label1:
 		For j = 0 To SamNeedItemsNum - 1
 			If Tester_Select(i) = True And SamTestResult(i, j) = False Then
 				SamFail = True
+				For k = 0 To 7
+					If SamRetestHave_index(k) = j And SamPanelHave_Back(k) = True Then
+						Wait 0.2
+						SamPanelHave(k) = True
+						SamPanelHave_Back(k) = False
+						If CmdSend$ <> "" Then
+							Print "有命令 " + CmdSend$ + " 待发送！"
+						EndIf
+						Do While CmdSend$ <> ""
+							Wait 0.1
+						Loop
+						CmdSend$ = "SamPanelHave,True," + Str$(k)
+					EndIf
+				Next
 			EndIf
 		Next
 	Next
@@ -2277,7 +2304,7 @@ Return
 Fend
 Function SamUnload(picknum As Integer)
 	
-	Integer i, j
+	Integer i, j, i_item
 	If PickHave(picknum) = True Then
 		If SamScanResult_Fail Then
 			'扫码失败
@@ -2296,18 +2323,20 @@ Function SamUnload(picknum As Integer)
 				'无需求
 				For i = 0 To SamNeedItemsNum - 1
 					If SamTestRecord(picknum, i) = True Then
+						i_item = i
 						Exit For
+						
 					EndIf
 				Next
 				If i > SamNeedItemsNum - 1 Then
 					GoSub SamUnload_Ng
 				Else
-					For i = 0 To 3
+					For i = 0 To 7
 						If SamPanelHave_Back(i) = False Then
 							Exit For
 						EndIf
 					Next
-					If i > 3 Then
+					If i > 7 Then
 						Print "样本盘满"
 						MsgSend$ = "样本盘满"
 						Pause
@@ -2339,6 +2368,7 @@ SamUnload_back:
 		PickHave(picknum) = False
 '		SamPanelHave(i) = True
 		SamPanelHave_Back(i) = True
+		SamRetestHave_index(i) = i_item
 '		If CmdSend$ <> "" Then
 '			Print "有命令 " + CmdSend$ + " 待发送！"
 '		EndIf
