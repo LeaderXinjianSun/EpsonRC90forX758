@@ -1,5 +1,5 @@
-'ver 20170701.02
-'1、“吸取失败”报警，需要人将产品取走，再开治具真空判断是否拿走
+'ver 20170704.01
+'1、样本，过程中不能将产品放回
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -177,7 +177,6 @@ Function main
 Fend
 '正常
 Function main2
-	
 
 	Integer i
 	Integer fillNum, selectNum
@@ -549,12 +548,13 @@ Function SamIsNeedPcs
 	If SamNeedItemsNum > 10 Then
 		SamNeedItemsNum = 10
 	EndIf
-	For i = 0 To 3
+	For i = 0 To SamNeedItemsNum - 1
 		SamNeedItems(i) = False
 	Next
 	For i = 0 To SamNeedItemsNum - 1
 		For j = 0 To 3
-			If SamTestRecord(j + 2, i) = False And Tester_Select(j) = True And Tester_Fill(j) = False Then
+'			If SamTestRecord(j + 2, i) = False And Tester_Select(j) = True And Tester_Fill(j) = False Then
+			If SamTestRecord(j + 2, i) = False And Tester_Select(j) = True Then
 				SamNeedItems(i) = True
 				Exit For
 			EndIf
@@ -679,6 +679,10 @@ Function SamActionProcess
 		
 		Next
 	Next
+	For i = 0 To 7
+		SamPanelHave(i) = False
+
+	Next
 SamActionProcess_label1:
 	Do
 		Call SamIsNeedPcs
@@ -716,15 +720,15 @@ SamActionProcess_label1:
 
 		
 		Call SamOperate1
-		Call SamUnload(0)
-		Call SamOperate2
 		Call SamUnload(1)
+		Call SamOperate2
+		Call SamUnload(0)
 		
 	Loop
 	'判断样本是否测试正确
-	Print "延时10秒，等待查询样本测试结果"
-	MsgSend$ = "延时10秒，等待查询样本测试结果"
-	Wait 10
+	Print "延时30秒，等待查询样本测试结果"
+	MsgSend$ = "延时30秒，等待查询样本测试结果"
+	Wait 30
 	SelectSampleResultfromDtFinish = 0
 	If CmdSend$ <> "" Then
 		Print "有命令 " + CmdSend$ + " 待发送！"
@@ -796,7 +800,7 @@ Fend
 			'无需求
 			'直接下料
 		Else
-			item_i = i
+			item_i = i '不良项
 			For i = 0 To 3
 				If SamTestRecord(i + 2, item_i) = False And Tester_Fill(i) = False And Tester_Select(i) Then
 					Exit For
@@ -804,7 +808,71 @@ Fend
 			Next
 			If i <= 3 Then
 				'有需求
+				'存在空穴，直接放
 				GoSub SamOperate1ReleaseSub
+			Else
+				'该类不良样本，穴都满（都在测试中）
+				For i = 0 To 3
+					If SamTestRecord(i + 2, item_i) = False And Tester_Fill(i) = True And Tester_Testing(i) = False And Tester_Select(i) Then
+						Exit For
+					EndIf
+				Next
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中。执行等待
+					Print "所有选中的测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 1
+					If Tester_Select(i) = True And Tester_Fill(i) = True And SamTestRecord(i + 2, item_i) = False Then
+						If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
+							realbox = TesterTimeElapse(i)
+							i_index = i
+						EndIf
+					EndIf
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = A1PASS1
+	'						Position2NeedNeedAnotherMove = True
+							
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = A2PASS1
+							
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = A3PASS1
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = A4PASS3
+					Send
+					FinalPosition = FinalPosition1
+					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+					isInWaitPosition(i_index) = True
+SamOperate1_lab1:
+					For i = 0 To 3
+	
+						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False And SamTestRecord(i + 2, item_i) = False Then
+							Exit For
+						EndIf
+						
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo SamOperate1_lab1
+					EndIf
+					GoTo SamOperate1_lab2
+				Else
+SamOperate1_lab2:
+					'吸取动作
+					GoSub SamOperate1SuckSub
+					If SamTestRecord(i + 2, item_i) = False Then
+						GoSub SamOperate1ReleaseSub
+					EndIf
+					
+				EndIf
 			EndIf
 			
 
@@ -909,12 +977,12 @@ SamOperate1_lable2:
 				'存在满穴
 				
 				
-				For i = 0 To SamNeedItemsNum - 1
-					If SamNeedItems(i) And SamPanelHave(i) Then
+				For i = 0 To 7
+					If SamPanelHave(i) Then
 						Exit For
 					EndIf
 				Next
-				If i > SamNeedItemsNum - 1 Then
+				If i > 7 Then
 					'样本盘无料	
 					
 					For i = 0 To 3
@@ -971,12 +1039,12 @@ SamOperate1_lable3:
 						If i > 3 Then
 							Wait 0.2
 							'一直判断
-							For i = 0 To SamNeedItemsNum - 1
-								If SamNeedItems(i) And SamPanelHave(i) Then
+							For i = 0 To 7
+								If SamPanelHave(i) Then
 									Exit For
 								EndIf
 							Next
-							If i > SamNeedItemsNum - 1 Then
+							If i > 7 Then
 								GoTo SamOperate1_lable3
 							Else
 								'被样本盘有料打断
@@ -1001,6 +1069,8 @@ SamOperate1_lable5:
 
 			EndIf
 		EndIf
+	
+		
 	EndIf
 	Exit Function
 	
@@ -1177,23 +1247,23 @@ SamOperate1SuckSubLabel1:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = A_1
+			FinalPosition1 = B_1
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = A_2
+			FinalPosition1 = B_2
 			NeedAnotherMove(1) = True
 			rearnum = 5
 			
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = A_3
+			FinalPosition1 = B_3
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = A_4
+			FinalPosition1 = B_4
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -1209,16 +1279,16 @@ SamOperate1SuckSubLabel1:
 	
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
-	PickHave(0) = PickAction(0)
-	If PickHave(0) = False Then
+	PickHave(1) = PickAction(1)
+	If PickHave(1) = False Then
 		pickRetryTimes = pickRetryTimes + 1
 '		Wait 1
-		PickHave(0) = PickAction(0)
+		PickHave(1) = PickAction(1)
 	EndIf
 
 
 
-	If PickHave(0) = True Then
+	If PickHave(1) = True Then
 	
 	
 		If CmdSend$ <> "" Then
@@ -1227,42 +1297,42 @@ SamOperate1SuckSubLabel1:
 		Do While CmdSend$ <> ""
 			Wait 0.1
 		Loop
-		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
 	
 		Tester_Fill(i) = False;
 		
-		Select i
-			Case 0
-	'				TargetPosition_Num = 2
-				'A_1，依据TesterOperate1更改
-				FinalPosition1 = A1PASS1
-	'				Position2NeedNeedAnotherMove = True
-				
-				rearnum = 4
-			Case 1
-	'				TargetPosition_Num = 3
-				FinalPosition1 = A2PASS1
-				
-				rearnum = 5
-			Case 2
-	'				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS1
-				rearnum = 14
-			Case 3
-	'				TargetPosition_Num = 5
-				FinalPosition1 = A4PASS3
-				rearnum = 15
-		Send
-	'		Go FinalPosition1
-		TargetPosition_Num = -2
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-		For j = 0 To 3
-			isInWaitPosition(j) = False
-		Next
+'		Select i
+'			Case 0
+'	'				TargetPosition_Num = 2
+'				'A_1，依据TesterOperate1更改
+'				FinalPosition1 = A1PASS1
+'	'				Position2NeedNeedAnotherMove = True
+'				
+'				rearnum = 4
+'			Case 1
+'	'				TargetPosition_Num = 3
+'				FinalPosition1 = A2PASS1
+'				
+'				rearnum = 5
+'			Case 2
+'	'				TargetPosition_Num = 4
+'				FinalPosition1 = A3PASS1
+'				rearnum = 14
+'			Case 3
+'	'				TargetPosition_Num = 5
+'				FinalPosition1 = A4PASS3
+'				rearnum = 15
+'		Send
+'	'		Go FinalPosition1
+'		TargetPosition_Num = -2
+'		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+'		For j = 0 To 3
+'			isInWaitPosition(j) = False
+'		Next
 		
 		If Tester_Pass(i) <> 0 Then
 				
-			Pick_P_Msg(0) = 0
+			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
 			
 	'		SampleResult$ = "OK"
@@ -1393,7 +1463,7 @@ SamOperate1SuckSubLabel1:
 	
 		If Tester_Pass(i) <> 0 Then
 				
-			Pick_P_Msg(0) = 0
+			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
 
 		Else
@@ -1405,8 +1475,8 @@ SamOperate1SuckSubLabel1:
 			EndIf
 
 		EndIf
-		'A爪手有料
-		'查询A爪手条码
+		'B爪手有料
+		'查询B爪手条码
 		SamSearchflag = 0
 		If CmdSend$ <> "" Then
 			Print "有命令 " + CmdSend$ + " 待发送！"
@@ -1414,7 +1484,7 @@ SamOperate1SuckSubLabel1:
 		Do While CmdSend$ <> ""
 			Wait 0.1
 		Loop
-		CmdSend$ = "SamDBSearch,A"
+		CmdSend$ = "SamDBSearch,B"
 		Wait SamSearchflag = 1
 	Else
 
@@ -1457,7 +1527,7 @@ SamOperate1SuckSubLabel1:
 		On Alarm_SuckFail
 		Pause
 		Off Alarm_SuckFail
-		Off SuckA
+		Off SuckB
 		GoTo SamOperate1SuckSubLabel1
 	EndIf
 Return
@@ -1503,6 +1573,68 @@ Function SamOperate2
 			If i <= 3 Then
 				'有需求
 				GoSub SamOperate2ReleaseSub
+			Else
+				'该类不良样本，穴都满（都在测试中）
+				For i = 0 To 3
+					If SamTestRecord(i + 2, item_i) = False And Tester_Fill(i) = True And Tester_Testing(i) = False And Tester_Select(i) Then
+						Exit For
+					EndIf
+				Next
+				If i > 3 Then
+					'所有测试机，都在测试中都在测试中。执行等待
+					Print "所有选中的测试机，都在测试中。前往预判位置。"
+					MsgSend$ = "所有选中的测试机，都在测试中。前往预判位置。"
+					realbox = 0
+					i_index = 1
+					If Tester_Select(i) = True And Tester_Fill(i) = True And SamTestRecord(i + 2, item_i) = False Then
+						If realbox < TesterTimeElapse(i) And TesterTimeElapse(i) < 100 Then
+							realbox = TesterTimeElapse(i)
+							i_index = i
+						EndIf
+					EndIf
+					Select i_index
+						Case 0
+							TargetPosition_Num = 2
+							'A_1，依据TesterOperate1更改
+							FinalPosition1 = A1PASS1
+	'						Position2NeedNeedAnotherMove = True
+							
+						Case 1
+							TargetPosition_Num = 3
+							FinalPosition1 = A2PASS1
+							
+						Case 2
+							TargetPosition_Num = 4
+							FinalPosition1 = A3PASS1
+						Case 3
+							TargetPosition_Num = 5
+							FinalPosition1 = A4PASS3
+					Send
+					FinalPosition = FinalPosition1
+					Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+					isInWaitPosition(i_index) = True
+SamOperate2_lab1:
+					For i = 0 To 3
+	
+						If Tester_Select(i) = True And Tester_Fill(i) = True And Tester_Testing(i) = False And SamTestRecord(i + 2, item_i) = False Then
+							Exit For
+						EndIf
+						
+					Next
+					If i > 3 Then
+						Wait 0.2
+						'一直判断
+						GoTo SamOperate2_lab1
+					EndIf
+					GoTo SamOperate2_lab2
+				Else
+SamOperate2_lab2:
+					'吸取动作
+					GoSub SamOperate2SuckSub
+					If SamTestRecord(i + 2, item_i) = False Then
+						GoSub SamOperate2ReleaseSub
+					EndIf
+				EndIf
 			EndIf
 
 		EndIf
@@ -1606,12 +1738,12 @@ SamOperate2_lable2:
 				'存在满穴
 				
 				
-				For i = 0 To SamNeedItemsNum - 1
-					If SamNeedItems(i) And SamPanelHave(i) Then
+				For i = 0 To 7
+					If SamPanelHave(i) Then
 						Exit For
 					EndIf
 				Next
-				If i > SamNeedItemsNum - 1 Then
+				If i > 7 Then
 					'样本盘无料	
 					
 					For i = 0 To 3
@@ -1668,12 +1800,12 @@ SamOperate2_lable3:
 						If i > 3 Then
 							Wait 0.2
 							'一直判断
-							For i = 0 To SamNeedItemsNum - 1
-								If SamNeedItems(i) And SamPanelHave(i) Then
+							For i = 0 To 7
+								If SamPanelHave(i) Then
 									Exit For
 								EndIf
 							Next
-							If i > SamNeedItemsNum - 1 Then
+							If i > 7 Then
 								GoTo SamOperate2_lable3
 							Else
 								'被样本盘有料打断
@@ -1874,23 +2006,23 @@ SamOperate2SuckSubLabel1:
 		Case 0
 			TargetPosition_Num = 2
 			'A_1，依据TesterOperate1更改
-			FinalPosition1 = B_1
+			FinalPosition1 = A_1
 			NeedAnotherMove(0) = True
 			rearnum = 4
 		Case 1
 			TargetPosition_Num = 3
-			FinalPosition1 = B_2
+			FinalPosition1 = A_2
 			NeedAnotherMove(1) = True
 			rearnum = 5
 			
 		Case 2
 			TargetPosition_Num = 4
-			FinalPosition1 = B_3
+			FinalPosition1 = A_3
 			NeedAnotherMove(2) = True
 			rearnum = 14
 		Case 3
 			TargetPosition_Num = 5
-			FinalPosition1 = B_4
+			FinalPosition1 = A_4
 			NeedAnotherMove(3) = True
 			rearnum = 15
 	Send
@@ -1906,16 +2038,16 @@ SamOperate2SuckSubLabel1:
 	
 	PickFlexFirstSuck = True
 	pickRetryTimes = 0
-	PickHave(1) = PickAction(1)
-	If PickHave(1) = False Then
+	PickHave(0) = PickAction(0)
+	If PickHave(0) = False Then
 		pickRetryTimes = pickRetryTimes + 1
 '		Wait 1
-		PickHave(1) = PickAction(1)
+		PickHave(0) = PickAction(0)
 	EndIf
 
 
 
-	If PickHave(1) = True Then
+	If PickHave(0) = True Then
 		
 		If CmdSend$ <> "" Then
 			Print "有命令 " + CmdSend$ + " 待发送！"
@@ -1923,38 +2055,38 @@ SamOperate2SuckSubLabel1:
 		Do While CmdSend$ <> ""
 			Wait 0.1
 		Loop
-		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",B"
+		CmdSend$ = "SaveBarcode," + Str$(i + 1) + ",A"
 		
 		Tester_Fill(i) = False;
 		
-		Select i
-			Case 0
-	'				TargetPosition_Num = 2
-				'A_1，依据TesterOperate1更改
-				FinalPosition1 = A1PASS1
-	'				Position2NeedNeedAnotherMove = True
-				
-				rearnum = 4
-			Case 1
-	'				TargetPosition_Num = 3
-				FinalPosition1 = A2PASS1
-				
-				rearnum = 5
-			Case 2
-	'				TargetPosition_Num = 4
-				FinalPosition1 = A3PASS1
-				rearnum = 14
-			Case 3
-	'				TargetPosition_Num = 5
-				FinalPosition1 = A4PASS3
-				rearnum = 15
-		Send
-	'		Go FinalPosition1
-		TargetPosition_Num = -2
-		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-		For j = 0 To 3
-			isInWaitPosition(j) = False
-		Next
+'		Select i
+'			Case 0
+'	'				TargetPosition_Num = 2
+'				'A_1，依据TesterOperate1更改
+'				FinalPosition1 = A1PASS1
+'	'				Position2NeedNeedAnotherMove = True
+'				
+'				rearnum = 4
+'			Case 1
+'	'				TargetPosition_Num = 3
+'				FinalPosition1 = A2PASS1
+'				
+'				rearnum = 5
+'			Case 2
+'	'				TargetPosition_Num = 4
+'				FinalPosition1 = A3PASS1
+'				rearnum = 14
+'			Case 3
+'	'				TargetPosition_Num = 5
+'				FinalPosition1 = A4PASS3
+'				rearnum = 15
+'		Send
+'	'		Go FinalPosition1
+'		TargetPosition_Num = -2
+'		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+'		For j = 0 To 3
+'			isInWaitPosition(j) = False
+'		Next
 		
 		
 		
@@ -2077,7 +2209,7 @@ SamOperate2SuckSubLabel1:
 		
 		If Tester_Pass(i) <> 0 Then
 				
-			Pick_P_Msg(1) = 0
+			Pick_P_Msg(0) = 0
 			NgContinue(i) = 0
 
 		Else
@@ -2097,7 +2229,7 @@ SamOperate2SuckSubLabel1:
 		Do While CmdSend$ <> ""
 			Wait 0.1
 		Loop
-		CmdSend$ = "SamDBSearch,B"
+		CmdSend$ = "SamDBSearch,A"
 		Wait SamSearchflag = 1
 	Else
 
@@ -2136,7 +2268,7 @@ SamOperate2SuckSubLabel1:
 		On Alarm_SuckFail
 		Pause
 		Off Alarm_SuckFail
-		Off SuckB
+		Off SuckA
 		GoTo SamOperate2SuckSubLabel1
 	EndIf
 Return
@@ -6633,6 +6765,7 @@ Function PickhaveMoniterB
 	PcsLostAlarm2 = False
 	Do
 		Wait 0.2
+		
 		If PickHave(1) Then
 			If Sw(VacuumValueB) = 0 Then
 				If StartCount = False Then
@@ -7823,6 +7956,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 

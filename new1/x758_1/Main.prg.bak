@@ -4467,13 +4467,13 @@ suckfailrecheck:
 		Off Alarm_SuckFail
 		Off SuckA
 		Select IndexArray_i(i)
-			Case 1
+			Case 0
 				On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
-			Case 2
+			Case 1
 				On AR_Suck; FlexVoccum1 = 12; FlexVoccum2 = 13
-			Case 3
+			Case 2
 				On BL_Suck; FlexVoccum1 = 20; FlexVoccum2 = 21
-			Case 4
+			Case 3
 				On BR_Suck; FlexVoccum1 = 22; FlexVoccum2 = 23
 		Send
 		Wait 1
