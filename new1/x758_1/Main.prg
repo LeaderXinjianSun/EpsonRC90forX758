@@ -1,4 +1,4 @@
-'ver 20170706.01
+'ver 20170706.02
 '1、无需等待上料结束
 '2、样本测试失败，记忆该样本在样本盘位置
 
@@ -1504,6 +1504,39 @@ SamOperate1SuckSubLabel1:
 		EndIf
 		'B爪手有料
 		'查询B爪手条码
+		If PickHave(0) = False Then
+			Select i
+				Case 0
+		'				TargetPosition_Num = 2
+					'A_1，依据TesterOperate1更改
+					FinalPosition1 = A1PASS1
+		'				Position2NeedNeedAnotherMove = True
+					
+					rearnum = 4
+				Case 1
+		'				TargetPosition_Num = 3
+					FinalPosition1 = A2PASS1
+					
+					rearnum = 5
+				Case 2
+		'				TargetPosition_Num = 4
+					FinalPosition1 = A3PASS1
+					rearnum = 14
+				Case 3
+		'				TargetPosition_Num = 5
+					FinalPosition1 = A4PASS3
+					rearnum = 15
+			Send
+		'		Go FinalPosition1
+			TargetPosition_Num = -2
+			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+		Else
+			Wait 0.2
+		EndIf
+		
 		SamSearchflag = 0
 		If CmdSend$ <> "" Then
 			Print "有命令 " + CmdSend$ + " 待发送！"
@@ -2248,7 +2281,39 @@ SamOperate2SuckSubLabel1:
 			EndIf
 
 		EndIf
-		'查询B爪手条码
+		If PickHave(1) = False Then
+			Select i
+				Case 0
+		'				TargetPosition_Num = 2
+					'A_1，依据TesterOperate1更改
+					FinalPosition1 = A1PASS1
+		'				Position2NeedNeedAnotherMove = True
+					
+					rearnum = 4
+				Case 1
+		'				TargetPosition_Num = 3
+					FinalPosition1 = A2PASS1
+					
+					rearnum = 5
+				Case 2
+		'				TargetPosition_Num = 4
+					FinalPosition1 = A3PASS1
+					rearnum = 14
+				Case 3
+		'				TargetPosition_Num = 5
+					FinalPosition1 = A4PASS3
+					rearnum = 15
+			Send
+		'		Go FinalPosition1
+			TargetPosition_Num = -2
+			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			For j = 0 To 3
+				isInWaitPosition(j) = False
+			Next
+		Else
+			Wait 0.2
+		EndIf
+		'查询A爪手条码
 		SamSearchflag = 0
 		If CmdSend$ <> "" Then
 			Print "有命令 " + CmdSend$ + " 待发送！"
@@ -7986,6 +8051,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 

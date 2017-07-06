@@ -1,5 +1,6 @@
 'ver 20170706.01
 '1、无需等待上料结束
+'2、样本测试失败，记忆该样本在样本盘位置
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
