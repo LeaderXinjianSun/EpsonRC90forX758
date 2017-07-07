@@ -1,6 +1,5 @@
-'ver 20170706.02
-'1、无需等待上料结束
-'2、样本测试失败，记忆该样本在样本盘位置
+'ver 20170707.01
+'1、样本测试未通过，强制复测
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -780,16 +779,24 @@ SamActionProcess_label1:
 		MsgSend$ = "样本测试错误"
 	
 		Pause
-		If SamRetest = 1 Then
-			For i = 0 To 4
-				For j = 0 To SamNeedItemsNum - 1
-					If SamTestResult(i, j) = False Then
-						SamTestRecord(i + 2, j) = False
-					EndIf
-				Next
+'		If SamRetest = 1 Then
+'			For i = 0 To 4
+'				For j = 0 To SamNeedItemsNum - 1
+'					If SamTestResult(i, j) = False Then
+'						SamTestRecord(i + 2, j) = False
+'					EndIf
+'				Next
+'			Next
+'			GoTo SamActionProcess_label1
+'		EndIf
+		For i = 0 To 4
+			For j = 0 To SamNeedItemsNum - 1
+				If SamTestResult(i, j) = False Then
+					SamTestRecord(i + 2, j) = False
+				EndIf
 			Next
-			GoTo SamActionProcess_label1
-		EndIf
+		Next
+		GoTo SamActionProcess_label1
 	Else
 		
 	EndIf
@@ -1582,8 +1589,8 @@ SamOperate1SuckSubLabel1:
 
 
 
-		Print "测试机" + Str$(i + 1) + "，吸取失败"
-		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Print "测试机" + Str$(i + 1) + "，样本 吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，样本 吸取失败"
 		On Alarm_SuckFail
 		Pause
 		Off Alarm_SuckFail
@@ -2355,8 +2362,8 @@ SamOperate2SuckSubLabel1:
 			isInWaitPosition(j) = False
 		Next
 
-		Print "测试机" + Str$(i + 1) + "，吸取失败"
-		MsgSend$ = "测试机" + Str$(i + 1) + "，吸取失败"
+		Print "测试机" + Str$(i + 1) + "，样本 吸取失败"
+		MsgSend$ = "测试机" + Str$(i + 1) + "，样本 吸取失败"
 		On Alarm_SuckFail
 		Pause
 		Off Alarm_SuckFail
