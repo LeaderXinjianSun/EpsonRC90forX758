@@ -1,5 +1,5 @@
-'ver 20170707.01
-'1、样本测试未通过，强制复测
+'ver 20170708.02
+'1、测样本过程中，点击“测样本”，无效
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -215,6 +215,7 @@ Function main2
 	If NoiseTrayPalletNum < 9 Or NoiseTrayPalletNum > 14 Then
 		NoiseTrayPalletNum = 9
 	EndIf
+	ReleaseFailFlexIndex = -1
 	Call HomeReturnAction
 
 '	ReStart_flag = False
@@ -630,6 +631,7 @@ Function SamPickfromPanel
 		
 		PickHave(0) = pickfeedflag
 		If PickHave(0) Then
+			On DangerOut
 			TargetPosition_Num = 1
 			FinalPosition = ScanPositionP3L
 			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -7292,8 +7294,9 @@ Function TcpIpCmdRev
 						NeedCleanAction = True
 					EndIf
 				Case "GONOGOAction"
-					SamNeedItemsNum = Val(CmdRevStr$(1))
-					If Not SamActionFlag Then
+					
+					If Not SamActionFlag And Not NeedSamAction Then
+						SamNeedItemsNum = Val(CmdRevStr$(1))
 						Discharge = 1
 						On Discharing, Forced
 						NeedSamAction = True
@@ -8058,6 +8061,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 
