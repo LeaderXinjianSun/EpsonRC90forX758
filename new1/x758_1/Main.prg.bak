@@ -1,5 +1,5 @@
-'ver 20170708.02
-'1、防止测样本过程中，上料行为，发生碰撞
+'ver 20170710.01
+'1、上传软体异常，报警后仍可继续，但下一pcs仍报警
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)

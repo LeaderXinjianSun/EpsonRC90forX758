@@ -1,5 +1,5 @@
-'ver 20170708.02
-'1、测样本过程中，点击“测样本”，无效
+'ver 20170710.01
+'1、上传软体异常，报警后仍可继续，但下一pcs仍报警
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -371,7 +371,7 @@ CheckUploadStatusLabel1:
 				MsgSend$ = "测试机" + Str$(i + 1) + "，上传软体异常"
 				Pause
 				Wait 1
-				GoTo CheckUploadStatusLabel1
+'				GoTo CheckUploadStatusLabel1
 			EndIf
 		Next
 	EndIf
