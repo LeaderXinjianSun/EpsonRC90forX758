@@ -162,12 +162,29 @@ Global Boolean StatusOfUpload(4)
 Global Integer StatusOfUploadFinish
 '******************************* 检测上传软体结束 ********************************************
 
+'******************************* 检测停机良率 ********************************************
+Global Boolean StatusOfYield(4)
+Global Integer StatusOfYieldFinish
+Global Preserve Boolean IsPassLowLimitStop
+'******************************* 检测停机良率结束 ********************************************
+
+'******************************* 比对INI ********************************************
+Global Boolean FromWhichFlex(2)
+'0:unknow
+'1:ok
+'2:ng
+Global Integer CheckBarcodeResult
+Global Preserve Boolean IsCheckINI
+'******************************* 比对INI率结束 ********************************************
+
 Global Boolean ReStart_flag
 
 Global Integer ReleaseFailFlexIndex
 '0 A爪手
 '1 B爪手
 Global Integer ReleaseFailPickNum
+
+
 
 Function main
 	
@@ -212,8 +229,8 @@ Function main2
 	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
 		NgTrayPalletNum = 1
 	EndIf
-	If NoiseTrayPalletNum < 9 Or NoiseTrayPalletNum > 14 Then
-		NoiseTrayPalletNum = 9
+	If NoiseTrayPalletNum < 1 Or NoiseTrayPalletNum > 6 Then
+		NoiseTrayPalletNum = 1
 	EndIf
 	ReleaseFailFlexIndex = -1
 	Call HomeReturnAction
@@ -330,6 +347,7 @@ main_label1:
 		EndIf
 		If PickHave(0) = False And PickHave(1) = False And Discharge = 0 Then
 			Call CheckUploadStatus
+			Call CheckYieldStatus
 			Call PickFeedOperate1
 		EndIf
 		Call UnloadOperate(0)
@@ -371,7 +389,32 @@ CheckUploadStatusLabel1:
 				MsgSend$ = "测试机" + Str$(i + 1) + "，上传软体异常"
 				Pause
 				Wait 1
-				GoTo CheckUploadStatusLabel1
+'				GoTo CheckUploadStatusLabel1
+			EndIf
+		Next
+	EndIf
+Fend
+Function CheckYieldStatus
+		
+	Integer i
+CheckYieldStatusLabel1:
+	If IsPassLowLimitStop Then
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "StatusOfYield"
+		StatusOfYieldFinish = 0
+		Wait StatusOfYieldFinish <> 0
+		For i = 0 To 3
+			If Not StatusOfYield(i) And IsPassLowLimitStop And Tester_Select(i) Then
+				Print "测试机" + Str$(i + 1) + "，良率异常"
+				MsgSend$ = "测试机" + Str$(i + 1) + "，良率异常"
+				Pause
+				Wait 1
+				GoTo CheckYieldStatusLabel1
 			EndIf
 		Next
 	EndIf
@@ -2567,8 +2610,10 @@ Function InitAction
 	
 	'NG Cui 阵列
 '	Pallet 5, NCui1, NCui2, NCui3, 2, 8
-	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 7
-	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 7
+	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 4
+	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 4
+	Pallet 11, NoiseCui_1, NoiseCui_2, NoiseCui_3, 2, 3
+	Pallet 12, NoiseCui_1_A, NoiseCui_2_A, NoiseCui_3_A, 2, 3
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -2657,8 +2702,8 @@ Function AllMonitor
 		If NgTrayPalletNum < 1 Then
 			NgTrayPalletNum = 1
 		EndIf
-		If NoiseTrayPalletNum < 9 Then
-			NoiseTrayPalletNum = 9
+		If NoiseTrayPalletNum < 1 Then
+			NoiseTrayPalletNum = 1
 		EndIf
 		
 		If Sw(RollSet) = 1 Then
@@ -3341,7 +3386,7 @@ TesterOperate1SuckSubLabel1:
 				Wait 0.1
 			Loop
 			CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
-		
+			CheckBarcodeResult = 0
 		ElseIf Not ReTest_ Then
 			
 			If CmdSend$ <> "" Then
@@ -4536,7 +4581,7 @@ TesterOperate2SuckSubLabel1:
 				Wait 0.1
 			Loop
 			CmdSend$ = "TestResultCount,OK," + Str$(IndexArray_i(i) + 1)
-		
+			CheckBarcodeResult = 0
 		ElseIf Not ReTest_ Then
 			
 			If CmdSend$ <> "" Then
@@ -6126,19 +6171,49 @@ UnloadOperate_Pass:
 		FinalPosition = P(34 + NowFlexIndex - 1)
 	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+	Accel 50, 50
 	Go FinalPosition
-	Call ReleaseAction(num, -1)
+	If IsCheckINI Then
+		Wait CheckBarcodeResult <> 0
+		If CheckBarcodeResult = 1 Then
+			Call ReleaseAction(num, -1)
+			Ttarget = 5
+			If CmdSend$ <> "" Then
+				Print "有命令 " + CmdSend$ + " 待发送！"
+			EndIf
+			Do While CmdSend$ <> ""
+				Wait 0.1
+			Loop
+			CmdSend$ = "ULOAD"
+		Else
+Pass_label1:
+			Print "产品记录异常"
+			MsgSend$ = "产品记录异常"
+			Pause
+			Wait 0.5
+			If Sw(num) = 1 Then
+				GoTo Pass_label1
+			Else
+				Off num * 2
+			EndIf
+		EndIf
+	Else
+		Call ReleaseAction(num, -1)
+		Ttarget = 5
+		If CmdSend$ <> "" Then
+			Print "有命令 " + CmdSend$ + " 待发送！"
+		EndIf
+		Do While CmdSend$ <> ""
+			Wait 0.1
+		Loop
+		CmdSend$ = "ULOAD"
+	EndIf
+	
 	PickHave(num) = False
 	
-	Ttarget = 5
-	If CmdSend$ <> "" Then
-		Print "有命令 " + CmdSend$ + " 待发送！"
-	EndIf
-	Do While CmdSend$ <> ""
-		Wait 0.1
-	Loop
-	CmdSend$ = "ULOAD"
+
 	Go ChangeHandL
+	Accel 100, 100
 Return
 
 UnloadOperate_Ng:
@@ -6148,19 +6223,19 @@ UnloadOperate_Ng:
 	If Pick_Remark(num) = 1 Then
 		'Noise不良放料
 		If num = 1 Then
-			FinalPosition = Pallet(5, NoiseTrayPalletNum)
+			FinalPosition = Pallet(11, NoiseTrayPalletNum)
 		Else
-			FinalPosition = Pallet(10, NoiseTrayPalletNum)
+			FinalPosition = Pallet(12, NoiseTrayPalletNum)
 		EndIf
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Call ReleaseAction(num, -1)
 		PickHave(num) = False
 		NoiseTrayPalletNum = NoiseTrayPalletNum + 1
-		If NoiseTrayPalletNum > 14 Then
+		If NoiseTrayPalletNum > 6 Then
 			Go P(349 + PassStepNum)
 			Print "Noise下料盘，换料"
 			MsgSend$ = "Noise下料盘，换料"
-			NoiseTrayPalletNum = 9
+			NoiseTrayPalletNum = 1
 			Pause
 			
 		EndIf
@@ -7175,6 +7250,15 @@ Function TcpIpCmdRev
 						EndIf
 					Next
 					StatusOfUploadFinish = 1;
+				Case "StatusOfYield"
+					For i = 0 To 3
+						If CmdRevStr$(i + 1) = "1" Then
+							StatusOfYield(i) = True;
+						Else
+							StatusOfYield(i) = False;
+						EndIf
+					Next
+					StatusOfYieldFinish = 1;
 				Case "Select"
 					For i = 0 To 3
 '						If CmdRevStr$(i + 1) = "1" Then
@@ -7238,6 +7322,28 @@ Function TcpIpCmdRev
 							isCheckUpload = True
 						Case "False"
 							isCheckUpload = False
+					Send
+				Case "IsPassLowLimitStop"
+					Select CmdRevStr$(1)
+						Case "True"
+							IsPassLowLimitStop = True
+						Case "False"
+							IsPassLowLimitStop = False
+					Send
+				Case "IsCheckINI"
+					Select CmdRevStr$(1)
+						Case "True"
+							IsCheckINI = True
+						Case "False"
+							IsCheckINI = False
+					Send
+					
+				Case "CheckBarcodeResult"
+					Select CmdRevStr$(1)
+						Case "1"
+							CheckBarcodeResult = 1
+						Case "2"
+							CheckBarcodeResult = 2
 					Send
 				Case "AABReTest"
 					Select CmdRevStr$(1)
