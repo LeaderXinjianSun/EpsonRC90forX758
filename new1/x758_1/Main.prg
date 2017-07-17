@@ -1,6 +1,5 @@
-'ver 20170710.01
-'1、上传软体异常，报警后仍可继续，但下一pcs仍报警
-
+'ver 20170717.01
+'1、改回NG盘仅一个盘程序
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -229,8 +228,8 @@ Function main2
 	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
 		NgTrayPalletNum = 1
 	EndIf
-	If NoiseTrayPalletNum < 1 Or NoiseTrayPalletNum > 6 Then
-		NoiseTrayPalletNum = 1
+	If NoiseTrayPalletNum < 8 Or NoiseTrayPalletNum > 14 Then
+		NoiseTrayPalletNum = 8
 	EndIf
 	ReleaseFailFlexIndex = -1
 	Call HomeReturnAction
@@ -2610,10 +2609,10 @@ Function InitAction
 	
 	'NG Cui 阵列
 '	Pallet 5, NCui1, NCui2, NCui3, 2, 8
-	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 4
-	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 4
-	Pallet 11, NoiseCui_1, NoiseCui_2, NoiseCui_3, 2, 3
-	Pallet 12, NoiseCui_1_A, NoiseCui_2_A, NoiseCui_3_A, 2, 3
+	Pallet 5, NCui_1, NCui_2, NCui_3, 2, 7
+	Pallet 10, NCui_1_A, NCui_2_A, NCui_3_A, 2, 7
+'	Pallet 11, NoiseCui_1, NoiseCui_2, NoiseCui_3, 2, 3
+'	Pallet 12, NoiseCui_1_A, NoiseCui_2_A, NoiseCui_3_A, 2, 3
 	PassStepNum = 0
 	
 '	For i = 0 To 5
@@ -2702,8 +2701,8 @@ Function AllMonitor
 		If NgTrayPalletNum < 1 Then
 			NgTrayPalletNum = 1
 		EndIf
-		If NoiseTrayPalletNum < 1 Then
-			NoiseTrayPalletNum = 1
+		If NoiseTrayPalletNum < 8 Then
+			NoiseTrayPalletNum = 8
 		EndIf
 		
 		If Sw(RollSet) = 1 Then
@@ -6223,19 +6222,19 @@ UnloadOperate_Ng:
 	If Pick_Remark(num) = 1 Then
 		'Noise不良放料
 		If num = 1 Then
-			FinalPosition = Pallet(11, NoiseTrayPalletNum)
+			FinalPosition = Pallet(5, NoiseTrayPalletNum)
 		Else
-			FinalPosition = Pallet(12, NoiseTrayPalletNum)
+			FinalPosition = Pallet(10, NoiseTrayPalletNum)
 		EndIf
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 		Call ReleaseAction(num, -1)
 		PickHave(num) = False
 		NoiseTrayPalletNum = NoiseTrayPalletNum + 1
-		If NoiseTrayPalletNum > 6 Then
+		If NoiseTrayPalletNum > 14 Then
 			Go P(349 + PassStepNum)
 			Print "Noise下料盘，换料"
 			MsgSend$ = "Noise下料盘，换料"
-			NoiseTrayPalletNum = 1
+			NoiseTrayPalletNum = 8
 			Pause
 			
 		EndIf
