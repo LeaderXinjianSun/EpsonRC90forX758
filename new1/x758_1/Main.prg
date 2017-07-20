@@ -1,5 +1,5 @@
-'ver 20170720.01
-'1、增加治具真空判断延时，防止误报警
+'ver 20170720.02
+'1、程序重启，若测试机有料，则认为其NG，需要继续复测
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -8149,6 +8149,22 @@ Function TrapInterruptAbort
 	Out 1, 0, Forced
 	For i = 0 To 3
 		PickHave(i) = False
+		
+	Next
+'Global Boolean Tester_Testing(4)
+'Global Preserve Integer Tester_Pass(4), Tester_Ng(4), Tester_Timeout(4)
+'Global Preserve Boolean Tester_Select(4), Tester_Fill(4)
+	For i = 0 To 3
+		Tester_Testing(i) = False
+		Tester_Pass(i) = 0
+		Tester_Ng(i) = 1
+		Tester_Timeout(i) = 0
+		If Tester_Select(i) Then
+			If Tester_Fill(i) Then
+				Tester_ReTestFalg(i) = 0
+				Tester_Remark(i) = 0
+			EndIf
+		EndIf
 	Next
 '	Discharge = 0
 	Off FeedEmpty, Forced

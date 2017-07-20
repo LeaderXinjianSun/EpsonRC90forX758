@@ -1,5 +1,5 @@
-'ver 20170720.01
-'1、增加治具真空判断延时，防止误报警
+'ver 20170720.02
+'1、程序重启，若测试机有料，则认为其NG，需要继续复测
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -7060,9 +7060,9 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  	
 	If Flexnum <> -1 Then
 '		Wait 0.3
-		Wait 0.5
+		Wait 0.2
 	Else
-		Wait 0.3
+		Wait 0.1
 	EndIf
  	
 	On blownum; Off sucknum
@@ -7072,7 +7072,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	EndIf
 '	Off blownum
 	PickHave(num) = False
-	Wait 0.3
+	Wait 0.2
 	Select Flexnum
 		Case 1
 			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
@@ -7085,7 +7085,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Send
 	
 	If Flexnum <> -1 Then
-		Wait 0.5
+		Wait 0.4
 		Off blownum
 	EndIf
 
@@ -7167,7 +7167,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 					On BR_Suck
 			Send
 	 	    Off valvenum; Off blownum
-	 	    Wait 0.5
+	 	    Wait 0.4
 	 	Else
 	 		Off valvenum; Off blownum
 	 		Wait 0.3
@@ -8149,6 +8149,21 @@ Function TrapInterruptAbort
 	Out 1, 0, Forced
 	For i = 0 To 3
 		PickHave(i) = False
+		
+	Next
+'Global Boolean Tester_Testing(4)
+'Global Preserve Integer Tester_Pass(4), Tester_Ng(4), Tester_Timeout(4)
+'Global Preserve Boolean Tester_Select(4), Tester_Fill(4)
+	For i = 0 To 3
+		Tester_Testing(i) = False
+		Tester_Pass(i) = 0
+		Tester_Ng(i) = 1
+		Tester_Timeout(i) = 0
+		If Tester_Select(i) Then
+			If Tester_Fill(i) Then
+				Tester_ReTestFalg(i) = 0
+			EndIf
+		EndIf
 	Next
 '	Discharge = 0
 	Off FeedEmpty, Forced
