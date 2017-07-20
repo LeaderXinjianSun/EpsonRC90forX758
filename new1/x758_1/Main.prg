@@ -1,5 +1,6 @@
-'ver 20170717.01
-'1、改回NG盘仅一个盘程序
+'ver 20170720.01
+'1、增加治具真空判断延时，防止误报警
+
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -6840,7 +6841,7 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 
 '	Wait 0.3 + pickRetryTimes * 0.3
-	Wait 0.5 + pickRetryTimes * 0
+	Wait 0.3 + pickRetryTimes * 0
 		
 	If needreleaseadjust Then
 		Off AdjustValve
@@ -6851,7 +6852,7 @@ Function PickAction(num As Integer) As Boolean
 	    Go NowPosition +Z(Delta_Z)
 	EndIf
 	Off valvenum
-	Wait 0.3
+	Wait 0.2
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
@@ -6865,13 +6866,13 @@ Function PickAction(num As Integer) As Boolean
 			Off AdjustValve
 			Wait 1
 			On valvenum
-			Wait 0.5
+			Wait 0.3
 			If pickRetryTimes = 0 Then
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
 			On blownum; Off vacuumnum
-			Wait 0.5
+			Wait 0.3
 			Off valvenum
 			Wait 1
 			Off blownum
@@ -6887,9 +6888,9 @@ Function PickAction(num As Integer) As Boolean
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
 			On blownum; Off vacuumnum
-			Wait 0.5
+			Wait 0.3
 			Off blownum; Off valvenum
-			Wait 0.5
+			Wait 0.3
 		EndIf
 '		On blownum; Off sucknum
 '		Wait 0.1
@@ -7059,19 +7060,19 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  	
 	If Flexnum <> -1 Then
 '		Wait 0.3
-		Wait 0.5
+		Wait 0.2
 	Else
-		Wait 0.3
+		Wait 0.1
 	EndIf
  	
 	On blownum; Off sucknum
 	Wait 0.1
 	If Flexnum = -1 Then
-		Wait 0.2
+		Wait 0.1
 	EndIf
 '	Off blownum
 	PickHave(num) = False
-	Wait 0.3
+	Wait 0.2
 	Select Flexnum
 		Case 1
 			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
@@ -7084,7 +7085,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Send
 	
 	If Flexnum <> -1 Then
-		Wait 0.3
+		Wait 0.4
 		Off blownum
 	EndIf
 
@@ -7166,7 +7167,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 					On BR_Suck
 			Send
 	 	    Off valvenum; Off blownum
-	 	    Wait 0.3
+	 	    Wait 0.4
 	 	Else
 	 		Off valvenum; Off blownum
 	 		Wait 0.3
