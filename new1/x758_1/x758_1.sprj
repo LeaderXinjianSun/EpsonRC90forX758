@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/07/20 10:26:12:448,DS:0000006254,CS:24412,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/07/23 08:04:09:631,DS:0000006253,CS:13574,MA:C6-8E-8F-74-5D-89,EI:           
 SystemProperties {
 	sRCVersion="7.1.3"
 	sRCRevision=""
 	sGUID="125ba4a3-86be-46e6-951c-8570368f4cc7"
 	sPath="D:\\EpsonRC70\\Projects\\EpsonRC90forX758\\new1\\x758_1\\"
 	sCreated="2017/1/20 10:54:13"
-	sLastModified="2017/7/20 18:26:10"
+	sLastModified="2017/7/23 16:04:07"
 	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -34,7 +34,7 @@ ProgramFile1 {
 	sName="Main.prg"
 	bCompiled=True
 	bStoreInController=True
-	sTimeSavedInController="2017/7/20 10:22:53"
+	sTimeSavedInController="2017/7/23 8:02:36"
 }
 nIncludeFileCount=0
 nPointFileCount=1

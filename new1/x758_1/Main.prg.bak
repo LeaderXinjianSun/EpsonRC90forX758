@@ -1,5 +1,6 @@
-'ver 20170720.02
-'1、程序重启，若测试机有料，则认为其NG，需要继续复测
+'ver 20170723.01
+'1、缩减取放料时间
+'2、底座模组边移动，机械手边动作
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -184,7 +185,9 @@ Global Integer ReleaseFailFlexIndex
 '1 B爪手
 Global Integer ReleaseFailPickNum
 
-
+'******************************* 提前移动 ********************************************
+Global Boolean isinScanPosition
+'******************************* 提前移动结束 ********************************************
 
 Function main
 	
@@ -6314,10 +6317,10 @@ ScanBarcodeOpetateP3label:
 		GoTo ScanBarcodeOpetateP3label
 	EndIf
 	
-	Accel 50, 50
-	Go ChangeHandL
-	Accel 90, 90
-
+'	Accel 50, 50
+'	Go ChangeHandL
+'	Accel 90, 90
+	isinScanPosition = True
 	ScanBarcodeOpetateP3 = ScanResult
 Fend
 Function ScanBarcodeOpetate(num As Integer, picksting$ As String)
@@ -6472,6 +6475,7 @@ Function HomeReturnAction
 
 	CurPosition_Num = -2
 	NowFlexIndex = 4
+	isinScanPosition = False
 Fend
 '路径规划
 'firstPosition 目标位置
@@ -6565,6 +6569,8 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 '				Go FinalPosition
 				
 			Case 1
+				
+				Wait Sw(DangerIn) = 0
 				Ftarget = 1
 				Fcurrent = -1
 				If CmdSend$ <> "" Then
@@ -6574,8 +6580,8 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,1"
-				Wait Fcurrent = 1
-				Wait Sw(DangerIn) = 0
+				
+				
 				deltaU = CU(Here) - CU(FinalPosition)
 				If deltaU > 90 Or deltaU < -90 Then
 					Pass ScanPositionP3L
@@ -6583,7 +6589,9 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				Accel 50, 50
 				Go FinalPosition
 				Accel 100, 100
+				Wait Fcurrent = 1
 			Case 2
+				
 				Wait Sw(DangerIn) = 0
 				On DangerOut
 				Ftarget = 2
@@ -6595,6 +6603,13 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,2"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
+
 				Wait Fcurrent = 2
 				
 				RoutePassP1 = Here
@@ -6629,6 +6644,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,3"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Wait Fcurrent = 3
 				Off DangerOut
 				RoutePassP1 = Here
@@ -6661,6 +6682,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,4"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Wait Fcurrent = 4
 				Off DangerOut
 				RoutePassP1 = Here
@@ -6697,6 +6724,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,5"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Wait Fcurrent = 5
 				Off DangerOut
 				RoutePassP1 = Here
@@ -6738,6 +6771,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,6"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Wait Fcurrent = 6
 				Off DangerOut
 				RoutePassP1 = Here
@@ -6770,6 +6809,12 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,7"
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Wait Fcurrent = 7
 				Off DangerOut
 				RoutePassP1 = Here
@@ -6849,10 +6894,10 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 	If pickRetryTimes = 0 Then
 		NowPosition = Here
-	    Go NowPosition +Z(Delta_Z)
+	    Go NowPosition +Z(Delta_Z) ! D1; Off valvenum !
 	EndIf
-	Off valvenum
-	Wait 0.2
+'	Off valvenum
+	Wait 0.1
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
@@ -6864,20 +6909,20 @@ Function PickAction(num As Integer) As Boolean
 		If PickFeedFirstSuck Then
 		    PickFeedFirstSuck = False
 			Off AdjustValve
-			Wait 1
+			Wait 0.5
 			On valvenum
-			Wait 0.3
+			Wait 0.2
 			If pickRetryTimes = 0 Then
 				NowPosition = Here
 			    Go NowPosition -Z(Delta_Z)
 			EndIf
 			On blownum; Off vacuumnum
-			Wait 0.3
+			Wait 0.2
 			Off valvenum
-			Wait 1
+			Wait 0.5
 			Off blownum
 			On AdjustValve
-			Wait 1
+			Wait 0.5
 		EndIf
 		If PickFlexFirstSuck Then
 			PickFlexFirstSuck = False
@@ -7050,29 +7095,33 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Send
 	
 '    Wait 0.1
+	On valvenum
+	If Flexnum <> -1 Then
+'		Wait 0.3
+		Wait 0.2
+	Else
+		Wait 0.05
+	EndIf
 	If Flexnum <> -1 Then
 		NowPosition = Here
 	    Go NowPosition -Z(Delta_Z_Release)
 	EndIf
 	
 '    Wait 0.1
- 	On valvenum
  	
-	If Flexnum <> -1 Then
-'		Wait 0.3
-		Wait 0.2
-	Else
-		Wait 0.1
-	EndIf
+ 	
+
  	
 	On blownum; Off sucknum
 	Wait 0.1
-	If Flexnum = -1 Then
-		Wait 0.1
-	EndIf
+'	If Flexnum = -1 Then
+'		Wait 0.1
+'	Else
+'		Wait 0.2
+'	EndIf
 '	Off blownum
 	PickHave(num) = False
-	Wait 0.2
+	
 	Select Flexnum
 		Case 1
 			On AL_Suck; FlexVoccum1 = 10; FlexVoccum2 = 11
@@ -7085,7 +7134,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Send
 	
 	If Flexnum <> -1 Then
-		Wait 0.4
+		Wait 0.5
 		Off blownum
 	EndIf
 
@@ -7167,16 +7216,16 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 					On BR_Suck
 			Send
 	 	    Off valvenum; Off blownum
-	 	    Wait 0.4
+'	 	    Wait 0.4
 	 	Else
 	 		Off valvenum; Off blownum
-	 		Wait 0.3
+'	 		Wait 0.3
 		EndIf
 		
 		
 	Else
 		Off valvenum; Off blownum
-		Wait 0.1
+'		Wait 0.1
  	EndIf
 	 	
 	
@@ -8162,6 +8211,7 @@ Function TrapInterruptAbort
 		If Tester_Select(i) Then
 			If Tester_Fill(i) Then
 				Tester_ReTestFalg(i) = 0
+				Tester_Remark(i) = 0
 			EndIf
 		EndIf
 	Next
