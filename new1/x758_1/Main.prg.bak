@@ -7100,7 +7100,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '∑≈¡œ
 '		Wait 0.3
 		Wait 0.2
 	Else
-		Wait 0.05
+		Wait 0.1
 	EndIf
 	If Flexnum <> -1 Then
 		NowPosition = Here

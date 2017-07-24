@@ -187,6 +187,7 @@ Global Integer ReleaseFailPickNum
 
 '******************************* 提前移动 ********************************************
 Global Boolean isinScanPosition
+Global Boolean isinFirstPosition
 '******************************* 提前移动结束 ********************************************
 
 Function main
@@ -2829,11 +2830,15 @@ PickFeedOperatelabel1:
 		If FeedFill(FeedPanelNum) = True Then
 			
 			TargetPosition_Num = 1
-			
-			FinalPosition = P(11 + FeedPanelNum) +Z(Delta_Z)
-			
-			
-			Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			If FeedPanelNum = 2 Or FeedPanelNum = 5 Then
+				FinalPosition = P(11 + FeedPanelNum - 1) +Z(Delta_Z)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+				Go P(11 + FeedPanelNum) +Z(Delta_Z)
+			Else
+				FinalPosition = P(11 + FeedPanelNum) +Z(Delta_Z)
+				Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+			EndIf
+
 '			needreleaseadjust = True
 			pickRetryTimes = 0
 			PickFeedFirstSuck = True
@@ -6476,6 +6481,7 @@ Function HomeReturnAction
 	CurPosition_Num = -2
 	NowFlexIndex = 4
 	isinScanPosition = False
+	isinFirstPosition = False
 Fend
 '路径规划
 'firstPosition 目标位置
@@ -6582,18 +6588,39 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 				CmdSend$ = "FMOVE,1"
 				
 				
-				deltaU = CU(Here) - CU(FinalPosition)
-				If deltaU > 90 Or deltaU < -90 Then
-					Pass ScanPositionP3L
+
+				If isinFirstPosition Then
+					Wait Fcurrent = 1
+					deltaU = CU(Here) - CU(FinalPosition)
+					If deltaU > 90 Or deltaU < -90 Then
+						Pass ScanPositionP3L
+					EndIf
+					Accel 50, 50
+					Go FinalPosition
+					Accel 100, 100
+								
+				Else
+					deltaU = CU(Here) - CU(FinalPosition)
+					If deltaU > 90 Or deltaU < -90 Then
+						Pass ScanPositionP3L
+					EndIf
+					Accel 50, 50
+					Go FinalPosition
+					Accel 100, 100
+					Wait Fcurrent = 1
 				EndIf
-				Accel 50, 50
-				Go FinalPosition
-				Accel 100, 100
-				Wait Fcurrent = 1
+				isinFirstPosition = False
 			Case 2
 				
 				Wait Sw(DangerIn) = 0
 				On DangerOut
+				
+				If isinScanPosition Then
+					Accel 50, 50
+					Go ChangeHandL
+					Accel 100, 100
+					isinScanPosition = False
+				EndIf
 				Ftarget = 2
 				Fcurrent = -1
 				If CmdSend$ <> "" Then
@@ -6603,12 +6630,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					Wait 0.1
 				Loop
 				CmdSend$ = "FMOVE,2"
-				If isinScanPosition Then
-					Accel 50, 50
-					Go ChangeHandL
-					Accel 100, 100
-					isinScanPosition = False
-				EndIf
+				isinFirstPosition = True
 
 				Wait Fcurrent = 2
 				
@@ -6651,6 +6673,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					isinScanPosition = False
 				EndIf
 				Wait Fcurrent = 3
+				isinFirstPosition = False
 				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -6689,6 +6712,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					isinScanPosition = False
 				EndIf
 				Wait Fcurrent = 4
+				isinFirstPosition = False
 				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -6731,6 +6755,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					isinScanPosition = False
 				EndIf
 				Wait Fcurrent = 5
+				isinFirstPosition = False
 				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -6778,6 +6803,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					isinScanPosition = False
 				EndIf
 				Wait Fcurrent = 6
+				isinFirstPosition = False
 				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -6816,6 +6842,7 @@ Function RoutePlanThenExe(firstPosition As Integer, secendPosition As Integer)
 					isinScanPosition = False
 				EndIf
 				Wait Fcurrent = 7
+				isinFirstPosition = False
 				Off DangerOut
 				RoutePassP1 = Here
 				PassStepNum = PassStepNum + 1
@@ -6894,10 +6921,10 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 	If pickRetryTimes = 0 Then
 		NowPosition = Here
-	    Go NowPosition +Z(Delta_Z) ! D1; Off valvenum !
+	    Go NowPosition +Z(Delta_Z)
 	EndIf
-'	Off valvenum
-	Wait 0.1
+	Off valvenum
+	Wait 0.3
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
@@ -7045,18 +7072,20 @@ Function CleanBlowAction(num As Integer, Flexnum As Integer)
 	CleanPosition2 = Here +Y(-10)
 	CleanPosition3 = Here
  	On valvenum; On blownum; Off sucknum; On 1; On 3
- 	Accel 10, 10
-	For i = 0 To 2
-		Pass CleanPosition1
-		Go CleanPosition3
-		Pass CleanPosition2
-		Go CleanPosition3
-	Next
-	Accel 50, 50
-	Go CleanPosition3 ! D1; Off valvenum; Off blownum; Off 1; Off 3 !
+' 	Accel 10, 10
+'	For i = 0 To 2
+'		Pass CleanPosition1
+'		Go CleanPosition3
+'		Pass CleanPosition2
+'		Go CleanPosition3
+'	Next
+'	Accel 50, 50
+'	Go CleanPosition3 ! D1; Off valvenum; Off blownum; Off 1; Off 3 !
+	Wait 1
+	Off valvenum; Off blownum; Off 1; Off 3
 	Go Here +Z(-10)
-	Wait 0.5
-	Accel 100, 100
+'	Wait 0.5
+'	Accel 100, 100
 Fend
 '释放动作
 'num:吸嘴索引
@@ -8232,6 +8261,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 
