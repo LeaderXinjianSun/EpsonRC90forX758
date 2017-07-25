@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/07/24 12:14:45:742,DS:0000006255,CS:17269,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2017/07/25 03:02:22:677,DS:0000006254,CS:07451,MA:C6-8E-8F-74-5D-89,EI:           
 SystemProperties {
 	sRCVersion="7.1.3"
 	sRCRevision=""
 	sGUID="125ba4a3-86be-46e6-951c-8570368f4cc7"
 	sPath="D:\\EpsonRC70\\Projects\\EpsonRC90forX758\\new1\\x758_1\\"
 	sCreated="2017/1/20 10:54:13"
-	sLastModified="2017/7/24 20:14:45"
+	sLastModified="2017/7/25 11:02:22"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -34,7 +34,7 @@ ProgramFile1 {
 	sName="Main.prg"
 	bCompiled=False
 	bStoreInController=True
-	sTimeSavedInController="2017/7/23 8:02:36"
+	sTimeSavedInController="2017/7/25 2:40:25"
 }
 nIncludeFileCount=0
 nPointFileCount=1
@@ -42,7 +42,7 @@ PointFile1 {
 	sName="robot1.pts"
 	nRobot=1
 	bDefault=True
-	sTimeSavedInController="2017/7/15 13:26:53"
+	sTimeSavedInController="2017/7/25 2:16:38"
 }
 nForceFileCount=0
 OperatorSettings {
