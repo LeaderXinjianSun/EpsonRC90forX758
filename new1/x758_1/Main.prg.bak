@@ -18,6 +18,7 @@ Global Preserve Integer Tester_Remark(4)
 '1:¸´²â1´Î,A
 '2:¸´²â2´Î,AA
 '3:¸´²â3´Î
+
 Global Preserve Integer Tester_ReTestFalg(4)
 Global String PickAorC$(4)
 
@@ -6364,6 +6365,7 @@ UnloadOperate_Ng:
 Return
 
 CheckBarcodeSub:
+	Wait Sw(DangerIn) = 0
 	On DangerOut
 	TargetPosition_Num = 1
 	
@@ -6392,7 +6394,7 @@ CheckBarcodeSub:
 			Loop
 			Select num
 				Case 0
-					Go TPosition5;
+					Go TPosition5_A;
 				Case 1
 					Go TPosition5;
 			Send
@@ -7616,7 +7618,14 @@ Function TcpIpCmdRev
 '									ScanResultC = 3
 '							Send
 					Send
-
+				Case "CheckScanResult"
+					Select CmdRevStr$(1)
+						Case "Pass"
+							CheckScanResult = 1
+						Case "Ng"
+							CheckScanResult = 2
+					Send
+				
 				Case "FeedFill"
 					For i = 0 To 5
 						If CmdRevStr$(i + 1) = "1" Then
@@ -8418,6 +8427,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 

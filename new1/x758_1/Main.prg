@@ -1,4 +1,4 @@
-'ver 20170725.01
+'ver 20170725.02
 '1、解决不记录问题
 '2、放料报警自动选项取回不良tray,可设层数
 
@@ -18,6 +18,7 @@ Global Preserve Integer Tester_Remark(4)
 '1:复测1次,A
 '2:复测2次,AA
 '3:复测3次
+
 Global Preserve Integer Tester_ReTestFalg(4)
 Global String PickAorC$(4)
 
@@ -6364,6 +6365,7 @@ UnloadOperate_Ng:
 Return
 
 CheckBarcodeSub:
+	Wait Sw(DangerIn) = 0
 	On DangerOut
 	TargetPosition_Num = 1
 	
@@ -8425,6 +8427,8 @@ Function TrapInterruptAbort
 	
 
 Fend
+
+
 
 
 
