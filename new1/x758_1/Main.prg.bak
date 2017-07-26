@@ -1,6 +1,5 @@
-'ver 20170725.01
-'1、解决不记录问题
-'2、放料报警自动选项取回不良tray,可设层数
+'ver 20170725.03
+'1、添加是否扫码比对，选项
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -194,6 +193,7 @@ Global Boolean isinFirstPosition
 Global Preserve Integer NGOverlayNum
 Global Preserve Integer NGOverlayNum1, NoiseOverlayNum1
 Global Preserve Boolean IsReleaseFailContinue
+Global Preserve Boolean isScanCheckFlag
 Function main
 	
 	Do
@@ -3242,7 +3242,7 @@ TesterOperate1_lable5:
 	                GoSub TesterOperate1SuckSub
 					
 					If PickHave(1) = True And Pick_P_Msg(1) = 1 And ReTest_ And Tester_ReTestFalg(IndexArray_i(i)) < 1 Then
-						Tester_ReTestFalg(i) = Tester_ReTestFalg(IndexArray_i(i)) + 1
+						Tester_ReTestFalg(IndexArray_i(i)) = Tester_ReTestFalg(IndexArray_i(i)) + 1
 						Print "A，排料，复测，" + Str$(IndexArray_i(i) + 1)
 						MsgSend$ = "A，排料，复测，" + Str$(IndexArray_i(i) + 1)
 						'继续放，复测
@@ -3699,14 +3699,17 @@ CheckVoccum_label1:
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		If Not IsReleaseFailContinue Then
-			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+'			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+'			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
 		Else
 			Wait 1
+			
 		EndIf
 
 '		Tester_Fill(IndexArray_i(i)) = False;
@@ -3907,9 +3910,10 @@ CheckVoccum_label2:
 '		On Alarm_ReleaseFail
 '		Pause
 '		Off Alarm_ReleaseFail
+		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		If Not IsReleaseFailContinue Then
-			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -4909,10 +4913,10 @@ TesterOperate1ReleaseSub:
 CheckVoccum_label3:
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-
+		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		If Not IsReleaseFailContinue Then
-			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -5119,10 +5123,10 @@ CheckVoccum_label4:
 
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-
+		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		If Not IsReleaseFailContinue Then
-			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -6258,7 +6262,7 @@ UnloadOperate_Pass:
 	EndIf
 	Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
 	Accel 50, 50
-	If IsCheckINI Then
+	If IsCheckINI And isScanCheckFlag Then
 		Go ChangeHandL
 	Else
 		Go FinalPosition
@@ -6267,16 +6271,21 @@ UnloadOperate_Pass:
 	If IsCheckINI Then
 		Wait CheckBarcodeResult <> 0
 		If CheckBarcodeResult = 1 Then
-'			Call ReleaseAction(num, -1)
-'			Ttarget = 5
-'			If CmdSend$ <> "" Then
-'				Print "有命令 " + CmdSend$ + " 待发送！"
-'			EndIf
-'			Do While CmdSend$ <> ""
-'				Wait 0.1
-'			Loop
-'			CmdSend$ = "ULOAD"
-			GoSub CheckBarcodeSub
+			If isScanCheckFlag Then
+				GoSub CheckBarcodeSub
+			Else
+				Call ReleaseAction(num, -1)
+				Ttarget = 5
+				If CmdSend$ <> "" Then
+					Print "有命令 " + CmdSend$ + " 待发送！"
+				EndIf
+				Do While CmdSend$ <> ""
+					Wait 0.1
+				Loop
+				CmdSend$ = "ULOAD"
+			EndIf
+
+
 		Else
 Pass_label1:
 			Print "产品记录异常"
@@ -7574,6 +7583,13 @@ Function TcpIpCmdRev
 							IsReleaseFailContinue = True
 						Case "False"
 							IsReleaseFailContinue = False
+					Send
+				Case "isScanCheckFlag"
+					Select CmdRevStr$(1)
+						Case "True"
+							isScanCheckFlag = True
+						Case "False"
+							isScanCheckFlag = False
 					Send
 				Case "CheckBarcodeResult"
 					Select CmdRevStr$(1)
