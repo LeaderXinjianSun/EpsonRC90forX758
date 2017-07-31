@@ -1,5 +1,5 @@
-'ver 20170726.01
-'1、修复复测多次问题
+'ver 20170726.02
+'1、样本测试，不清空条码
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
