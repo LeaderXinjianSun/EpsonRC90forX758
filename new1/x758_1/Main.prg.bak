@@ -1,5 +1,5 @@
-'ver 20170726.01
-'1、修复复测多次问题
+'ver 20170731.01
+'1、放产品NG，延时1s后，若放好。则不报警。
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -3699,11 +3699,11 @@ CheckVoccum_label1:
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+'		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+'		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 		If Not IsReleaseFailContinue Then
-'			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-'			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -3744,6 +3744,10 @@ CheckVoccum_label1:
 			Send
 			ReleaseFailFlexIndex = -1
 		Else
+			If IsReleaseFailContinue Then
+				Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+				MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			EndIf
 			ReleaseFailFlexIndex = IndexArray_i(i)
 '0 A爪手
 '1 B爪手
@@ -3910,10 +3914,10 @@ CheckVoccum_label2:
 '		On Alarm_ReleaseFail
 '		Pause
 '		Off Alarm_ReleaseFail
-		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		If Not IsReleaseFailContinue Then
 
+		If Not IsReleaseFailContinue Then
+			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -3930,6 +3934,10 @@ CheckVoccum_label2:
 			Next
 			ReleaseFailFlexIndex = -1
 		Else
+			If IsReleaseFailContinue Then
+				Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+				MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			EndIf
 			ReleaseFailFlexIndex = IndexArray_i(i)
 '0 A爪手
 '1 B爪手
@@ -4913,10 +4921,10 @@ TesterOperate1ReleaseSub:
 CheckVoccum_label3:
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		If Not IsReleaseFailContinue Then
 
+		If Not IsReleaseFailContinue Then
+			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -4953,6 +4961,10 @@ CheckVoccum_label3:
 			Send
 			ReleaseFailFlexIndex = -1
 		Else
+			If IsReleaseFailContinue Then
+				Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+				MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			EndIf
 			ReleaseFailFlexIndex = IndexArray_i(i)
 '0 A爪手
 '1 B爪手
@@ -5123,10 +5135,10 @@ CheckVoccum_label4:
 
 	If (Sw(voccumValue1) = 0 Or Sw(voccumValue2) = 0) And CheckFlexVoccum(IndexArray_i(i)) Then
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
-		Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
-		If Not IsReleaseFailContinue Then
 
+		If Not IsReleaseFailContinue Then
+			Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
 			On Alarm_ReleaseFail
 			Pause
 			Off Alarm_ReleaseFail
@@ -5143,6 +5155,10 @@ CheckVoccum_label4:
 			Next
 			ReleaseFailFlexIndex = -1
 		Else
+			If IsReleaseFailContinue Then
+				Print "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+				MsgSend$ = "测试工位" + Str$(IndexArray_i(i) + 1) + "，产品没放好"
+			EndIf
 			ReleaseFailFlexIndex = IndexArray_i(i)
 '0 A爪手
 '1 B爪手
@@ -6565,19 +6581,26 @@ Function HomeReturnAction
 '			HomeSuccessFlage = False
 '			Print "请将机械手调整为左手姿势"
 '		EndIf
+		If CU(Here) > -360 And CU(Here) < 360 Then
+		
+		Else
+			HomeSuccessFlage = False
+			Print "角度偏差超限，当前角度为 " + Str$(CU(Here))
+			MsgSend$ = "角度偏差超限，当前角度为" + Str$(CU(Here))
+		EndIf
 		If CX(Here) > -50 And CX(Here) < 0 Then
 		
 		Else
 			HomeSuccessFlage = False
-			Print "X方向偏差超限"
-			MsgSend$ = "X方向偏差超限"
+			Print "X方向偏差超限，当前X坐标为 " + Str$(CX(Here))
+			MsgSend$ = "X方向偏差超限，当前X坐标为 " + Str$(CX(Here))
 		EndIf
 		If CY(Here) > 150 And CY(Here) < 350 Then
 		
 		Else
 			HomeSuccessFlage = False
-			Print "Y方向偏差超限"
-			MsgSend$ = "Y方向偏差超限"
+			Print "Y方向偏差超限，当前Y坐标为 " + Str$(CY(Here))
+			MsgSend$ = "Y方向偏差超限，当前Y坐标为 " + Str$(CY(Here))
 		EndIf
 		
 		If HomeSuccessFlage Then
