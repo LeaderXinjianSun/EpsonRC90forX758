@@ -1,5 +1,5 @@
-'ver 20170802.01
-'1、添加U轴超限报警。
+'ver 20170804.01
+'1、可以不测PASS样本。
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -1417,8 +1417,8 @@ SamOperate1SuckSubLabel1:
 '			isInWaitPosition(j) = False
 '		Next
 		
-		If Tester_Pass(i) <> 0 Then
-				
+'		If Tester_Pass(i) <> 0 Then
+		If False Then
 			Pick_P_Msg(1) = 0
 			NgContinue(i) = 0
 			
@@ -1476,7 +1476,7 @@ SamOperate1SuckSubLabel1:
 			Select SamTestNowItems(i)
 				Case 1
 					SamTestResult(i, 0) = False
-					SampleResult$ = "NG"
+					SampleResult$ = "OK"
 				Case 2
 					SamTestResult(i, 1) = True
 					SampleResult$ = "NG"

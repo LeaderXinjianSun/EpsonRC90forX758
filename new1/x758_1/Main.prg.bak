@@ -1,5 +1,5 @@
-'ver 20170731.01
-'1、放产品NG，延时1s后，若放好。则不报警。
+'ver 20170802.01
+'1、添加U轴超限报警。
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -6581,7 +6581,7 @@ Function HomeReturnAction
 '			HomeSuccessFlage = False
 '			Print "请将机械手调整为左手姿势"
 '		EndIf
-		If CU(Here) > -360 And CU(Here) < 360 Then
+		If CU(Here) > -180 And CU(Here) < 360 Then
 		
 		Else
 			HomeSuccessFlage = False
