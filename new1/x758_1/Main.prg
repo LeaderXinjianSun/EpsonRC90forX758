@@ -1,5 +1,5 @@
-'ver 20170804.01
-'1、可以不测PASS样本。
+'ver 20170804.02
+'1、样本取料时，气缸抬起多等待0.5s防止带料。
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -194,6 +194,7 @@ Global Preserve Integer NGOverlayNum
 Global Preserve Integer NGOverlayNum1, NoiseOverlayNum1
 Global Preserve Boolean IsReleaseFailContinue
 Global Preserve Boolean isScanCheckFlag
+Global Boolean SamInFeedPosition
 Function main
 	
 	Do
@@ -245,6 +246,7 @@ Function main2
 
 '	ReStart_flag = False
 	ReStart_flag = True
+	SamInFeedPosition = False;
 	Off FeedEmpty
 	Wait 0.5
 '	For i = 0 To 5
@@ -646,6 +648,7 @@ Function SamPickfromPanel
 		EndIf
 	Else
 		'取料
+		SamInFeedPosition = True
 		TargetPosition_Num = 7
 		FinalPosition = P(128 + i) +Z(Delta_Z)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -670,6 +673,7 @@ Function SamPickfromPanel
 '			Wait 0.5
 			pickfeedflag = PickAction(0)
 		EndIf
+		SamInFeedPosition = False
 		SamPanelHave(i) = False
 		SamPanelHave_Back(i) = False
 		If CmdSend$ <> "" Then
@@ -7108,6 +7112,9 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 	Off valvenum
 	Wait 0.3
+	If SamInFeedPosition Then
+		Wait 0.5
+	EndIf
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
