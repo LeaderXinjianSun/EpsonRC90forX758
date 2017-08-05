@@ -1,5 +1,5 @@
-'ver 20170804.02
-'1、样本取料时，气缸抬起多等待0.5s防止带料。
+'ver 20170805.01
+'1、样本放回时，气缸抬起多等待0.5s防止带料。
 
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -648,7 +648,7 @@ Function SamPickfromPanel
 		EndIf
 	Else
 		'取料
-		SamInFeedPosition = True
+		
 		TargetPosition_Num = 7
 		FinalPosition = P(128 + i) +Z(Delta_Z)
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
@@ -673,7 +673,7 @@ Function SamPickfromPanel
 '			Wait 0.5
 			pickfeedflag = PickAction(0)
 		EndIf
-		SamInFeedPosition = False
+
 		SamPanelHave(i) = False
 		SamPanelHave_Back(i) = False
 		If CmdSend$ <> "" Then
@@ -2493,7 +2493,9 @@ SamUnload_back:
 			FinalPosition = P(120 + i)
 		EndIf
 		Call RoutePlanThenExe(CurPosition_Num, TargetPosition_Num)
+		SamInFeedPosition = True
 		Call ReleaseAction(picknum, -1)
+		SamInFeedPosition = False
 		PickHave(picknum) = False
 '		SamPanelHave(i) = True
 		SamPanelHave_Back(i) = True
@@ -7112,9 +7114,7 @@ Function PickAction(num As Integer) As Boolean
 	EndIf
 	Off valvenum
 	Wait 0.3
-	If SamInFeedPosition Then
-		Wait 0.5
-	EndIf
+
 	Wait Sw(vacuumnum), 0.5
 
 	If Sw(vacuumnum) = 0 Then
@@ -7333,6 +7333,9 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  	
 	On blownum; Off sucknum
 	Wait 0.1
+	If SamInFeedPosition Then
+		Wait 0.5
+	EndIf
 '	If Flexnum = -1 Then
 '		Wait 0.1
 '	Else
@@ -7443,6 +7446,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 		
 		
 	Else
+
 		Off valvenum; Off blownum
 '		Wait 0.1
  	EndIf
