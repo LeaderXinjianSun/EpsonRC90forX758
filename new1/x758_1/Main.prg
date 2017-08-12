@@ -1,6 +1,5 @@
-'ver 20170805.01
-'1、样本放回时，气缸抬起多等待0.5s防止带料。
-
+'ver 20170812.01
+'1、根据样本显示不符做出修改
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -238,8 +237,8 @@ Function main2
 	If NgTrayPalletNum < 1 Or NgTrayPalletNum > 8 Then
 		NgTrayPalletNum = 1
 	EndIf
-	If NoiseTrayPalletNum < 8 Or NoiseTrayPalletNum > 14 Then
-		NoiseTrayPalletNum = 8
+	If NoiseTrayPalletNum < 9 Or NoiseTrayPalletNum > 14 Then
+		NoiseTrayPalletNum = 9
 	EndIf
 	ReleaseFailFlexIndex = -1
 	Call HomeReturnAction
@@ -1479,7 +1478,7 @@ SamOperate1SuckSubLabel1:
 	'		
 			Select SamTestNowItems(i)
 				Case 1
-					SamTestResult(i, 0) = False
+					SamTestResult(i, 0) = True
 					SampleResult$ = "OK"
 				Case 2
 					SamTestResult(i, 1) = True
@@ -2214,7 +2213,7 @@ SamOperate2SuckSubLabel1:
 		
 		
 		
-		If Tester_Pass(i) <> 0 Then
+		If False Then
 				
 			Pick_P_Msg(0) = 0
 			NgContinue(i) = 0
@@ -2262,8 +2261,8 @@ SamOperate2SuckSubLabel1:
 		
 			Select SamTestNowItems(i)
 				Case 1
-					SamTestResult(i, 0) = False
-					SampleResult$ = "NG"
+					SamTestResult(i, 0) = True
+					SampleResult$ = "OK"
 				Case 2
 					SamTestResult(i, 1) = True
 					SampleResult$ = "NG"
@@ -2716,8 +2715,8 @@ Function AllMonitor
 		If NgTrayPalletNum < 1 Then
 			NgTrayPalletNum = 1
 		EndIf
-		If NoiseTrayPalletNum < 8 Then
-			NoiseTrayPalletNum = 8
+		If NoiseTrayPalletNum < 9 Then
+			NoiseTrayPalletNum = 9
 		EndIf
 		
 		If Sw(RollSet) = 1 Then
@@ -6356,7 +6355,7 @@ UnloadOperate_Ng:
 		NoiseTrayPalletNum = NoiseTrayPalletNum + 1
 		If NoiseTrayPalletNum > 14 Then
 
-			NoiseTrayPalletNum = 8
+			NoiseTrayPalletNum = 9
 			NoiseOverlayNum1 = NoiseOverlayNum1 + 1
 			If NoiseOverlayNum1 >= NGOverlayNum Then
 				NoiseOverlayNum1 = 0
@@ -7333,9 +7332,7 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
  	
 	On blownum; Off sucknum
 	Wait 0.1
-	If SamInFeedPosition Then
-		Wait 0.5
-	EndIf
+
 '	If Flexnum = -1 Then
 '		Wait 0.1
 '	Else
@@ -7448,7 +7445,10 @@ Function ReleaseAction(num As Integer, Flexnum As Integer) '放料
 	Else
 
 		Off valvenum; Off blownum
-'		Wait 0.1
+		Wait 0.3
+		If SamInFeedPosition Then
+			Wait 0.2
+		EndIf
  	EndIf
 	 	
 	
