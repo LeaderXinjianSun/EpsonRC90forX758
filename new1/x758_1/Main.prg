@@ -1,5 +1,5 @@
-'ver 20170815.01
-'1、NG盘和样本盘分开
+'ver 20170824.01
+'1、添加待料指示灯显示
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -261,12 +261,15 @@ Function main2
 		Off AdjustValve
 		FeedReadySigleDown = 0
 		FeedPanelNum = 0
+		On WaitPCS
 		Wait Sw(FeedReady) = 1
 		FeedReadySigleDown = 1
+		Off WaitPCS
 	Else
 		Print "请确认，不得取走上料盘产品"
 		MsgSend$ = "请确认，不得取走上料盘产品"
 		On AdjustValve
+		Off WaitPCS
 		Pause
     EndIf
 
@@ -2811,6 +2814,7 @@ PickFeedOperatelabel1:
 		MsgSend$ = "上料盘，未准备好"
 '		Off AdjustValve
 		Off DangerOut
+		On WaitPCS
 		Do While Sw(FeedReady) = 0 Or FeedReadySigleDown = 0 Or Sw(DangerIn) = 1
 			Wait 0.2
 			If Discharge <> 0 And Sw(DangerIn) = 0 Then
@@ -2820,6 +2824,7 @@ PickFeedOperatelabel1:
 		If Discharge = 0 Then
 			Print "上料盘，准备好"
 			MsgSend$ = "上料盘，准备好"
+			Off WaitPCS
 		EndIf
 '		On AdjustValve
 '		Wait 0.3
