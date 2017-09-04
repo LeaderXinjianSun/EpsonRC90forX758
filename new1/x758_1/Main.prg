@@ -1,5 +1,5 @@
-'ver 20170824.01
-'1、添加待料指示灯显示
+'ver 20170904.01
+'1、清洁操作完成，无需等待
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -287,12 +287,12 @@ main_label1:
 			If CleanActionFlag Then
 				Print "清洁操作，开始"
 				MsgSend$ = "清洁操作，开始"
-				Wait 1
+'				Wait 1
 				Call CleanActionProcess
-				Wait 1
+'				Wait 1
 				Print "清洁操作，结束"
 				MsgSend$ = "清洁操作，结束"
-				Wait 1
+'				Wait 1
 				CleanActionFlag = False
 				CleanActionFinishFlag = True
 				Discharge = 0
