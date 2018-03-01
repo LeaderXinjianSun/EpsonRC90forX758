@@ -1,4 +1,4 @@
-ENVT0100,LM:2017/09/04 03:39:57:889,DS:0000002054,CS:14601,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2018/03/01 23:38:05:366,DS:0000002611,CS:20791,MA:68-F7-28-D3-72-7E,EI:           
 sActiveChild="Main.prg"
 bMdiMaximized=True
 nProgramFileCount=1
@@ -47,9 +47,35 @@ RunWindow {
 		nHeight=381
 	}
 	nWinState=0
+	nNumOfDisplays=1
+	nSplitterDistance=0
+	Display1 {
+		nCamera=0
+		sSequences="1"
+	}
+	Display2 {
+		nCamera=0
+		sSequences="1"
+	}
+	Display3 {
+		nCamera=0
+		sSequences="1"
+	}
+	Display4 {
+		nCamera=0
+		sSequences="1"
+	}
+	Display5 {
+		nCamera=0
+		sSequences="1"
+	}
+	Display6 {
+		nCamera=0
+		sSequences="1"
+	}
 }
 IOLabelEditor {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=68
 		nTop=0
@@ -100,7 +126,7 @@ RobotMgr {
 		nLeft=11
 		nTop=-5
 		nWidth=698
-		nHeight=478
+		nHeight=477
 	}
 }
 UserErrorEditor {
@@ -122,6 +148,12 @@ VisionGuide {
 		nHeight=0
 	}
 	nWinState=0
+	bShowFlowChart=True
+	nSplitterDistance1=0
+	nSplitterDistance2=0
+	nSplitterDistance3=0
+	nSplitterDistance4=0
+	nSplitterDistance5=0
 }
 GUIBuilder {
 	bOpened=False
@@ -132,6 +164,10 @@ GUIBuilder {
 		nHeight=0
 	}
 	nWinState=0
+	nSplitterDistance1=0
+	nSplitterDistance2=0
+	nSplitterDistance3=0
+	nSplitterDistance4=0
 }
 ProjectExplorer {
 	bProgramsOpened=True

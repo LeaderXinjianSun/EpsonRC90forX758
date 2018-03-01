@@ -1,5 +1,5 @@
-'ver 20170904.01
-'1、清洁操作完成，无需等待
+'ver 20180302.01
+'1、更改放不好放黑盘
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
 Global Integer CurPosition_Num, TargetPosition_Num
@@ -2898,7 +2898,7 @@ PickFeedOperatelabel1:
 						MsgSend$ = "扫码不良"
 '						Pause
 						Pick_P_Msg(0) = 1
-						
+						Pick_Remark(0) = 1
 				Send
 				If PcsLostAlarm1 Then
 					Print "A爪手掉料"
@@ -4136,9 +4136,9 @@ TOReleaseFail_SuckSub:
 '		EndIf
 	EndIf
 	If PickHave(ReleaseFailPickNum) = True Then
-	'吸取成功，当NG产品处理
+	'吸取成功，当Noise产品处理
 		Pick_P_Msg(ReleaseFailPickNum) = 1
-		Pick_Remark(ReleaseFailPickNum) = 0
+		Pick_Remark(ReleaseFailPickNum) = 1
 	Else
 		Select ReleaseFailFlexIndex
 			Case 0

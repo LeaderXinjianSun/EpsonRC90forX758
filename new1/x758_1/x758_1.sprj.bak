@@ -1,11 +1,11 @@
-ENVT0100,LM:2017/09/04 03:39:49:405,DS:0000006252,CS:14906,MA:C6-8E-8F-74-5D-89,EI:           
+ENVT0100,LM:2018/03/01 23:37:22:051,DS:0000006690,CS:22282,MA:68-F7-28-D3-72-7E,EI:           
 SystemProperties {
-	sRCVersion="7.1.3"
+	sRCVersion="7.3.2"
 	sRCRevision=""
 	sGUID="125ba4a3-86be-46e6-951c-8570368f4cc7"
 	sPath="D:\\EpsonRC70\\Projects\\EpsonRC90forX758\\new1\\x758_1\\"
 	sCreated="2017/1/20 10:54:13"
-	sLastModified="2017/9/4 11:39:49"
+	sLastModified="2018/3/2 7:37:22"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -34,7 +34,7 @@ ProgramFile1 {
 	sName="Main.prg"
 	bCompiled=False
 	bStoreInController=True
-	sTimeSavedInController="2017/9/4 3:24:57"
+	sTimeSavedInController="2018/3/1 23:29:18"
 }
 nIncludeFileCount=0
 nPointFileCount=1
@@ -58,6 +58,7 @@ OperatorSettings {
 		bSystemHistoryButton=True
 		bDisplayVision=False
 		bSimulatorButton=True
+		bConfigVideoButton=True
 		Program0 {
 			sName="Program"
 			bEnabled=True
@@ -314,6 +315,31 @@ OperatorSettings {
 			sName="Program 63"
 			bEnabled=True
 		}
+		nNumOfDisplays=1
+		Display1 {
+			nCamera=0
+			sSequences="1"
+		}
+		Display2 {
+			nCamera=0
+			sSequences="1"
+		}
+		Display3 {
+			nCamera=0
+			sSequences="1"
+		}
+		Display4 {
+			nCamera=0
+			sSequences="1"
+		}
+		Display5 {
+			nCamera=0
+			sSequences="1"
+		}
+		Display6 {
+			nCamera=0
+			sSequences="1"
+		}
 	}
 	RobotManager {
 		bAllowReset=True
@@ -336,12 +362,16 @@ OperatorSettings {
 		bECPTab=False
 		bBoxesTab=False
 		bPlanesTab=False
+		bForceTab=False
+		bForceSensorTab=False
+		bMassTab=False
 		bWeightTab=False
 		bInertiaTab=False
 		bXYZLimitsTab=False
 		bRangeTab=False
 		bHomeConfigTab=False
 		bMCalOrderTab=False
+		bVRTTab=False
 	}
 	IOMonitor {
 		bStandardViewTab=True
