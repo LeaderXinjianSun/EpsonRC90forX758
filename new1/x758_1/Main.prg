@@ -1,4 +1,4 @@
-'ver 20180302.01
+'ver 20180303.01
 '1、更改放不好放黑盘
 Global String CmdRev$, CmdSend$, MsgSend$, CmdRevFlex$, CmdSendFlex$
 Global String CmdRevStr$(20), CmdRevFlexStr$(20)
@@ -366,6 +366,7 @@ main_label1:
 		'处理A爪头
 		Call TesterOperate1
 		Call UnloadOperate(1)
+		Call UnloadOperate(0)
 		If ReleaseFailFlexIndex <> -1 Then
 			Call TesterOperateReleaseFail
 			Call UnloadOperate(ReleaseFailPickNum)
@@ -373,6 +374,7 @@ main_label1:
         '处理B爪头
 		Call TesterOperate2
 		Call UnloadOperate(0)
+		Call UnloadOperate(1)
 		If ReleaseFailFlexIndex <> -1 Then
 			Call TesterOperateReleaseFail
 			Call UnloadOperate(ReleaseFailPickNum)
